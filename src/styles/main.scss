@@ -1,0 +1,58 @@
+* {
+  box-sizing: border-box;
+}
+
+.infinite-table {
+  height: 100%;
+  overflow: hidden;
+}
+
+.infinite-table__columns-define {
+  display: none;
+}
+
+
+.infinite-table__table-header {
+  .infinite-table__cell {
+    padding: 12px 0;
+  }
+}
+
+.infinite-table__table-header, .infinite-table__body {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.infinite-table__body__wrapper {
+  overflow: auto;
+}
+
+.infinite-table__cell {
+  min-width: 0;
+  text-align: left;
+  position: relative;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  .cell-content {
+    display: inline-block;
+    padding: 0 10px;
+    position: relative;
+    width: 100%;
+  }
+
+  .cell-hover-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: #42b983;
+    color: white;
+    z-index: 10;
+  }
+
+
+}
