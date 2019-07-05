@@ -3,12 +3,13 @@ const defaultColumnRender = function defaultColumnRender(props) {
   const { label } = options;
   return row[label];
 };
-const getColumnRenderFunc = function (render) {
+const getColumnRenderFunc = function getColumnRenderFunc(render) {
   return props => render(props);
 };
 
 export default {
   name: 'infinite-table-column',
+  inject: ['tableColumns'],
   props: {
     sortable: {
       type: Boolean,
@@ -44,9 +45,7 @@ export default {
     },
   },
   mounted() {
-    const { store } = this.parent;
     const index = this.parent.getColumnIndex(this);
-
 
     const {
       width, label, sortable, comparator,
@@ -60,14 +59,15 @@ export default {
       columnRender = getColumnRenderFunc(defaultColumnRender);
     }
 
+    const widthValue = Number.isNaN(parseFloat(width)) ? null : parseFloat(width);
     const options = {
-      width: parseFloat(width),
+      width: widthValue,
       label,
       sortable,
       comparator,
       columnRender,
     };
-    store.addColumn(index, options);
+    this.tableColumns[index] = options;
   },
   render() {
     return null;

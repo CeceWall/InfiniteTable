@@ -21,6 +21,7 @@
 .infinite-table__table-header, .infinite-table__body {
   width: 100%;
   table-layout: fixed;
+  border-spacing: 0;
   border-collapse: collapse;
 }
 
@@ -29,19 +30,21 @@
 }
 
 .infinite-table__cell {
-  min-width: 0;
   text-align: left;
   position: relative;
   vertical-align: middle;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding: 0;
 
   .cell-content {
-    display: inline-block;
-    padding: 0 10px;
-    position: relative;
+    line-height: 24px;
+    box-sizing: border-box;
     width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    padding: 12px 10px;
+    position: relative;
   }
 
   .cell-hover-content {

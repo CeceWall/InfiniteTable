@@ -1,26 +1,27 @@
-import TableCell from './table-cell.jsx';
+import TableCell from './table-cell';
 
 export default {
   name: 'table-row',
   components: {
     TableCell,
   },
-  inject: ['store'],
   props: {
     data: {
       require: true,
     },
-    columnOptions: {
-      require: true,
+    tableColumns: {
+      required: true,
+    },
+    layoutSize: {
+      required: true,
     },
   },
   render() {
-    const { data, columnOptions, store } = this;
-    const { rowHeight } = store.getTableOptions();
+    const { data, tableColumns } = this;
     return (
-      <tr style={{ height: `${rowHeight}px` }}>
+      <tr>
         {
-          columnOptions.map((columnOption) => {
+          tableColumns.map((columnOption) => {
             const { columnRender } = columnOption;
             return (
               <table-cell ellipsisHover={true}>

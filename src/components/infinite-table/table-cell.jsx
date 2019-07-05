@@ -18,6 +18,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    height: {
+      type: [String, Number],
+      default: '48px',
+    },
   },
   data() {
     return {
@@ -28,11 +32,11 @@ export default {
     handleMouseMove(evt) {
     },
     handleMouseEnter() {
-      const { cellContent } = this.$refs;
-      const { offsetWidth, scrollWidth } = cellContent;
-      if (offsetWidth < scrollWidth && this.ellipsisHover) {
-        this.isHoverItemVisible = true;
-      }
+      // const { cellContent } = this.$refs;
+      // const { offsetWidth, scrollWidth } = cellContent;
+      // if (offsetWidth < scrollWidth && this.ellipsisHover) {
+      //   this.isHoverItemVisible = true;
+      // }
     },
     handleMouseLeave() {
       this.isHoverItemVisible = false;
@@ -52,7 +56,7 @@ export default {
         on-mouseenter={this.handleMouseEnter}
         on-mouseleave={this.handleMouseLeave}
       >
-        <div ref="cellContent" class="cell-content">
+        <div ref="cellContent" class="cell-content" style={{ height: this.height }}>
           {$slots.default}
         </div>
         {

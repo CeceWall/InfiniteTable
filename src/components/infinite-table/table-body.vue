@@ -1,31 +1,39 @@
 <template>
-  <table class="infinite-table__body">
-    <colgroup>
-      <col
-        v-for="(column, columnIndex) of columns"
-        :key="columnIndex" :width="column.width"
-      />
-    </colgroup>
-    <tbody>
-    <table-row
-      :data="rowData"
-      v-for="(rowData,rowIndex) of data"
-      :key="rowIndex"
-      :column-options="columns"
-    ></table-row>
-    </tbody>
-  </table>
+  <div ref="body" class="infinite-table__body__wrapper">
+    <table class="infinite-table__body">
+      <colgroup>
+        <col
+          v-for="(column, columnIndex) of tableColumns"
+          :key="columnIndex"
+          :width="column.width"
+        />
+      </colgroup>
+      <recycle-render
+        :instance="this"
+        :render="tableRow"
+        :data="data"
+        :scroll-element="() => this.$refs.body"
+        :render-props="{
+          tableColumns,
+          layoutSize,
+         }"
+      >
+        <tbody></tbody>
+      </recycle-render>
+    </table>
+  </div>
 </template>
 
 <script>
 import TableRow from './table-row';
+import RecycleRender from './render/recycle-render.vue';
 
 export default {
   name: 'table-body',
   components: {
-    TableRow,
+    RecycleRender,
   },
-  inject: ['store'],
+  inject: ['tableColumns', 'layoutSize'],
   props: {
     data: {
       type: Array,
@@ -35,21 +43,8 @@ export default {
   data() {
     return {
       viewportHeight: 0,
+      tableRow: TableRow,
     };
-  },
-  mounted() {
-    this.$nextTick(() => {
-      console.log(this.store.getLayoutOptions())
-      const tableOptions = this.store.getTableOptions();
-      const { tableHeight, tableHeaderHeight } = this.store.getLayoutOptions();
-      console.log(tableHeight, tableHeaderHeight);
-      this.viewportHeight = tableHeight - tableHeaderHeight;
-    });
-  },
-  computed: {
-    columns() {
-      return this.store.getColumns();
-    },
   },
 };
 </script>

@@ -5,22 +5,17 @@ export default {
   components: {
     'table-cell': TableCell,
   },
-  inject: ['store'],
-  computed: {
-    parent() {
-      return this.$parent;
-    },
-  },
+  inject: ['tableColumns'],
   render() {
-    const columns = this.store.getColumns();
+    const { tableColumns } = this;
     return (
       <table class="infinite-table__table-header">
         <colgroup>
-          {columns.map(column => <col width={column.width} />)}
+          {tableColumns.map(column => <col width={column.width} />)}
         </colgroup>
         <thead>
         <tr>
-          {columns.map(column => <table-cell>{column.label}</table-cell>)}
+          {tableColumns.map(column => <table-cell>{column.label}</table-cell>)}
         </tr>
         </thead>
       </table>
