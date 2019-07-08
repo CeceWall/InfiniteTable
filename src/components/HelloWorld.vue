@@ -1,7 +1,7 @@
 <template>
-  <div class="hello" style="height: 800px;">
+  <div class="hello" style="height: 900px;">
     <div style="width: 100%; height: 100%">
-      <infinite-table :data="data">
+      <infinite-table :data="data" height="100%">
         <infinite-table-column label="a" width="418">
           <template slot-scope="props">
             <div style="color: red">
@@ -91,7 +91,7 @@ export default {
     };
   },
   mounted() {
-    // let n = 1000;
+    let n = 1000;
     // setInterval(() => {
     //   if (n > 0) {
     //     this.data.push({

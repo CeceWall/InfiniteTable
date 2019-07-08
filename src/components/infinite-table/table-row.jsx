@@ -1,4 +1,4 @@
-import TableCell from './table-cell';
+import TableCell from './table-cell.vue';
 
 export default {
   name: 'table-row',
@@ -19,12 +19,12 @@ export default {
   render() {
     const { data, tableColumns } = this;
     return (
-      <tr>
+      <div>
         {
           tableColumns.map((columnOption) => {
             const { columnRender } = columnOption;
             return (
-              <table-cell ellipsisHover={true}>
+              <table-cell ellipsisHover={true} width={columnOption.width}>
                 {
                   columnRender({
                     row: data,
@@ -35,7 +35,7 @@ export default {
             );
           })
         }
-      </tr>
+      </div>
     );
   },
 };

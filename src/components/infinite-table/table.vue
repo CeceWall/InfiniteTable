@@ -1,20 +1,27 @@
 <template>
-  <div class="infinite-table">
+  <div class="infinite-table" :style="{height: tableHeight}" :class="tableClass">
     <div class="infinite-table__columns-define">
       <slot></slot>
     </div>
-    <div ref="header" class="infinite-table__header__wrapper" :style="{width: layoutSize.containerWidth}">
-      <table-header />
-    </div>
-    <table-body :data="data" v-if="layoutFinished" :style="{width: layoutSize.containerWidth,height: tableViewportHeight}" />
+    <table-header
+      :table-columns="tableColumns" :header-height="tableHeaderHeight"
+      :style="{width: `${layoutSize.allColumnsWidth}px`}"
+      :class="tableHeaderClass"
+    />
+    <table-body
+      :data="data"
+      :style="{width: `${layoutSize.allColumnsWidth}px`}"
+      :table-columns="tableColumns"
+      :layout-size="layoutSize"
+    />
   </div>
 </template>
 
 <script>
-import TableHeader from './table-header';
+import TableHeader from './table-header.vue';
 import TableBody from './table-body.vue';
-import { getContentSize, getTableBodyHeight, doColumnWidthLayout } from './table-layout';
-import { getScrollWidth } from './utils';
+import { getTableBodyHeight, doColumnWidthLayout } from './table-layout';
+import { getScrollWidth, num2px, getClientSize } from './utils/layout';
 
 export default {
   name: 'InfiniteTable',
@@ -29,6 +36,13 @@ export default {
         return [];
       },
     },
+    height: {
+      type: [Number, String],
+    },
+    headerHeight: {
+      type: [Number, String],
+      default: 48,
+    },
     rowHeight: {
       type: [Number, String],
       default: 48,
@@ -40,6 +54,22 @@ export default {
   computed: {
     tableViewportHeight() {
       return `calc(100% - ${this.layoutSize.tableHeaderHeight}px)`;
+    },
+    tableHeight() {
+      return num2px(this.height);
+    },
+    tableHeaderHeight() {
+      return num2px(this.headerHeight);
+    },
+    tableClass() {
+      return {
+        'infinite-table--scrollable': this.tableHeight,
+      };
+    },
+    tableHeaderClass() {
+      return {
+        'infinite-table__table-header--sticky': this.tableHeight,
+      };
     },
   },
   // TODO 不使用inject传递
@@ -67,6 +97,9 @@ export default {
         tableHeaderHeight: 48,
         // table可视区域的高度
         tableViewportHeight: 0,
+        viewportWidth: 0,
+        viewportHeight: 0,
+        allColumnsWidth: 0,
       },
     };
   },
@@ -82,28 +115,47 @@ export default {
   },
   methods: {
     doLayout() {
-      const containerSize = getContentSize(this.$el);
-      // TODO 解决动态获取header height的问题
-      const { tableHeaderHeight } = this.layoutSize;
+      // 获取容器的clientHeight和clientWidth
+      const containerSize = getClientSize(this.$el);
+      const tableHeaderHeight = parseFloat(this.headerHeight);
+
       // TODO 不使用inject传递
-      let tableWidth = containerSize.width;
+      let viewportWidth = containerSize.width;
+      const tableBodyHeight = getTableBodyHeight(this.rowHeight, this.data.length);
+      // 如果container的高度不为0（为0代表未使用css设置高度）而且container的高度小于TableBody的高度,说明需要有纵向滚动条
       // 如果有纵向滚动条，那么内部table的宽度应该减去纵向滚动条的宽度
-      const hasVerticalScroller = containerSize.height - tableHeaderHeight < getTableBodyHeight(this.rowHeight, this.data.length);
+      const hasVerticalScroller = containerSize.height > 0 && (containerSize.height - tableHeaderHeight < tableBodyHeight);
       if (hasVerticalScroller) {
-        tableWidth -= getScrollWidth();
+        viewportWidth -= getScrollWidth();
       }
-      const calculatedColumns = doColumnWidthLayout(tableWidth, this.tableColumns);
-      const totalColumnWidth = calculatedColumns.reduce((sum, column) => sum + column.width, 0);
-      const hasHorizontalScroller = totalColumnWidth > containerSize.width;
-      this.updateInject(this.tableColumns, calculatedColumns);
-      this.updateInject(this.layoutSize, {
-        ...this.layoutSize,
-        containerWidth: containerSize.width,
-        containerHeight: containerSize.height,
-        tableWidth,
-        tableViewportHeight: containerSize.height - tableHeaderHeight - (hasHorizontalScroller ? getScrollWidth() : 0),
-      });
-      this.layoutFinished = true;
+      // 使用viewportWidth，计算columns的宽度
+      // 如果所有column都设置了宽度，那么总宽度是每个column宽度的累加
+      // 如果存在没设置宽度的column，那么先用默认的column宽度计算column的总宽度
+      // 若总宽度小于viewport的宽度，将总宽度减去已设置的宽度，未设置宽度的column均分剩余的宽度。
+      // 否则，未设置宽度的column设置为默认宽度
+      const calculatedColumns = doColumnWidthLayout(viewportWidth, this.tableColumns);
+      const allColumnsWidth = calculatedColumns.reduce((sum, column) => sum + column.width, 0);
+      const hasHorizontalScroller = allColumnsWidth > viewportWidth;
+      let viewportHeight = containerSize.height - tableHeaderHeight;
+      if (hasHorizontalScroller) {
+        viewportHeight -= getScrollWidth();
+      }
+      this.tableColumns = calculatedColumns;
+      this.layoutSize = {
+        rowHeight: this.rowHeight,
+        viewportWidth,
+        viewportHeight,
+        allColumnsWidth,
+      };
+      // this.updateInject(this.tableColumns, calculatedColumns);
+      // this.updateInject(this.layoutSize, {
+      //   ...this.layoutSize,
+      //   containerWidth: containerSize.width,
+      //   containerHeight: containerSize.height,
+      //   tableWidth: viewportWidth,
+      //   tableViewportHeight: containerSize.height - tableHeaderHeight - (hasHorizontalScroller ? getScrollWidth() : 0),
+      // });
+      // this.layoutFinished = true;
     },
     getColumnIndex(column) {
       return this.$children.indexOf(column);

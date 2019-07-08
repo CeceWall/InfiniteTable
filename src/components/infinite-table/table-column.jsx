@@ -60,14 +60,13 @@ export default {
     }
 
     const widthValue = Number.isNaN(parseFloat(width)) ? null : parseFloat(width);
-    const options = {
+    this.tableColumns[index] = {
       width: widthValue,
       label,
       sortable,
       comparator,
       columnRender,
     };
-    this.tableColumns[index] = options;
   },
   render() {
     return null;
