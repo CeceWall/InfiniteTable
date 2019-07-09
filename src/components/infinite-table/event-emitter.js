@@ -1,14 +1,36 @@
-import Vue from 'vue';
+export default class EventEmitter {
+  constructor() {
+    this.listeners = new Map();
+  }
 
-const eventBus = new Vue({
-  data: {
-    selectedRowIndex: -1,
-  },
-  methods: {
-    selectRow(data) {
-      this.selectedRowIndex = data;
-    },
-  },
-});
+  addEvent(event, callback) {
+    let eventListeners;
+    if (!this.listeners.has(event)) {
+      eventListeners = new Set();
+      this.listeners.set(event, eventListeners);
+    }
+    eventListeners = this.listeners.get(event);
+    eventListeners.add(callback);
+  }
 
-export default eventBus;
+  removeEvent(event, callback) {
+    if (this.listeners.has(event)) {
+      const eventListeners = this.listeners.get(event);
+      return eventListeners.delete(callback);
+    }
+    return false;
+  }
+
+  removeAllListeners(event) {
+    this.listeners.delete(event);
+  }
+
+  dispatch(event, payload) {
+    if (this.listeners.has(event)) {
+      const eventListeners = this.listeners.get(event);
+      eventListeners.forEach((callback) => {
+        callback(payload);
+      });
+    }
+  }
+}

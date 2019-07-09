@@ -15,9 +15,9 @@
 
 <script>
 import { num2px } from './utils/layout';
-import TableRow from './table-row.jsx';
+import TableRow from './table-row';
 import RecycleRender from './render/recycle-render';
-import TableEllipsisCell from '@/components/infinite-table/table-ellipsis-cell';
+import TableEllipsisCell from './table-ellipsis-cell.vue';
 
 export default {
   name: 'table-body',

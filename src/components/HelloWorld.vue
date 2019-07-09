@@ -1,7 +1,7 @@
 <template>
   <div class="hello" style="height: 900px;">
     <div style="width: 100%; height: 100%">
-      <infinite-table :data="data" height="100%">
+      <infinite-table ref="table" :data="data" height="100%">
         <infinite-table-column label="a" width="418" />
         <infinite-table-column label="b" >
           <template slot-scope="props">
@@ -84,26 +84,20 @@ export default {
         z: `${item}-${index}`,
         aa: `${item}-${index}`,
       })),
-    ])(200);
+    ])(1000);
 
     return {
       data,
     };
   },
   mounted() {
-    let n = 1000;
-    // setInterval(() => {
-    //   if (n > 0) {
-    //     this.data.push({
-    //       a: 1,
-    //       b: 1,
-    //       c: 1,
-    //       d: 1,
-    //     });
-    //     // this.data.splice(0, 1)
-    //     n -= 1;
-    //   }
-    // }, 10);
+    let n = 0;
+    setInterval(() => {
+      if (n < this.data.length) {
+        this.$refs.table.selectRow(this.data[n]);
+        n += 1;
+      }
+    }, 1000);
   },
   props: {
     msg: String,

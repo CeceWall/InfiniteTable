@@ -9,7 +9,6 @@ const getColumnRenderFunc = function getColumnRenderFunc(render) {
 
 export default {
   name: 'infinite-table-column',
-  inject: ['tableColumns'],
   props: {
     sortable: {
       type: Boolean,

@@ -20,8 +20,11 @@
 <script>
 import TableHeader from './table-header.vue';
 import TableBody from './table-body.vue';
+import TableStore from './table-store';
+import EventEmitter from './event-emitter';
 import { getTableBodyHeight, doColumnWidthLayout } from './table-layout';
 import { getScrollWidth, num2px, getClientSize } from './utils/layout';
+import { getTableId } from './utils/table';
 
 export default {
   name: 'InfiniteTable',
@@ -69,8 +72,19 @@ export default {
       };
     },
   },
-  data() {
+  provide() {
     return {
+      tableStore: this.tableStore,
+    };
+  },
+  data() {
+    const tableId = getTableId();
+    const eventEmitter = new EventEmitter();
+    const tableStore = new TableStore({ tableId, eventEmitter });
+    return {
+      tableId,
+      tableStore,
+      eventEmitter,
       layoutFinished: false,
       tableColumns: [],
       layoutSize: {
@@ -84,6 +98,10 @@ export default {
   },
   mounted() {
     this.doLayout();
+    this.eventEmitter.addEvent('selected-change', (payload) => { this.$emit('selected-change', payload); });
+  },
+  beforeDestroy() {
+    this.eventEmitter.removeAllListeners('selected-change');
   },
   watch: {
     // TODO 仅在resize或数据量变化导致滚动条出现变化时才计算layout
@@ -98,8 +116,6 @@ export default {
       // 获取容器的clientHeight和clientWidth
       const containerSize = getClientSize(this.$el);
       const tableHeaderHeight = parseFloat(this.headerHeight);
-
-      // TODO 不使用inject传递
       let viewportWidth = containerSize.width;
       const tableBodyHeight = getTableBodyHeight(this.rowHeight, this.data.length);
       // 如果container的高度不为0（为0代表未使用css设置高度）而且container的高度小于TableBody的高度,说明需要有纵向滚动条
@@ -136,6 +152,9 @@ export default {
     },
     removeTableColumn(index) {
       this.tableColumns.splice(index, 1);
+    },
+    selectRow(row) {
+      this.tableStore.selectedRow = row;
     },
   },
 };

@@ -1,28 +1,22 @@
 import Vue from 'vue';
 
-class TableStore {
-  constructor() {
-    this.store = Vue.observable({
-      layoutSize: {},
-      tableColumns: {},
-    });
+export default class TableStore {
+  constructor(options = {}) {
+    if (!options.tableId) {
+      console.error('TableStore: 缺少必要的tableId参数');
+    }
+    this.tableId = options.tableId;
+    this.eventEmitter = options.eventEmitter;
+    this.rowHeight = options.rowHeight;
+    this.__selectedRow = options.selectedRow;
   }
 
-  get layoutSize() {
-    return this.store.layoutSize;
+  set selectedRow(row) {
+    this.__selectedRow = row;
+    this.eventEmitter.dispatch('selected-change', this.__selectedRow);
   }
 
-  set layoutSize(value) {
-    this.store.layoutSize = value;
-  }
-
-  get tableColumns() {
-    return this.store.tableColumns;
-  }
-
-  set tableColumns(value) {
-    this.store.tableColumns = value;
+  get selectedRow() {
+    return this.__selectedRow;
   }
 }
-
-export default new TableStore();

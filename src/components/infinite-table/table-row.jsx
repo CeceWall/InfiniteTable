@@ -1,8 +1,8 @@
 import TableCell from './table-cell.vue';
-import emitter from './event-emitter';
 
 export default {
   name: 'table-row',
+  inject: ['tableStore'],
   components: {
     TableCell,
   },
@@ -17,19 +17,32 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      highlightRow: false, // 避免selectedRow改变导致不必要的updateComponent调用
+    };
+  },
   computed: {
-    selectedRowIndex() {
-      return emitter.selectedRowIndex;
+    selectedRow() {
+      return this.tableStore.selectedRow;
+    },
+    tableRowClass() {
+      return {
+        'infinite-table__row': true,
+        'infinite-table__row--selected': this.highlightRow,
+      };
+    },
+  },
+  watch: {
+    selectedRow() {
+      this.highlightRow = this.selectedRow === this.data;
     },
   },
   render() {
     const { data, tableColumns } = this;
     return (
       <div
-        class={{
-          'infinite-table__row': true,
-          'infinite-table__row--selected': this.selectedRowIndex === data,
-        }}
+        class={this.tableRowClass}
         onContextmenu={this.handleContextMenu}
         onClick={this.handleSelectRow}
       >
@@ -40,6 +53,7 @@ export default {
               <table-cell
                 ref="cell"
                 refInFor
+                key={columnOption.label}
                 width={columnOption.width}
                 {
                   ...{
@@ -74,10 +88,10 @@ export default {
         columnOption,
         data,
       };
-      emitter.$emit('cell-display-ellipsis', eventPayload);
+      // emitter.$emit('cell-display-ellipsis', eventPayload);
     },
     handleSelectRow() {
-      emitter.selectRow(this.data);
+      this.tableStore.selectedRow = this.data;
     },
     handleCellMouseLeave(e, columnOption, data) {
       const eventPayload = {
@@ -85,7 +99,7 @@ export default {
         columnOption,
         data,
       };
-      emitter.$emit('cell-hide-ellipsis', eventPayload);
+      // emitter.$emit('cell-hide-ellipsis', eventPayload);
     },
   },
 };
