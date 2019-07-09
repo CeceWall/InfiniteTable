@@ -7,7 +7,7 @@
     :viewport-height="layoutSize.viewportHeight"
     :row-height="layoutSize.rowHeight"
   >
-    <div class="infinite-table__body" :style="tableBodyStyle">
+    <div class="infinite-table__body" :style="tableBodyStyle" v-on="tableBodyListeners">
 <!--      <table-ellipsis-cell :layout-size="layoutSize" />-->
     </div>
   </recycle-render>
@@ -40,6 +40,11 @@ export default {
     },
   },
   computed: {
+    tableBodyListeners() {
+      return {
+        ...this.$listeners,
+      };
+    },
     tableBodyStyle() {
       return {
         height: num2px(this.layoutSize.rowHeight * this.data.length),

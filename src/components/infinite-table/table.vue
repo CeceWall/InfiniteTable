@@ -1,5 +1,7 @@
 <template>
-  <div class="infinite-table" :style="{height: tableHeight}" :class="tableClass">
+  <div
+    class="infinite-table" :style="{height: tableHeight}" :class="tableClass"
+  >
     <div class="infinite-table__columns-define">
       <slot></slot>
     </div>
@@ -7,12 +9,18 @@
       :table-columns="tableColumns" :header-height="tableHeaderHeight"
       :style="{width: `${layoutSize.allColumnsWidth}px`}"
       :class="tableHeaderClass"
+      @click="handleDispatchEvent('header', 'click', $event)"
+      @dblclick="handleDispatchEvent('header', 'dblclick', $event)"
+      @contextmenu="handleDispatchEvent('header', 'contextmenu', $event)"
     />
     <table-body
       :data="data"
       :style="{width: `${layoutSize.allColumnsWidth}px`}"
       :table-columns="tableColumns"
       :layout-size="layoutSize"
+      @click="handleDispatchEvent('body', 'click', $event)"
+      @dblclick="handleDispatchEvent('body', 'dblclick', $event)"
+      @contextmenu="handleDispatchEvent('body', 'contextmenu', $event)"
     />
   </div>
 </template>
@@ -53,6 +61,10 @@ export default {
     rowKey: {
       type: String,
     },
+    highlightRow: {
+      type: Boolean,
+      default: true,
+    },
   },
   computed: {
     tableHeight() {
@@ -80,7 +92,10 @@ export default {
   data() {
     const tableId = getTableId();
     const eventEmitter = new EventEmitter();
-    const tableStore = new TableStore({ tableId, eventEmitter });
+    const tableStore = new TableStore({
+      tableId,
+      eventEmitter,
+    });
     return {
       tableId,
       tableStore,
@@ -98,7 +113,9 @@ export default {
   },
   mounted() {
     this.doLayout();
-    this.eventEmitter.addEvent('selected-change', (payload) => { this.$emit('selected-change', payload); });
+    this.eventEmitter.addEvent('selected-change', (payload) => {
+      this.$emit('selected-change', payload);
+    });
   },
   beforeDestroy() {
     this.eventEmitter.removeAllListeners('selected-change');
@@ -155,6 +172,13 @@ export default {
     },
     selectRow(row) {
       this.tableStore.selectedRow = row;
+    },
+    handleDispatchEvent(component, type, e) {
+      this.$emit(`${component}-row-${type}`, {
+        event: e,
+        column: this.tableStore.selectedColumn,
+        row: this.tableStore.selectedRow,
+      });
     },
   },
 };

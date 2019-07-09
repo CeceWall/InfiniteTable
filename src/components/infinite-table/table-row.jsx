@@ -41,11 +41,7 @@ export default {
   render() {
     const { data, tableColumns } = this;
     return (
-      <div
-        class={this.tableRowClass}
-        onContextmenu={this.handleContextMenu}
-        onClick={this.handleSelectRow}
-      >
+      <div class={this.tableRowClass}>
         {
           tableColumns.map((columnOption) => {
             const { columnRender } = columnOption;
@@ -60,6 +56,11 @@ export default {
                     on: {
                       'cell-display-ellipsis': e => this.handleCellMouseEnter(e, columnOption, data),
                       'cell-hide-ellipsis': e => this.handleCellMouseLeave(e, columnOption, data),
+                    },
+                    nativeOn: {
+                      click: () => { console.log('table row click'); this.handleRowEvent('click', columnOption); },
+                      dblclick: () => { this.handleRowEvent('dblclick', columnOption); },
+                      contextmenu: () => { this.handleRowEvent('contextmenu', columnOption); },
                     },
                   }
                 }
@@ -100,6 +101,10 @@ export default {
         data,
       };
       // emitter.$emit('cell-hide-ellipsis', eventPayload);
+    },
+    handleRowEvent(type, column) {
+      this.tableStore.selectedColumn = column;
+      this.tableStore.selectedRow = this.data;
     },
   },
 };

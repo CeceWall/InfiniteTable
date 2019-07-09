@@ -1,5 +1,3 @@
-import Vue from 'vue';
-
 export default class TableStore {
   constructor(options = {}) {
     if (!options.tableId) {
@@ -9,14 +7,22 @@ export default class TableStore {
     this.eventEmitter = options.eventEmitter;
     this.rowHeight = options.rowHeight;
     this.__selectedRow = options.selectedRow;
+    this.__selectedColumn = options.selectedColumn;
   }
 
   set selectedRow(row) {
     this.__selectedRow = row;
-    this.eventEmitter.dispatch('selected-change', this.__selectedRow);
   }
 
   get selectedRow() {
     return this.__selectedRow;
+  }
+
+  set selectedColumn(column) {
+    this.__selectedColumn = column;
+  }
+
+  get selectedColumn() {
+    return this.__selectedColumn;
   }
 }

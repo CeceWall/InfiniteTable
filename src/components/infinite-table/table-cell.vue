@@ -3,8 +3,6 @@
     class="infinite-table__cell"
     :class="cellClass"
     :style="cellStyle"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
   >
     <div ref="content" class="cell-content">
       <slot></slot>
@@ -42,19 +40,6 @@ export default {
         width: num2px(this.width),
         height: num2px(this.height),
       };
-    },
-  },
-  methods: {
-    handleMouseEnter(e) {
-      this.$emit('mouseenter', e);
-      const contentWidth = this.$refs.content.offsetWidth;
-      if (contentWidth > px2num(this.width)) {
-        this.$emit('cell-display-ellipsis', e);
-      }
-    },
-    handleMouseLeave(e) {
-      this.$emit('mouseleave', e);
-      this.$emit('cell-hide-ellipsis', e);
     },
   },
 };

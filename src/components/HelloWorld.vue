@@ -5,14 +5,14 @@
         <infinite-table-column label="a" width="418" />
         <infinite-table-column label="b" >
           <template slot-scope="props">
-            <div style="color: red" contenteditable>
+            <div style="color: red" title="123" contenteditable>
               {{ '21095-56-5' }}
             </div>
           </template>
         </infinite-table-column>
         <infinite-table-column label="c" />
         <infinite-table-column label="d" width="128" />
-        <infinite-table-column label="e" width="128" />
+        <infinite-table-column label="e" width="158" />
         <infinite-table-column label="f" width="128" />
         <infinite-table-column label="g" width="128" />
         <infinite-table-column label="h" width="128" />
@@ -94,7 +94,7 @@ export default {
     let n = 0;
     setInterval(() => {
       if (n < this.data.length) {
-        this.$refs.table.selectRow(this.data[n]);
+        // this.$refs.table.selectRow(this.data[n]);
         n += 1;
       }
     }, 1000);
