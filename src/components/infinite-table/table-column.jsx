@@ -60,13 +60,18 @@ export default {
     }
 
     const widthValue = Number.isNaN(parseFloat(width)) ? null : parseFloat(width);
-    this.tableColumns[index] = {
+    const column = {
       width: widthValue,
       label,
       sortable,
       comparator,
       columnRender,
     };
+    this.tableColumnIndex = index;
+    this.parent.addTableColumn(index, column);
+  },
+  beforeDestroy() {
+    this.parent.removeTableColumn(this.tableColumnIndex);
   },
   render() {
     return null;

@@ -7,18 +7,22 @@
     :viewport-height="layoutSize.viewportHeight"
     :row-height="layoutSize.rowHeight"
   >
-    <div class="infinite-table__body" :style="tableBodyStyle"></div>
+    <div class="infinite-table__body" :style="tableBodyStyle">
+<!--      <table-ellipsis-cell :layout-size="layoutSize" />-->
+    </div>
   </recycle-render>
 </template>
 
 <script>
 import { num2px } from './utils/layout';
-import TableRow from './table-row';
+import TableRow from './table-row.jsx';
 import RecycleRender from './render/recycle-render';
+import TableEllipsisCell from '@/components/infinite-table/table-ellipsis-cell';
 
 export default {
   name: 'table-body',
   components: {
+    TableEllipsisCell,
     RecycleRender,
   },
   props: {

@@ -41,6 +41,14 @@ export function num2px(number) {
   return number;
 }
 
+export function px2num(str) {
+  const num = parseFloat(str);
+  if (Number.isNaN(num)) {
+    return 0;
+  }
+  return num;
+}
+
 /**
  * 获取clientHeight和clientWidth
  * @param {HTMLElement} el;

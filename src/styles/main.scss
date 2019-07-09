@@ -8,8 +8,8 @@
 }
 
 .infinite-table--scrollable {
-  overflow-x: auto;
-  overflow-y: auto;
+  overflow-x: scroll;
+  overflow-y: scroll;
 }
 
 
@@ -37,6 +37,7 @@
   position: absolute;
   will-change: transform;
   z-index: 1;
+
   &.invisible {
     display: none;
   }
@@ -67,7 +68,7 @@
     line-height: 24px;
     box-sizing: border-box;
     display: inline-block;
-    padding: 12px 10px;
+    padding: 8px 12px;
     position: relative;
   }
 
@@ -79,6 +80,20 @@
     background: #42b983;
     color: white;
     z-index: 10;
+  }
+}
+
+.infinite-table__ellipsis-cell {
+  position: absolute;
+  line-height: 24px;
+  background: #42b983;
+  z-index: 2;
+}
+
+.infinite-table__row {
+  display: flex;
+  &:hover, &.infinite-table__row--selected {
+    background-color: #42b983;
   }
 }
 

@@ -3,19 +3,12 @@ import { calculateAnchorItem } from './transform';
 
 export default {
   name: 'recycle-render',
-  data() {
-    return {
-      viewportRows: 0,
-      anchor: {
-        index: 0,
-        offset: 0,
-      },
-      items: new Map(),
-      vmCache: [],
-    };
-  },
   render() {
     return this.$slots.default;
+  },
+  created() {
+    this.items = new Map();
+    this.vmCache = [];
   },
   mounted() {
     this.initial();
@@ -95,6 +88,7 @@ export default {
         if (item.index < startIndex || item.index > endIndex) {
           if (item.vm) {
             this.vmCache.push(item.vm);
+            item.vm.$el.classList.add('invisible');
             item.vm = null;
           }
           this.items.delete(key);
@@ -111,6 +105,7 @@ export default {
             this.$el.appendChild(vm.$el);
           } else {
             vm.setData(this.data[i]);
+            vm.$el.classList.remove('invisible');
           }
           item = {
             index: i,

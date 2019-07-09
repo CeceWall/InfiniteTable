@@ -52,9 +52,6 @@ export default {
     },
   },
   computed: {
-    tableViewportHeight() {
-      return `calc(100% - ${this.layoutSize.tableHeaderHeight}px)`;
-    },
     tableHeight() {
       return num2px(this.height);
     },
@@ -72,13 +69,6 @@ export default {
       };
     },
   },
-  // TODO 不使用inject传递
-  provide() {
-    return {
-      layoutSize: this.layoutSize,
-      tableColumns: this.tableColumns,
-    };
-  },
   data() {
     return {
       layoutFinished: false,
@@ -86,17 +76,6 @@ export default {
       layoutSize: {
         // 每行的行高
         rowHeight: this.rowHeight,
-        // 最外层容器宽度
-        containerWidth: 0,
-        // 最外层容器高度
-        containerHeight: 0,
-        // 内层table的宽度, 应当减去横向滚动条
-        tableWidth: 0,
-        // 内层table header高度
-        // FIXME 更换获取header高度的方式
-        tableHeaderHeight: 48,
-        // table可视区域的高度
-        tableViewportHeight: 0,
         viewportWidth: 0,
         viewportHeight: 0,
         allColumnsWidth: 0,
@@ -107,6 +86,7 @@ export default {
     this.doLayout();
   },
   watch: {
+    // TODO 仅在resize或数据量变化导致滚动条出现变化时才计算layout
     data: {
       handler() {
         this.doLayout();
@@ -147,31 +127,15 @@ export default {
         viewportHeight,
         allColumnsWidth,
       };
-      // this.updateInject(this.tableColumns, calculatedColumns);
-      // this.updateInject(this.layoutSize, {
-      //   ...this.layoutSize,
-      //   containerWidth: containerSize.width,
-      //   containerHeight: containerSize.height,
-      //   tableWidth: viewportWidth,
-      //   tableViewportHeight: containerSize.height - tableHeaderHeight - (hasHorizontalScroller ? getScrollWidth() : 0),
-      // });
-      // this.layoutFinished = true;
     },
     getColumnIndex(column) {
       return this.$children.indexOf(column);
     },
-    // TODO 不使用inject传递
-    updateInject(val, newVal) {
-      if (!val) return;
-      if (Array.isArray(val)) {
-        val.splice(0, val.length);
-        val.push(...newVal);
-      } else {
-        Object.keys(val)
-          .forEach((key) => {
-            this.$set(val, key, newVal[key]);
-          });
-      }
+    addTableColumn(index, column) {
+      this.tableColumns[index] = column;
+    },
+    removeTableColumn(index) {
+      this.tableColumns.splice(index, 1);
     },
   },
 };

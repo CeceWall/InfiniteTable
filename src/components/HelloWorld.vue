@@ -2,14 +2,14 @@
   <div class="hello" style="height: 900px;">
     <div style="width: 100%; height: 100%">
       <infinite-table :data="data" height="100%">
-        <infinite-table-column label="a" width="418">
+        <infinite-table-column label="a" width="418" />
+        <infinite-table-column label="b" >
           <template slot-scope="props">
-            <div style="color: red">
-              {{ props.row.a }}
+            <div style="color: red" contenteditable>
+              {{ '21095-56-5' }}
             </div>
           </template>
         </infinite-table-column>
-        <infinite-table-column label="b" />
         <infinite-table-column label="c" />
         <infinite-table-column label="d" width="128" />
         <infinite-table-column label="e" width="128" />
@@ -84,7 +84,7 @@ export default {
         z: `${item}-${index}`,
         aa: `${item}-${index}`,
       })),
-    ])(500);
+    ])(200);
 
     return {
       data,
