@@ -1,7 +1,9 @@
 <template>
-  <div class="infinite-table__table-header">
+  <div class="infinite-table__table-header" :style="{height: headerHeight}">
     <table-cell
-      v-for="column of tableStore.tableColumns" :height="headerHeight" :width="column.width"
+      v-for="column of tableStore.tableColumns"
+      :width="column.width"
+      :height="headerHeight"
       :key="column.label"
     >
       {{column.label}}

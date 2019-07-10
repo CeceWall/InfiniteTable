@@ -31,7 +31,7 @@ export default {
   },
   render() {
     const { data } = this;
-    const { tableColumns } = this.tableStore;
+    const { tableColumns, tableOptions } = this.tableStore;
     return (
       <div class={this.tableRowClass}>
         {
@@ -41,6 +41,7 @@ export default {
               <table-cell
                 key={columnOption.label}
                 width={columnOption.width}
+                height={tableOptions.rowHeight}
                 {
                   ...{
                     nativeOn: {

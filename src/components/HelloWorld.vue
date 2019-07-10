@@ -1,13 +1,16 @@
 <template>
   <div class="hello" style="height: 100%;">
     <div style="width: 100%; height: 100%">
-      <infinite-table ref="table" :data="data" height="100%" :highlight-row="highlightRow" :row-class-name="rowClassName">
+      <infinite-table
+        ref="table" :data="data" height="100%" :highlight-row="highlightRow" :row-class-name="rowClassName"
+        header-height="60px" row-height="40px"
+      >
         <infinite-table-column label="a" width="418" />
-        <infinite-table-column label="b" >
+        <infinite-table-column label="b" width="124px">
           <template slot-scope="props">
-            <div style="color: red" title="123" contenteditable>
+            <span style="color: red" title="123">
               {{ '21095-56-5' }}
-            </div>
+            </span>
           </template>
         </infinite-table-column>
         <infinite-table-column label="c" />

@@ -43,10 +43,6 @@ export default {
       type: [Object, Function],
       required: true,
     },
-    railWayItems: {
-      type: Number,
-      default: 30,
-    },
     viewportHeight: {
       type: Number,
       required: true,
@@ -70,6 +66,7 @@ export default {
         return;
       }
       const { rowHeight, data, viewportHeight } = this;
+      // fixme: 修复firefox和热更新时，初始scrollTop为不为0 但是anchorItem不存在的问题
       if (scrollTop === 0) {
         this.anchorItem = {
           offset: 0,

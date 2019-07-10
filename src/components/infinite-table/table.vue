@@ -29,7 +29,9 @@ import TableHeader from './table-header.vue';
 import TableBody from './table-body.vue';
 import TableStore from './table-store';
 import { getTableBodyHeight, doColumnWidthLayout } from './table-layout';
-import { getScrollWidth, num2px, getClientSize } from './utils/layout';
+import {
+  getScrollWidth, num2px, getClientSize, px2num,
+} from './utils/layout';
 import { getTableId } from './utils/table';
 
 export default {
@@ -55,6 +57,10 @@ export default {
     rowHeight: {
       type: [Number, String],
       default: 48,
+    },
+    striped: {
+      type: Boolean,
+      default: true,
     },
     highlightRow: {
       type: Boolean,
@@ -94,20 +100,24 @@ export default {
       height: this.height,
       rowClassName: this.rowClassName,
       headerHeight: this.headerHeight,
-      rowHeight: this.rowHeight,
+      striped: this.striped,
+      rowHeight: px2num(this.rowHeight),
     };
     const tableStore = new TableStore({
       tableId,
       tableColumns: [],
       tableOptions,
     });
+    const rowHeight = px2num(this.rowHeight);
+    console.log(rowHeight);
     return {
       tableId,
       tableStore,
       layoutFinished: false,
       layoutSize: {
         // 每行的行高
-        rowHeight: this.rowHeight,
+        // FIXME: 统一tableStore和LayoutSize
+        rowHeight,
         viewportWidth: 0,
         viewportHeight: 0,
         allColumnsWidth: 0,
@@ -154,8 +164,9 @@ export default {
         viewportHeight -= getScrollWidth();
       }
       this.tableStore.tableColumns = calculatedColumns;
+
       this.layoutSize = {
-        rowHeight: this.rowHeight,
+        rowHeight: px2num(this.rowHeight),
         viewportWidth,
         viewportHeight,
         allColumnsWidth,

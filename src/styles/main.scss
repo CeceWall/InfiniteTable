@@ -1,10 +1,11 @@
-* {
-  box-sizing: border-box;
-}
+@import 'variables.scss';
 
 .infinite-table {
   height: 100%;
   overflow: hidden;
+  background-color: $table-background-color;
+  color: $table-text-color;
+  font-size: $table-font-size;
 }
 
 .infinite-table--scrollable {
@@ -12,16 +13,17 @@
   overflow-y: auto;
 }
 
-
 .infinite-table__columns-define {
   display: none;
 }
 
-
 .infinite-table__table-header {
+  box-sizing: border-box;
+  background-color: $table-background-color;
   display: flex;
   position: relative;
   z-index: 2;
+  border-bottom: $table-header-border-bottom;
 
   &.infinite-table__table-header--sticky {
     position: sticky;
@@ -54,32 +56,26 @@
 .infinite-table__cell {
   text-align: left;
   position: relative;
-  display: inline-block;
+  display: flex;
+  align-items: center;
   padding: 0;
   overflow: hidden;
 
   &.infinite-table__cell--ellipsis {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    .cell-content {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
   }
 
   .cell-content {
+    width: 100%;
     line-height: 24px;
     box-sizing: border-box;
-    display: inline-block;
-    padding: 8px 12px;
+    display: block;
+    padding: 0 10px;
     position: relative;
-  }
-
-  .cell-hover-content {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    background: #42b983;
-    color: white;
-    z-index: 10;
   }
 }
 
@@ -92,8 +88,14 @@
 
 .infinite-table__row {
   display: flex;
+  user-select: none;
   &:hover, &.infinite-table__row--selected {
-    background-color: #42b983;
+    background-color: $table-row-hover-color;
+  }
+  &.infinite-table__row--striped {
+    .infinite-table__cell {
+      background-color: #232d37;
+    }
   }
 }
 
