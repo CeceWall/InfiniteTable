@@ -6,7 +6,7 @@
       <slot></slot>
     </div>
     <table-header
-      :table-columns="tableColumns" :header-height="tableHeaderHeight"
+      :header-height="tableHeaderHeight"
       :style="{width: `${layoutSize.allColumnsWidth}px`}"
       :class="tableHeaderClass"
       @click="handleDispatchEvent('header', 'click', $event)"
@@ -16,7 +16,6 @@
     <table-body
       :data="data"
       :style="{width: `${layoutSize.allColumnsWidth}px`}"
-      :table-columns="tableColumns"
       :layout-size="layoutSize"
       @click="handleDispatchEvent('body', 'click', $event)"
       @dblclick="handleDispatchEvent('body', 'dblclick', $event)"
@@ -29,7 +28,6 @@
 import TableHeader from './table-header.vue';
 import TableBody from './table-body.vue';
 import TableStore from './table-store';
-import EventEmitter from './event-emitter';
 import { getTableBodyHeight, doColumnWidthLayout } from './table-layout';
 import { getScrollWidth, num2px, getClientSize } from './utils/layout';
 import { getTableId } from './utils/table';
@@ -58,12 +56,12 @@ export default {
       type: [Number, String],
       default: 48,
     },
-    rowKey: {
-      type: String,
-    },
     highlightRow: {
       type: Boolean,
       default: true,
+    },
+    rowClassName: {
+      type: [String, Function],
     },
   },
   computed: {
@@ -91,17 +89,22 @@ export default {
   },
   data() {
     const tableId = getTableId();
-    const eventEmitter = new EventEmitter();
+    const tableOptions = {
+      highlightRow: this.highlightRow,
+      height: this.height,
+      rowClassName: this.rowClassName,
+      headerHeight: this.headerHeight,
+      rowHeight: this.rowHeight,
+    };
     const tableStore = new TableStore({
       tableId,
-      eventEmitter,
+      tableColumns: [],
+      tableOptions,
     });
     return {
       tableId,
       tableStore,
-      eventEmitter,
       layoutFinished: false,
-      tableColumns: [],
       layoutSize: {
         // 每行的行高
         rowHeight: this.rowHeight,
@@ -113,12 +116,6 @@ export default {
   },
   mounted() {
     this.doLayout();
-    this.eventEmitter.addEvent('selected-change', (payload) => {
-      this.$emit('selected-change', payload);
-    });
-  },
-  beforeDestroy() {
-    this.eventEmitter.removeAllListeners('selected-change');
   },
   watch: {
     // TODO 仅在resize或数据量变化导致滚动条出现变化时才计算layout
@@ -126,6 +123,9 @@ export default {
       handler() {
         this.doLayout();
       },
+    },
+    highlightRow(newVal) {
+      this.tableStore.tableOptions.highlightRow = newVal;
     },
   },
   methods: {
@@ -146,14 +146,14 @@ export default {
       // 如果存在没设置宽度的column，那么先用默认的column宽度计算column的总宽度
       // 若总宽度小于viewport的宽度，将总宽度减去已设置的宽度，未设置宽度的column均分剩余的宽度。
       // 否则，未设置宽度的column设置为默认宽度
-      const calculatedColumns = doColumnWidthLayout(viewportWidth, this.tableColumns);
+      const calculatedColumns = doColumnWidthLayout(viewportWidth, this.tableStore.tableColumns);
       const allColumnsWidth = calculatedColumns.reduce((sum, column) => sum + column.width, 0);
       const hasHorizontalScroller = allColumnsWidth > viewportWidth;
       let viewportHeight = containerSize.height - tableHeaderHeight;
       if (hasHorizontalScroller) {
         viewportHeight -= getScrollWidth();
       }
-      this.tableColumns = calculatedColumns;
+      this.tableStore.tableColumns = calculatedColumns;
       this.layoutSize = {
         rowHeight: this.rowHeight,
         viewportWidth,
@@ -165,10 +165,10 @@ export default {
       return this.$children.indexOf(column);
     },
     addTableColumn(index, column) {
-      this.tableColumns[index] = column;
+      this.tableStore.tableColumns[index] = column;
     },
     removeTableColumn(index) {
-      this.tableColumns.splice(index, 1);
+      this.tableStore.tableColumns.splice(index, 1);
     },
     selectRow(row) {
       this.tableStore.selectedRow = row;

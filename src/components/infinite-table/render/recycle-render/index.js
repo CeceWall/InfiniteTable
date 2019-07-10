@@ -1,17 +1,21 @@
 import Vue from 'vue';
 import { calculateAnchorItem } from './transform';
 
+/**
+ * 该组件循环利用vue对象实现大数据量的滚动
+ *
+ */
 export default {
   name: 'recycle-render',
   render() {
     return this.$slots.default;
   },
-  created() {
+  mounted() {
     this.items = new Map();
     this.vmCache = [];
-  },
-  mounted() {
-    this.initial();
+    this.scroll = typeof this.scrollElement === 'function' ? this.scrollElement() : this.scrollElement;
+    this.scroll.addEventListener('scroll', this.onScroll);
+    this.onScroll();
   },
   beforeDestroy() {
     if (this.scroll) {
@@ -19,6 +23,8 @@ export default {
       this.scroll = null;
       this.vmCache = null;
     }
+    this.items.clear();
+    this.vmCache = null;
   },
   props: {
     render: {
@@ -51,11 +57,6 @@ export default {
     },
   },
   methods: {
-    initial() {
-      this.scroll = typeof this.scrollElement === 'function' ? this.scrollElement() : this.scrollElement;
-      this.scroll.addEventListener('scroll', this.onScroll);
-      this.onScroll();
-    },
     onScroll() {
       if (!this.handling) {
         this.handling = true;
@@ -79,7 +80,9 @@ export default {
         this.anchorItem = calculateAnchorItem(this.anchorItem, delta, rowHeight, data.length);
       }
       const lastAnchorItem = calculateAnchorItem(this.anchorItem, viewportHeight, rowHeight, data.length);
-      this.attachContentByAnchor(this.anchorItem.index, lastAnchorItem.index);
+      const startIndex = Math.max(0, this.anchorItem.index - 1);
+      const endIndex = Math.min(this.data.length - 1, lastAnchorItem.index + 1);
+      this.attachContentByAnchor(startIndex, endIndex);
       this.lastScrollTop = scrollTop;
       this.handling = false;
     },
@@ -88,7 +91,7 @@ export default {
         if (item.index < startIndex || item.index > endIndex) {
           if (item.vm) {
             this.vmCache.push(item.vm);
-            item.vm.$el.classList.add('invisible');
+            // item.vm.$el.classList.add('invisible');
             item.vm = null;
           }
           this.items.delete(key);
@@ -105,7 +108,7 @@ export default {
             this.$el.appendChild(vm.$el);
           } else {
             vm.setData(this.data[i]);
-            vm.$el.classList.remove('invisible');
+            // vm.$el.classList.remove('invisible');
           }
           item = {
             index: i,

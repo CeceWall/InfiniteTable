@@ -8,21 +8,39 @@ export default class TableStore {
     this.rowHeight = options.rowHeight;
     this.__selectedRow = options.selectedRow;
     this.__selectedColumn = options.selectedColumn;
-  }
-
-  set selectedRow(row) {
-    this.__selectedRow = row;
+    this.__tableColumns = options.tableColumns;
+    this.__tableOptions = options.tableOptions;
   }
 
   get selectedRow() {
     return this.__selectedRow;
   }
 
-  set selectedColumn(column) {
-    this.__selectedColumn = column;
+  set selectedRow(row) {
+    this.__selectedRow = row;
   }
 
   get selectedColumn() {
     return this.__selectedColumn;
+  }
+
+  set selectedColumn(column) {
+    this.__selectedColumn = column;
+  }
+
+  get tableColumns() {
+    return this.__tableColumns;
+  }
+
+  set tableColumns(columns) {
+    this.__tableColumns = columns;
+  }
+
+  get tableOptions() {
+    return this.__tableOptions;
+  }
+
+  set tableOptions(options) {
+    this.__tableOptions = options;
   }
 }

@@ -1,7 +1,7 @@
 <template>
-  <div class="hello" style="height: 900px;">
+  <div class="hello" style="height: 100%;">
     <div style="width: 100%; height: 100%">
-      <infinite-table ref="table" :data="data" height="100%">
+      <infinite-table ref="table" :data="data" height="100%" :highlight-row="highlightRow" :row-class-name="rowClassName">
         <infinite-table-column label="a" width="418" />
         <infinite-table-column label="b" >
           <template slot-scope="props">
@@ -88,6 +88,7 @@ export default {
 
     return {
       data,
+      highlightRow: true,
     };
   },
   mounted() {
@@ -101,6 +102,12 @@ export default {
   },
   props: {
     msg: String,
+  },
+  methods: {
+    rowClassName(rowData) {
+      const index = this.data.indexOf(rowData);
+      return index % 2 === 0 ? 'even' : 'odd';
+    },
   },
 };
 </script>

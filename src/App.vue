@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <HelloWorld msg="Welcome to Your Vue.js App" />
   </div>
 </template>
 
@@ -16,6 +16,10 @@ export default {
 </script>
 
 <style lang="scss">
-#app {
-}
+  html, body, #app {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    height: 100%;
+  }
 </style>
