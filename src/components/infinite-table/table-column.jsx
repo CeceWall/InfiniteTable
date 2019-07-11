@@ -1,7 +1,7 @@
 const defaultColumnRender = function defaultColumnRender(props) {
   const { options, row } = props;
-  const { label } = options;
-  return row[label];
+  const { prop } = options;
+  return row[prop];
 };
 const getColumnRenderFunc = function getColumnRenderFunc(render) {
   return props => render(props);
@@ -32,6 +32,10 @@ export default {
       type: String,
       require: true,
     },
+    prop: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -48,6 +52,7 @@ export default {
 
     const {
       width, label, sortable, comparator,
+      prop,
     } = this;
 
     const scopedSlot = this.$scopedSlots.default;
@@ -65,6 +70,7 @@ export default {
       sortable,
       comparator,
       columnRender,
+      prop,
     };
     this.tableColumnIndex = index;
     this.parent.addTableColumn(index, column);

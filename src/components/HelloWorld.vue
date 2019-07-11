@@ -9,39 +9,39 @@
         :row-extra-attrs="rowClassName"
         header-height="60px" row-height="40px"
       >
-        <infinite-table-column label="a" width="418" />
-        <infinite-table-column label="b" width="124px">
+        <infinite-table-column label="a" prop="a" width="418" />
+        <infinite-table-column label="b" prop="b" width="124px">
           <template slot-scope="props">
             <span style="color: red" title="123">
               {{ '21095-56-5' }}
             </span>
           </template>
         </infinite-table-column>
-        <infinite-table-column label="c" />
-        <infinite-table-column label="d" width="128" />
-        <infinite-table-column label="e" width="158" />
-        <infinite-table-column label="f" width="128" />
-        <infinite-table-column label="g" width="128" />
-        <infinite-table-column label="h" width="128" />
-        <infinite-table-column label="i" width="128" />
-        <infinite-table-column label="j" width="128" />
-        <infinite-table-column label="k" width="128" />
-        <infinite-table-column label="l" width="128" />
-        <infinite-table-column label="m" width="128" />
-        <infinite-table-column label="n" width="128" />
-        <infinite-table-column label="o" width="128" />
-        <infinite-table-column label="p" width="128" />
-        <infinite-table-column label="q" width="128" />
-        <infinite-table-column label="r" width="128" />
-        <infinite-table-column label="s" width="128" />
-        <infinite-table-column label="t" width="128" />
-        <infinite-table-column label="u" width="128" />
-        <infinite-table-column label="v" width="128" />
-        <infinite-table-column label="w" width="128" />
-        <infinite-table-column label="x" width="128" />
-        <infinite-table-column label="y" width="128" />
-        <infinite-table-column label="z" width="128" />
-        <infinite-table-column label="aa" width="128" />
+        <infinite-table-column label="c" prop="c"/>
+        <infinite-table-column label="d" prop="d" width="128" />
+        <infinite-table-column label="e" prop="e" width="158" />
+        <infinite-table-column label="f" prop="f" width="128" />
+        <infinite-table-column label="g" prop="g" width="128" />
+        <infinite-table-column label="h" prop="h" width="128" />
+        <infinite-table-column label="i" prop="i" width="128" />
+        <infinite-table-column label="j" prop="j" width="128" />
+        <infinite-table-column label="k" prop="k" width="128" />
+        <infinite-table-column label="l" prop="l" width="128" />
+        <infinite-table-column label="m" prop="m" width="128" />
+        <infinite-table-column label="n" prop="n" width="128" />
+        <infinite-table-column label="o" prop="o" width="128" />
+        <infinite-table-column label="p" prop="p" width="128" />
+        <infinite-table-column label="q" prop="q" width="128" />
+        <infinite-table-column label="r" prop="r" width="128" />
+        <infinite-table-column label="s" prop="s" width="128" />
+        <infinite-table-column label="t" prop="t" width="128" />
+        <infinite-table-column label="u" prop="u" width="128" />
+        <infinite-table-column label="v" prop="v" width="128" />
+        <infinite-table-column label="w" prop="w" width="128" />
+        <infinite-table-column label="x" prop="x" width="128" />
+        <infinite-table-column label="y" prop="y" width="128" />
+        <infinite-table-column label="z" prop="z" width="128" />
+        <infinite-table-column label="aa" prop="aa" width="128" />
       </infinite-table>
     </div>
   </div>
