@@ -2,7 +2,11 @@
   <div class="hello" style="height: 100%;">
     <div style="width: 100%; height: 100%">
       <infinite-table
-        ref="table" :data="data" height="100%" :highlight-row="highlightRow" :row-class-name="rowClassName"
+        ref="table"
+        :data="data"
+        height="100%"
+        :highlight-row="highlightRow"
+        :row-extra-attrs="rowClassName"
         header-height="60px" row-height="40px"
       >
         <infinite-table-column label="a" width="418" />
@@ -101,15 +105,21 @@ export default {
         // this.$refs.table.selectRow(this.data[n]);
         n += 1;
       }
-    }, 1000);
+    }, 50000);
   },
   props: {
     msg: String,
   },
   methods: {
-    rowClassName(rowData) {
-      const index = this.data.indexOf(rowData);
-      return index % 2 === 0 ? 'even' : 'odd';
+    rowClassName(rowData, rowIndex) {
+      return {
+        class: {
+          a1: true,
+        },
+        attrs: {
+          draggable: false,
+        },
+      };
     },
   },
 };

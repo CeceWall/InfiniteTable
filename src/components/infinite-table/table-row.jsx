@@ -10,30 +10,12 @@ export default {
     data: {
       require: true,
     },
-    highlighted: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  computed: {
-    highlightRow() {
-      return this.tableStore.selectedRow === this.data;
-    },
-    tableRowClass() {
-      const { highlightRow, rowClassName } = this.tableStore.tableOptions;
-      const extraClassName = typeof rowClassName === 'function' ? rowClassName(this.data) : rowClassName;
-      return {
-        'infinite-table__row': true,
-        'infinite-table__row--selected': highlightRow && this.highlightRow,
-        [extraClassName]: true,
-      };
-    },
   },
   render() {
     const { data } = this;
     const { tableColumns, tableOptions } = this.tableStore;
     return (
-      <div class={this.tableRowClass}>
+      <div class="infinite-table__row">
         {
           tableColumns.map((columnOption) => {
             const { columnRender } = columnOption;

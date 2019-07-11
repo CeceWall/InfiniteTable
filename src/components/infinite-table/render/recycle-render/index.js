@@ -35,8 +35,8 @@ export default {
       type: Object,
       required: false,
     },
-    data: {
-      type: Array,
+    total: {
+      type: Number,
       required: true,
     },
     scrollElement: {
@@ -49,6 +49,10 @@ export default {
     },
     rowHeight: {
       type: Number,
+      required: true,
+    },
+    renderFunction: {
+      type: Function,
       required: true,
     },
   },
@@ -65,7 +69,7 @@ export default {
         this.handling = false;
         return;
       }
-      const { rowHeight, data, viewportHeight } = this;
+      const { rowHeight, total, viewportHeight } = this;
       // fixme: 修复firefox和热更新时，初始scrollTop为不为0 但是anchorItem不存在的问题
       if (scrollTop === 0) {
         this.anchorItem = {
@@ -74,11 +78,11 @@ export default {
         };
       } else {
         const delta = scrollTop - this.lastScrollTop;
-        this.anchorItem = calculateAnchorItem(this.anchorItem, delta, rowHeight, data.length);
+        this.anchorItem = calculateAnchorItem(this.anchorItem, delta, rowHeight, total);
       }
-      const lastAnchorItem = calculateAnchorItem(this.anchorItem, viewportHeight, rowHeight, data.length);
+      const lastAnchorItem = calculateAnchorItem(this.anchorItem, viewportHeight, rowHeight, total);
       const startIndex = Math.max(0, this.anchorItem.index - 1);
-      const endIndex = Math.min(this.data.length - 1, lastAnchorItem.index + 1);
+      const endIndex = Math.min(total - 1, lastAnchorItem.index + 1);
       this.attachContentByAnchor(startIndex, endIndex);
       this.lastScrollTop = scrollTop;
       this.handling = false;
@@ -101,10 +105,10 @@ export default {
           let vm = this.vmCache.shift();
           if (!vm) {
             const node = this.renderTombstone();
-            vm = this.renderRow(this.data[i], node);
+            vm = this.renderRow(node, i);
             this.$el.appendChild(vm.$el);
           } else {
-            vm.setData(this.data[i]);
+            vm.setIndex(i);
             // vm.$el.classList.remove('invisible');
           }
           item = {
@@ -124,31 +128,25 @@ export default {
       t.style.height = `${this.rowHeight}px`;
       return t;
     },
-    renderRow(data, element) {
-      const { render, renderProps } = this;
+    renderRow(element, index) {
       const parent = this;
       return new Vue({
         name: 'recycle-render-component',
         el: element,
         parent,
         data: {
-          data,
+          index,
         },
         methods: {
-          setData(newVal) {
-            this.data = newVal;
+          setIndex(newIndex) {
+            this.index = newIndex;
           },
         },
-        render(h) {
-          return h(render, {
-            props: {
-              ...renderProps,
-              data: this.data,
-            },
-            class: {
-              'infinite-table__row--recycle': true,
-            },
-          });
+        render() {
+          const vnode = parent.renderFunction(this.index);
+          // 添加额外的recycle需要的class
+          vnode.data.class['infinite-table__row--recycle'] = true;
+          return vnode;
         },
       });
     },

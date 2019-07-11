@@ -66,8 +66,11 @@ export default {
       type: Boolean,
       default: true,
     },
-    rowClassName: {
-      type: [String, Function],
+    rowExtraAttrs: {
+      type: [Object, Function],
+      default() {
+        return {};
+      },
     },
   },
   computed: {
@@ -98,7 +101,7 @@ export default {
     const tableOptions = {
       highlightRow: this.highlightRow,
       height: this.height,
-      rowClassName: this.rowClassName,
+      rowExtraAttrs: this.rowExtraAttrs,
       headerHeight: this.headerHeight,
       striped: this.striped,
       rowHeight: px2num(this.rowHeight),
@@ -109,11 +112,9 @@ export default {
       tableOptions,
     });
     const rowHeight = px2num(this.rowHeight);
-    console.log(rowHeight);
     return {
       tableId,
       tableStore,
-      layoutFinished: false,
       layoutSize: {
         // 每行的行高
         // FIXME: 统一tableStore和LayoutSize

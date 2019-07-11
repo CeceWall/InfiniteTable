@@ -89,13 +89,16 @@
 .infinite-table__row {
   display: flex;
   user-select: none;
+
+  &.infinite-table__row--striped {
+    background-color: #232d37;
+  }
+
+  /**
+    因为css优先级的原因，hover和selected样式需要在striped下面写
+   */
   &:hover, &.infinite-table__row--selected {
     background-color: $table-row-hover-color;
-  }
-  &.infinite-table__row--striped {
-    .infinite-table__cell {
-      background-color: #232d37;
-    }
   }
 }
 
