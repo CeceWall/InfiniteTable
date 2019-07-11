@@ -1,10 +1,12 @@
 import Vue from 'vue';
+import 'raf/polyfill';
 import { calculateAnchorItem } from './transform';
 
 /**
  * 该组件循环利用vue对象实现大数据量的滚动
  *
  */
+// FIXME 解决数据出现或者消失时，render没有及时更新状态的问题
 export default {
   name: 'recycle-render',
   render() {
@@ -14,6 +16,10 @@ export default {
     this.items = new Map();
     this.vmCache = [];
     this.scroll = typeof this.scrollElement === 'function' ? this.scrollElement() : this.scrollElement;
+    if (!this.scroll) {
+      throw new Error('RecycleRender: 没有可用的可滚动DOM');
+    }
+    this.scroll.scrollTop = 0;
     this.scroll.addEventListener('scroll', this.onScroll);
     this.onScroll();
   },
@@ -27,20 +33,12 @@ export default {
     this.vmCache = null;
   },
   props: {
-    render: {
-      type: Object,
-      required: true,
-    },
-    renderProps: {
-      type: Object,
-      required: false,
-    },
     total: {
       type: Number,
       required: true,
     },
     scrollElement: {
-      type: [Object, Function],
+      type: [HTMLElement, Function],
       required: true,
     },
     viewportHeight: {
@@ -56,21 +54,40 @@ export default {
       required: true,
     },
   },
+  watch: {
+    rowHeight() {
+      this.forceUpdate();
+    },
+    viewportHeight() {
+      this.forceUpdate();
+    },
+    total() {
+      this.forceUpdate();
+    },
+  },
   methods: {
+    forceUpdate() {
+      this.handleScroll(true);
+    },
     onScroll() {
+      // 滚动时
       if (!this.handling) {
         this.handling = true;
-        requestAnimationFrame(this.handleScroll);
+        window.requestAnimationFrame(this.handleScroll);
       }
     },
-    handleScroll() {
+    /**
+     * 滚动条变化后，根据滚动条渲染列表的方法
+     * 默认只有在纵向滚动条变化时，才渲染列表，可以通过force参数强制刷新
+     * @param {Boolean} force 是否强制更新，当total变化或data变化时，应当强制更新当前渲染的项目
+     */
+    handleScroll(force = false) {
       const { scrollTop } = this.scroll;
-      if (scrollTop === this.lastScrollTop) {
+      if (!force && (scrollTop === this.lastScrollTop)) {
         this.handling = false;
         return;
       }
       const { rowHeight, total, viewportHeight } = this;
-      // fixme: 修复firefox和热更新时，初始scrollTop为不为0 但是anchorItem不存在的问题
       if (scrollTop === 0) {
         this.anchorItem = {
           offset: 0,
@@ -145,6 +162,12 @@ export default {
         render() {
           const vnode = parent.renderFunction(this.index);
           // 添加额外的recycle需要的class
+          if (!vnode.data) {
+            vnode.data = {};
+          }
+          if (!vnode.data.class) {
+            vnode.data.class = {};
+          }
           vnode.data.class['infinite-table__row--recycle'] = true;
           return vnode;
         },

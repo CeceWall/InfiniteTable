@@ -1,5 +1,7 @@
+/* eslint-disable import/prefer-default-export */
+
 export function calculateAnchorItem(anchorItem, delta, rowHeight, totalLength) {
-  if (delta === 0) {
+  if (delta === 0 || totalLength === 0) {
     return anchorItem;
   }
   const { index, offset } = anchorItem;
