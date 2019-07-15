@@ -6,7 +6,6 @@ import { calculateAnchorItem } from './transform';
  * 该组件循环利用vue对象实现大数据量的滚动
  *
  */
-// FIXME 解决数据出现或者消失时，render没有及时更新状态的问题
 export default {
   name: 'recycle-render',
   render() {
@@ -104,12 +103,13 @@ export default {
       this.lastScrollTop = scrollTop;
       this.handling = false;
     },
+    // TODO 保证DOM的顺序
     attachContentByAnchor(startIndex, endIndex) {
       this.items.forEach((item, key) => {
         if (item.index < startIndex || item.index > endIndex) {
           if (item.vm) {
             this.vmCache.push(item.vm);
-            // item.vm.$el.classList.add('invisible');
+            // eslint-disable-next-line no-param-reassign
             item.vm = null;
           }
           this.items.delete(key);

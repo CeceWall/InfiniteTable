@@ -14,7 +14,6 @@
       @contextmenu="handleDispatchEvent('header', 'contextmenu', $event)"
     />
     <table-body
-      :data="data"
       :style="{width: `${layoutSize.allColumnsWidth}px`}"
       :layout-size="layoutSize"
       @click="handleDispatchEvent('body', 'click', $event)"
@@ -107,6 +106,7 @@ export default {
       rowHeight: px2num(this.rowHeight),
     };
     const tableStore = new TableStore({
+      data: this.data,
       tableId,
       tableColumns: [],
       tableOptions,
@@ -130,8 +130,10 @@ export default {
   },
   watch: {
     // TODO 仅在resize或数据量变化导致滚动条出现变化时才计算layout
+    // FIXME 数据项更新后自动更新render
     data: {
-      handler() {
+      handler(newData) {
+        this.tableStore.data = newData;
         this.doLayout();
       },
     },
@@ -141,6 +143,7 @@ export default {
   },
   methods: {
     doLayout() {
+      // FIXME 修复列不如容器宽时，出现横向滚动条的问题
       // 获取容器的clientHeight和clientWidth
       const containerSize = getClientSize(this.$el);
       const tableHeaderHeight = parseFloat(this.headerHeight);

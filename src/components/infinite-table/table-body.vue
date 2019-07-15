@@ -1,6 +1,6 @@
 <template>
   <recycle-render
-    :render="tableRow"
+    ref="recycleRender"
     :total="data.length"
     :scroll-element="getScrollElement"
     :viewport-height="layoutSize.viewportHeight"
@@ -25,16 +25,15 @@ export default {
     TableRow,
   },
   props: {
-    data: {
-      type: Array,
-      required: true,
-    },
     layoutSize: {
       type: Object,
       require: true,
     },
   },
   computed: {
+    data() {
+      return this.tableStore.data;
+    },
     tableBodyListeners() {
       return {
         ...this.$listeners,
@@ -51,6 +50,11 @@ export default {
       viewportHeight: 0,
       tableRow: TableRow,
     };
+  },
+  watch: {
+    data() {
+      this.$refs.recycleRender.forceUpdate();
+    },
   },
   methods: {
     getScrollElement() {

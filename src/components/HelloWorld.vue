@@ -7,26 +7,27 @@
         height="100%"
         :highlight-row="highlightRow"
         :row-extra-attrs="rowClassName"
-        header-height="60px" row-height="40px"
+        header-height="60px"
+        row-height="40px"
       >
         <infinite-table-column label="a" prop="a" width="418" />
         <infinite-table-column label="b" prop="b" width="124px">
           <template slot-scope="props">
-            <span style="color: red" title="123">
+            <span style="color: red" title="123" @drop="handleDrop" @dragover.prevent>
               {{ '21095-56-5' }}
             </span>
           </template>
         </infinite-table-column>
         <infinite-table-column label="c" prop="c"/>
-        <infinite-table-column label="d" prop="d" width="128" />
-        <infinite-table-column label="e" prop="e" width="158" />
+        <infinite-table-column label="d" prop="d" width="128" sortable />
+        <infinite-table-column label="e" prop="e" width="158" sortable />
         <infinite-table-column label="f" prop="f" width="128" />
         <infinite-table-column label="g" prop="g" width="128" />
         <infinite-table-column label="h" prop="h" width="128" />
-        <infinite-table-column label="i" prop="i" width="128" />
+        <infinite-table-column label="i" prop="i" width="128" sortable />
         <infinite-table-column label="j" prop="j" width="128" />
         <infinite-table-column label="k" prop="k" width="128" />
-        <infinite-table-column label="l" prop="l" width="128" />
+        <infinite-table-column label="l" prop="l" width="128" sortable />
         <infinite-table-column label="m" prop="m" width="128" />
         <infinite-table-column label="n" prop="n" width="128" />
         <infinite-table-column label="o" prop="o" width="128" />
@@ -91,7 +92,7 @@ export default {
         z: `${item}-${index}`,
         aa: `${item}-${index}`,
       })),
-    ])(1000);
+    ])(0);
 
     return {
       data,
@@ -100,24 +101,62 @@ export default {
   },
   mounted() {
     let n = 0;
-    setInterval(() => {
-      if (n < this.data.length) {
-        // this.$refs.table.selectRow(this.data[n]);
-        n += 1;
-      }
-    }, 50000);
+    setTimeout(() => {
+      this.data = _.flow([
+        _.times,
+        fp.map((item, index) => ({
+          a: `${item}-${index}`,
+          b: `${item}-${index}`,
+          c: `${item}-${index}`,
+          d: `${item}-${index}`,
+          e: `${item}-${index}`,
+          f: `${item}-${index}`,
+          g: `${item}-${index}`,
+          h: `${item}-${index}`,
+          i: `${item}-${index}`,
+          j: `${item}-${index}`,
+          k: `${item}-${index}`,
+          l: `${item}-${index}`,
+          m: `${item}-${index}`,
+          n: `${item}-${index}`,
+          o: `${item}-${index}`,
+          p: `${item}-${index}`,
+          q: `${item}-${index}`,
+          r: `${item}-${index}`,
+          s: `${item}-${index}`,
+          t: `${item}-${index}`,
+          u: `${item}-${index}`,
+          v: `${item}-${index}`,
+          w: `${item}-${index}`,
+          x: `${item}-${index}`,
+          y: `${item}-${index}`,
+          z: `${item}-${index}`,
+          aa: `${item}-${index}`,
+        })),
+      ])(500);
+    }, 1000);
+    // setInterval(() => {
+    //   if (n < this.data.length) {
+    // this.$refs.table.selectRow(this.data[n]);
+    // n += 1;
+    // }
+    // }, 1000);
   },
   props: {
     msg: String,
   },
   methods: {
+    handleDrop(e) {
+      e.preventDefault();
+      console.log(e);
+    },
     rowClassName(rowData, rowIndex) {
       return {
         class: {
           a1: true,
         },
         attrs: {
-          draggable: false,
+          draggable: true,
         },
       };
     },

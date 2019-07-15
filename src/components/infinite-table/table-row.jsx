@@ -14,6 +14,7 @@ export default {
   render() {
     const { data } = this;
     const { tableColumns, tableOptions } = this.tableStore;
+    // TODO 将table-cell的渲染放到table-body中，目的是columnRender能拿到更多的数据
     return (
       <div class="infinite-table__row">
         {

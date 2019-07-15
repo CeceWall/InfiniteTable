@@ -1,8 +1,12 @@
 const defaultColumnRender = function defaultColumnRender(props) {
   const { options, row } = props;
   const { prop } = options;
-  return row[prop];
+  if (prop) {
+    return row[prop];
+  }
+  return '';
 };
+
 const getColumnRenderFunc = function getColumnRenderFunc(render) {
   return props => render(props);
 };
@@ -34,7 +38,6 @@ export default {
     },
     prop: {
       type: String,
-      required: true,
     },
   },
   data() {
@@ -56,6 +59,9 @@ export default {
     } = this;
 
     const scopedSlot = this.$scopedSlots.default;
+    if (!scopedSlot && !prop) {
+      console.error('table-column: prop和slot-scope必须存在一个');
+    }
     let columnRender;
     if (scopedSlot) {
       columnRender = getColumnRenderFunc(scopedSlot);
