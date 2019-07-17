@@ -7,13 +7,12 @@
     :row-height="layoutSize.rowHeight"
     :render-function="renderRow"
   >
-    <div class="infinite-table__body" :style="tableBodyStyle" v-on="tableBodyListeners">
+    <div class="infinite-table__body" v-on="tableBodyListeners">
     </div>
   </recycle-render>
 </template>
 
 <script lang="jsx">
-import { num2px } from './utils/layout';
 import TableRow from './table-row';
 import RecycleRender from './render/recycle-render';
 
@@ -37,11 +36,6 @@ export default {
     tableBodyListeners() {
       return {
         ...this.$listeners,
-      };
-    },
-    tableBodyStyle() {
-      return {
-        height: num2px(this.layoutSize.rowHeight * this.data.length),
       };
     },
   },

@@ -20,6 +20,9 @@ export default {
     }
     this.scroll.scrollTop = 0;
     this.scroll.addEventListener('scroll', this.onScroll);
+
+    // 添加占位元素
+    this.appendTransformEnd();
     this.onScroll();
   },
   beforeDestroy() {
@@ -65,6 +68,15 @@ export default {
     },
   },
   methods: {
+    appendTransformEnd() {
+      const div = document.createElement('div');
+      div.textContent = ' ';
+      div.style.position = 'absolute';
+      div.style.height = '1px';
+      div.style.width = '1px';
+      this.$el.appendChild(div);
+      this.transformEnd = div;
+    },
     forceUpdate() {
       this.handleScroll(true);
     },
@@ -87,28 +99,39 @@ export default {
         return;
       }
       const { rowHeight, total, viewportHeight } = this;
-      if (scrollTop === 0) {
-        this.anchorItem = {
-          offset: 0,
-          index: 0,
-        };
-      } else {
-        const delta = scrollTop - this.lastScrollTop;
-        this.anchorItem = calculateAnchorItem(this.anchorItem, delta, rowHeight, total);
+      const anchorItem = {
+        index: Math.floor(scrollTop / rowHeight),
+        offset: scrollTop % rowHeight,
+      };
+      const lastAnchorItem = calculateAnchorItem(anchorItem, viewportHeight, rowHeight, total);
+      let startIndex = Math.max(0, anchorItem.index - 1);
+      const endIndex = Math.min(total, lastAnchorItem.index + 2);
+
+      // startIndex >= endIndex 说明数据项目有变化，数据无法从startIndex开始
+      // 这种情况下，使用endIndex推算出startIndex
+      if (startIndex >= endIndex) {
+        startIndex = calculateAnchorItem(lastAnchorItem, viewportHeight, rowHeight, total);
       }
-      const lastAnchorItem = calculateAnchorItem(this.anchorItem, viewportHeight, rowHeight, total);
-      const startIndex = Math.max(0, this.anchorItem.index - 1);
-      const endIndex = Math.min(total - 1, lastAnchorItem.index + 1);
       this.attachContentByAnchor(startIndex, endIndex);
+      this.transformEnd.style.transform = `translateY(${total * rowHeight}px)`;
       this.lastScrollTop = scrollTop;
       this.handling = false;
     },
-    // TODO 保证DOM的顺序
+    /**
+     * 根据startIndex和endIndex添加节点，左闭右开
+     * 当
+     *
+     * @param startIndex
+     * @param endIndex
+     */
     attachContentByAnchor(startIndex, endIndex) {
       this.items.forEach((item, key) => {
-        if (item.index < startIndex || item.index > endIndex) {
+        if (item.index < startIndex || item.index >= endIndex) {
           if (item.vm) {
             this.vmCache.push(item.vm);
+            item.vm.$el.classList.add('invisible');
+            // eslint-disable-next-line no-param-reassign
+            item.vm.lastIndex = item.index;
             // eslint-disable-next-line no-param-reassign
             item.vm = null;
           }
@@ -116,17 +139,16 @@ export default {
         }
       });
 
-      for (let i = startIndex; i <= endIndex; i += 1) {
+      for (let i = startIndex; i < endIndex; i += 1) {
         let item = this.items.get(i);
         if (!item) {
           let vm = this.vmCache.shift();
           if (!vm) {
             const node = this.renderTombstone();
             vm = this.renderRow(node, i);
-            this.$el.appendChild(vm.$el);
+            vm.$el.classList.add('invisible');
           } else {
             vm.setIndex(i);
-            // vm.$el.classList.remove('invisible');
           }
           item = {
             index: i,
@@ -135,9 +157,13 @@ export default {
           this.items.set(i, item);
         }
       }
-      for (let i = startIndex; i <= endIndex; i += 1) {
+      for (let i = startIndex; i < endIndex; i += 1) {
         const item = this.items.get(i);
-        item.vm.$el.style.transform = `translate3d(0, ${i * this.rowHeight}px, 0)`;
+        item.vm.$el.style.transform = `translateY(${i * this.rowHeight}px)`;
+        if (item.vm.$el.classList.contains('invisible')) {
+          item.vm.$el.classList.remove('invisible');
+          this.$el.appendChild(item.vm.$el);
+        }
       }
     },
     renderTombstone() {

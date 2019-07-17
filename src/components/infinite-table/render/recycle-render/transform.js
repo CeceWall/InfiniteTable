@@ -1,5 +1,14 @@
 /* eslint-disable import/prefer-default-export */
 
+/**
+ * 使用当前块的index和offset，移动的距离，行高和总共的元素个数
+ * 计算移动后的index和offset
+ * @param anchorItem
+ * @param delta
+ * @param rowHeight
+ * @param totalLength
+ * @return {{offset: number, index: (*|number)}|*}
+ */
 export function calculateAnchorItem(anchorItem, delta, rowHeight, totalLength) {
   if (delta === 0 || totalLength === 0) {
     return anchorItem;

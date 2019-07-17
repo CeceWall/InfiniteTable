@@ -23,7 +23,6 @@ const MockComponent = {
       this.$refs.recycleRender.forceUpdate();
     },
     renderChild(index) {
-      const dataNo = this.data[index];
       return this.$createElement(
         'div',
         {
@@ -32,7 +31,7 @@ const MockComponent = {
             height: '48px',
           },
         },
-        `${dataNo}`,
+        `${index}`,
       );
     },
   },
@@ -60,6 +59,8 @@ const MockComponent = {
 };
 
 const wrapper = mount(MockComponent);
+const rowSelector = '.infinite-table__row--recycle';
+const visibleRowSelector = `${rowSelector}:not(.invisible)`;
 
 describe('recycle-render', () => {
   it('计算锚点', () => {
@@ -110,29 +111,47 @@ describe('recycle-render', () => {
   });
   it('初始无数据', (done) => {
     setTimeout(() => {
-      const { children } = wrapper.element;
-      expect(children.length).to.equal(0);
+      const recycleElements = wrapper.element.querySelectorAll(rowSelector);
+      expect(recycleElements.length).to.equal(0);
       done();
     }, 32);
   });
-  it('数据加载变化', (done) => {
-    wrapper.setData({
-      data: new Array(100).fill(0).map((i, index) => index),
-    });
-    Vue.nextTick(() => {
-      const { children } = wrapper.element;
-      expect(children.length).to.gt(10);
-      done();
-    });
+  it('添加元素', () => {
+    const testCases = [
+      [0, 10],
+      [40, 50],
+      [20, 35],
+      [15, 25],
+      [20, 40],
+      [0, 1],
+      [0, 0],
+    ];
+    for (const testCase of testCases) {
+      const [startIndex, endIndex] = testCase;
+      console.log(`startIndex ${startIndex} endIndex ${endIndex}`);
+      wrapper.vm.$refs.recycleRender.attachContentByAnchor(startIndex, endIndex);
+      const rowElements = wrapper.element.querySelectorAll(visibleRowSelector);
+      expect(rowElements.length).to.equal(endIndex - startIndex);
+    }
   });
   it('数据更新', (done) => {
-    const data = new Array(100).fill(100).map((i, index) => index + i);
+    const data = new Array(20).fill(0);
     wrapper.setData({
       data,
     });
     Vue.nextTick(() => {
-      const { firstChild } = wrapper.element;
-      expect(firstChild.textContent).to.equal(`${data[0]}`);
+      const element = wrapper.element.querySelector(visibleRowSelector);
+      expect(element.textContent).to.equal(`${data[0]}`);
+      done();
+    });
+  });
+  it('数据清空', (done) => {
+    wrapper.setData({
+      data: [],
+    });
+    Vue.nextTick(() => {
+      const rowElements = wrapper.element.querySelectorAll(visibleRowSelector);
+      expect(rowElements.length).to.equal(0);
       done();
     });
   });
