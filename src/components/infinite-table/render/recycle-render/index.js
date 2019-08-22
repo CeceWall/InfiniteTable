@@ -84,7 +84,7 @@ export default {
       // 滚动时
       if (!this.handling) {
         this.handling = true;
-        window.requestAnimationFrame(this.handleScroll);
+        window.requestAnimationFrame(() => this.handleScroll(false));
       }
     },
     /**
@@ -112,9 +112,9 @@ export default {
       if (startIndex >= endIndex) {
         startIndex = calculateAnchorItem(lastAnchorItem, viewportHeight, rowHeight, total);
       }
+      this.lastScrollTop = scrollTop;
       this.attachContentByAnchor(startIndex, endIndex);
       this.transformEnd.style.transform = `translateY(${total * rowHeight}px)`;
-      this.lastScrollTop = scrollTop;
       this.handling = false;
     },
     /**
@@ -129,7 +129,6 @@ export default {
         if (item.index < startIndex || item.index >= endIndex) {
           if (item.vm) {
             this.vmCache.push(item.vm);
-            item.vm.$el.classList.add('invisible');
             // eslint-disable-next-line no-param-reassign
             item.vm.lastIndex = item.index;
             // eslint-disable-next-line no-param-reassign
@@ -146,7 +145,7 @@ export default {
           if (!vm) {
             const node = this.renderTombstone();
             vm = this.renderRow(node, i);
-            vm.$el.classList.add('invisible');
+            this.$el.appendChild(vm.$el);
           } else {
             vm.setIndex(i);
           }
@@ -156,14 +155,7 @@ export default {
           };
           this.items.set(i, item);
         }
-      }
-      for (let i = startIndex; i < endIndex; i += 1) {
-        const item = this.items.get(i);
         item.vm.$el.style.transform = `translateY(${i * this.rowHeight}px)`;
-        if (item.vm.$el.classList.contains('invisible')) {
-          item.vm.$el.classList.remove('invisible');
-          this.$el.appendChild(item.vm.$el);
-        }
       }
     },
     renderTombstone() {
