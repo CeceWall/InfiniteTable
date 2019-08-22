@@ -1,12 +1,12 @@
 <template>
   <div class="infinite-table__table-header" :style="{height: headerHeight}">
-    <table-cell
+    <div
       v-for="column of tableStore.tableColumns"
-      :class="{ 'infinite-table__cell--pointer': column.sortable }"
-      :width="column.width"
-      :height="headerHeight"
       :key="column.label"
-      @click.native="handleColumnSort(column)"
+      class="infinite-table__cell"
+      :class="{ 'infinite-table__cell--pointer': column.sortable }"
+      :style="{ width: `${column.width}px` }"
+      @click="handleColumnSort(column)"
     >
       {{column.label}}
       <div
@@ -24,13 +24,11 @@
           @click.stop="handleColumnSort(column, 'desc')"
         ></div>
       </div>
-    </table-cell>
+    </div>
   </div>
 
 </template>
 <script>
-import TableCell from './table-cell.vue';
-
 export default {
   name: 'table-header',
   inject: ['tableStore'],
@@ -39,9 +37,6 @@ export default {
       type: String,
       required: true,
     },
-  },
-  components: {
-    TableCell,
   },
   computed: {
     sortedColumn() {

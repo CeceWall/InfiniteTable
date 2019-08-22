@@ -1,11 +1,6 @@
-import TableCell from './table-cell.vue';
-
 export default {
   name: 'table-row',
   inject: ['tableStore'],
-  components: {
-    TableCell,
-  },
   props: {
     data: {
       require: true,
@@ -21,27 +16,30 @@ export default {
           tableColumns.map((columnOption) => {
             const { columnRender } = columnOption;
             return (
-              <table-cell
+              <div
                 key={columnOption.label}
-                width={columnOption.width}
-                height={tableOptions.rowHeight}
+                className="infinite-table__cell"
+                style={{ width: `${columnOption.width}px`, height: `${tableOptions.rowHeight}px` }}
                 {
                   ...{
                     nativeOn: {
-                      click: () => { this.handleRowEvent('click', columnOption); },
-                      dblclick: () => { this.handleRowEvent('dblclick', columnOption); },
-                      contextmenu: () => { this.handleRowEvent('contextmenu', columnOption); },
+                      click: () => {
+                        this.handleRowEvent('click', columnOption);
+                      },
+                      dblclick: () => {
+                        this.handleRowEvent('dblclick', columnOption);
+                      },
+                      contextmenu: () => {
+                        this.handleRowEvent('contextmenu', columnOption);
+                      },
                     },
                   }
                 }
               >
-                {
-                  columnRender({
-                    row: data,
-                    options: columnOption,
-                  })
-                }
-              </table-cell>
+                <div className="cell-content">
+                  {columnRender({ row: data, options: columnOption })}
+                </div>
+              </div>
             );
           })
         }
