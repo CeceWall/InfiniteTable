@@ -18,6 +18,7 @@ export default class TableStore {
     this.tableId = options.tableId;
     this.eventEmitter = options.eventEmitter;
     this.rowHeight = options.rowHeight;
+    this.__layoutSize = options.layoutSize;
     this.__selectedRow = options.selectedRow;
     this.__selectedColumn = options.selectedColumn;
     this.__tableColumns = options.tableColumns;
@@ -70,6 +71,14 @@ export default class TableStore {
     return this.__data;
   }
 
+  get layoutSize() {
+    return this.__layoutSize;
+  }
+
+  set layoutSize(value) {
+    this.__layoutSize = value;
+  }
+
   get sortedOption() {
     return this.__sortedOption;
   }
@@ -118,6 +127,5 @@ export default class TableStore {
           return comparator(row1[prop], row2[prop]) * descFlag;
         });
     }
-    console.log(`order ${order}`, this.__data__nature);
   }
 }

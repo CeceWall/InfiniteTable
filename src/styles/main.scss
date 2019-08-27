@@ -11,7 +11,10 @@
 .infinite-table--scrollable {
   overflow-x: auto;
   overflow-y: auto;
-  will-change: transform;
+  /**
+  FIXME: 开启此CSS会导致白屏问题
+   */
+  //will-change: transform;
 }
 
 .infinite-table__columns-define {
@@ -113,6 +116,7 @@
 }
 
 .infinite-table__row {
+  position: absolute;
   display: flex;
   user-select: none;
 

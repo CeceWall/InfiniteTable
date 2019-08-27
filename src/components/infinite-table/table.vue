@@ -5,21 +5,22 @@
     <div class="infinite-table__columns-define">
       <slot></slot>
     </div>
-    <table-header
-      :header-height="tableHeaderHeight"
-      :style="{width: `${layoutSize.allColumnsWidth}px`}"
-      :class="tableHeaderClass"
-      @click="handleDispatchEvent('header', 'click', $event)"
-      @dblclick="handleDispatchEvent('header', 'dblclick', $event)"
-      @contextmenu="handleDispatchEvent('header', 'contextmenu', $event)"
-    />
-    <table-body
-      :style="{width: `${layoutSize.allColumnsWidth}px`}"
-      :layout-size="layoutSize"
-      @click="handleDispatchEvent('body', 'click', $event)"
-      @dblclick="handleDispatchEvent('body', 'dblclick', $event)"
-      @contextmenu="handleDispatchEvent('body', 'contextmenu', $event)"
-    />
+    <div class="infinite-table--scrollable">
+      <table-header
+        :header-height="tableHeaderHeight"
+        :style="{width: `${layoutSize.allColumnsWidth}px`}"
+        :class="tableHeaderClass"
+        @click="handleDispatchEvent('header', 'click', $event)"
+        @dblclick="handleDispatchEvent('header', 'dblclick', $event)"
+        @contextmenu="handleDispatchEvent('header', 'contextmenu', $event)"
+      />
+      <table-body
+        :layout-size="layoutSize"
+        @click="handleDispatchEvent('body', 'click', $event)"
+        @dblclick="handleDispatchEvent('body', 'dblclick', $event)"
+        @contextmenu="handleDispatchEvent('body', 'contextmenu', $event)"
+      />
+    </div>
   </div>
 </template>
 
@@ -40,31 +41,56 @@ export default {
     TableHeader,
   },
   props: {
+    /**
+     * 列表的数据内容
+     */
     data: {
       type: Array,
       default() {
         return [];
       },
     },
+    /**
+     * table的高度，可以使用任意合法的css
+     */
     height: {
       type: [Number, String],
     },
+    /**
+     * 表头的高度
+     */
     headerHeight: {
       type: [Number, String],
       default: 48,
     },
+    /**
+     * 每行数据的高度
+     */
     rowHeight: {
       type: [Number, String],
       default: 48,
     },
+    rowKey: {
+      type: [String, Number],
+      required: true,
+    },
+    /**
+     * 是否采用明暗间隔的行
+     */
     striped: {
       type: Boolean,
       default: true,
     },
+    /**
+     * 是否高亮选中的行
+     */
     highlightRow: {
       type: Boolean,
       default: true,
     },
+    /**
+     * 渲染行时，额外添加的class名
+     */
     rowExtraAttrs: {
       type: [Object, Function],
       default() {
@@ -103,6 +129,7 @@ export default {
       rowExtraAttrs: this.rowExtraAttrs,
       headerHeight: this.headerHeight,
       striped: this.striped,
+      rowKey: this.rowKey,
       rowHeight: px2num(this.rowHeight),
     };
     const tableStore = new TableStore({
@@ -110,6 +137,12 @@ export default {
       tableId,
       tableColumns: [],
       tableOptions,
+      layoutSize: {
+        rowHeight: tableOptions.rowHeight,
+        viewportWidth: 0,
+        viewportHeight: 0,
+        allColumnsWidth: 0,
+      }
     });
     const rowHeight = px2num(this.rowHeight);
     return {
@@ -175,6 +208,12 @@ export default {
         viewportHeight,
         allColumnsWidth,
       };
+      this.tableStore.layoutSize = {
+        rowHeight: px2num(this.rowHeight),
+        viewportWidth,
+        viewportHeight,
+        allColumnsWidth,
+      }
     },
     getColumnIndex(column) {
       return this.$children.indexOf(column);

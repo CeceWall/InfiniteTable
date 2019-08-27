@@ -6,6 +6,7 @@
         :data="data"
         height="100%"
         :highlight-row="highlightRow"
+        row-key="0"
         :row-extra-attrs="rowClassName"
         header-height="60px"
         row-height="40px"
@@ -14,7 +15,7 @@
           v-for="label of getColumns()"
           :label="label"
           :prop="label"
-          width="100"
+          :width="getColumnWidth()"
           :key="label"
           sortable
         />
@@ -43,26 +44,30 @@ export default {
   },
   mounted() {
     const columns = this.getColumns();
-    console.log(this.getColumns());
 
     const data = _.flow([
       _.times,
       fp.map(rowIndex => columns.reduce((obj, column, columnIndex) => ({
         ...obj,
-        [column]: `${columnIndex} -${rowIndex} - ${column}`,
+        [column]: `${rowIndex} - ${columnIndex}`,
       }), {})),
-    ])(200);
+    ])(1500);
     setTimeout(() => {
       this.data = data;
     }, 1000);
-    setTimeout(() => {
-      // this.data = [];
-    }, 2000);
   },
   props: {
     msg: String,
   },
   methods: {
+    getColumnWidth() {
+      function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min; // 不含最大值，含最小值
+      }
+      return getRandomInt(0, 100) + 100;
+    },
     getColumns(n = 50) {
       return _.flow(
         _.times,
