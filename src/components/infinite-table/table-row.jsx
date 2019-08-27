@@ -18,6 +18,11 @@ export default {
       type: Number,
     },
   },
+  methods: {
+    handleRowClick() {
+
+    },
+  },
   render(h) {
     const { data } = this;
     const { tableColumns, tableOptions, layoutSize } = this.tableStore;
@@ -53,7 +58,7 @@ export default {
                     height: `${tableOptions.rowHeight}px`,
                   }}
                 >
-                  <div className="cell-content">
+                  <div class="cell-content">
                     {columnRender({ row: data, options: columnOption })}
                   </div>
                 </div>

@@ -15,7 +15,7 @@
       v-slot:default="{data, index}"
     >
       <table-row
-        :class="getRowClass(data, index)"
+        v-bind="getExtraRowAttrs(data, index)"
         :offset-x="grid.offsetX"
         :data="data"
       />
@@ -79,9 +79,18 @@ export default {
     },
   },
   methods: {
-    getRowClass(rowItem, index) {
+    getExtraRowAttrs(rowItem, index) {
+      const { striped, rowExtraAttrs } = this.tableOptions;
+      let extraAttrs = rowExtraAttrs;
+      if (typeof rowExtraAttrs === 'function') {
+        extraAttrs = rowExtraAttrs(rowItem, index);
+      }
       return {
-        'infinite-table__row--striped': this.tableOptions.striped && index % 2 === 1,
+        class: {
+          ...extraAttrs.class,
+          'infinite-table__row--striped': striped && index % 2 === 1,
+        },
+        ...extraAttrs.attrs,
       };
     },
     handleScroll() {

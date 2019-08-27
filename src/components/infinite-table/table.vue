@@ -10,15 +10,8 @@
         :header-height="tableHeaderHeight"
         :style="{width: `${tableStore.layoutSize.allColumnsWidth}px`}"
         :class="tableHeaderClass"
-        @click="handleDispatchEvent('header', 'click', $event)"
-        @dblclick="handleDispatchEvent('header', 'dblclick', $event)"
-        @contextmenu="handleDispatchEvent('header', 'contextmenu', $event)"
       />
-      <table-body
-        @click="handleDispatchEvent('body', 'click', $event)"
-        @dblclick="handleDispatchEvent('body', 'dblclick', $event)"
-        @contextmenu="handleDispatchEvent('body', 'contextmenu', $event)"
-      />
+      <table-body />
     </div>
   </div>
 </template>
@@ -70,7 +63,7 @@ export default {
       default: 48,
     },
     rowKey: {
-      type: [String, Number],
+      type: String,
       required: true,
     },
     /**
@@ -83,7 +76,7 @@ export default {
     /**
      * 是否高亮选中的行
      */
-    highlightRow: {
+    highlightCurrentRow: {
       type: Boolean,
       default: true,
     },
