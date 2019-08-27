@@ -12,12 +12,19 @@
       :data-key="tableOptions.rowKey"
       :viewport-size="layoutSize.viewportHeight"
       :offset="grid.offsetY"
-      v-slot:default="{data}"
+      v-slot:default="{data, index}"
     >
-      <table-row :offset-x="grid.offsetX" :data="data" />
+      <table-row
+        :class="getRowClass(data, index)"
+        :offset-x="grid.offsetX"
+        :data="data"
+      />
     </range-render>
     <div
-      :style="{transform:`translateY(${data.length * tableOptions.rowHeight}px)`, width: `${layoutSize.allColumnsWidth}px`}"
+      :style="{
+        transform:`translateY(${data.length * tableOptions.rowHeight}px)`,
+        width: `${layoutSize.allColumnsWidth}px`
+      }"
       style="position: absolute; height: 1px;"
     ></div>
   </div>
@@ -72,6 +79,11 @@ export default {
     },
   },
   methods: {
+    getRowClass(rowItem, index) {
+      return {
+        'infinite-table__row--striped': this.tableOptions.striped && index % 2 === 1,
+      };
+    },
     handleScroll() {
       if (!this.handing) {
         this.handing = true;

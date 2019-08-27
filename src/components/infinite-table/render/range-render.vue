@@ -6,7 +6,7 @@
       :key="item.props.id"
       :style="{'transform': `translate${direction ==='vertical' ? 'Y' : 'X'}(${item.position}px)`}"
     >
-      <slot :data="item.data" />
+      <slot :data="item.data" :index="item.props.index" />
     </div>
   </div>
 </template>
