@@ -2,17 +2,11 @@ import RangeRender from './render/range-render.vue';
 
 export default {
   name: 'table-row',
-  inject: ['tableStore'],
+  inject: ['tableStore', 'emitter'],
   components: { RangeRender },
   props: {
     data: {
       require: true,
-    },
-    startIndex: {
-      type: Number,
-    },
-    endIndex: {
-      type: Number,
     },
     offsetX: {
       type: Number,
@@ -20,7 +14,7 @@ export default {
   },
   methods: {
     handleRowClick() {
-
+      this.emitter.dispatch('row-click', this.data);
     },
   },
   render(h) {
@@ -33,6 +27,9 @@ export default {
         style: {
           width: `${layoutSize.allColumnsWidth}px`,
           height: `${tableOptions.rowHeight}px`,
+        },
+        on: {
+          click: this.handleRowClick,
         },
       }, [
         h('range-render', {

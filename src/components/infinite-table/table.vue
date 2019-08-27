@@ -24,6 +24,7 @@ import { getTableBodyHeight, doColumnWidthLayout } from './table-layout';
 import {
   getScrollWidth, num2px, getClientSize, px2num,
 } from './utils/layout';
+import EventEmitter from './event-emitter';
 import { getTableId } from './utils/table';
 
 export default {
@@ -111,6 +112,7 @@ export default {
   provide() {
     return {
       tableStore: this.tableStore,
+      emitter: new EventEmitter(this),
     };
   },
   data() {
@@ -148,6 +150,12 @@ export default {
         allColumnsWidth: 0,
       },
     };
+  },
+  created() {
+    this.$on('row-click', (row) => {
+      this.$emit('current-change', row, this.tableStore.selectedRow);
+      this.tableStore.selectedRow = row;
+    });
   },
   mounted() {
     this.doLayout();

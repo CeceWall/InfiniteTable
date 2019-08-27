@@ -81,6 +81,7 @@ export default {
   methods: {
     getExtraRowAttrs(rowItem, index) {
       const { striped, rowExtraAttrs } = this.tableOptions;
+      const { selectedRow } = this.tableStore;
       let extraAttrs = rowExtraAttrs;
       if (typeof rowExtraAttrs === 'function') {
         extraAttrs = rowExtraAttrs(rowItem, index);
@@ -89,6 +90,7 @@ export default {
         class: {
           ...extraAttrs.class,
           'infinite-table__row--striped': striped && index % 2 === 1,
+          'infinite-table__row--selected': rowItem === selectedRow,
         },
         ...extraAttrs.attrs,
       };
@@ -96,9 +98,9 @@ export default {
     handleScroll() {
       if (!this.handing) {
         this.handing = true;
-        window.requestAnimationFrame(() => {
-          this.handing = false;
+        requestAnimationFrame(() => {
           this.changeOffsetIndex();
+          this.handing = false;
         });
       }
     },
