@@ -52,16 +52,22 @@ export default {
       pool: [],
     };
   },
+  updated() {
+    console.log('range-render updated');
+  },
   watch: {
     offset() {
+      console.log('offset change');
       this.handleIndexChange();
     },
     viewportSize() {
+      console.log('viewportSize change');
       this.handleIndexChange();
     },
     data: {
       immediate: true,
       handler() {
+        console.log('data change');
         this.handleIndexChange();
       },
     },
@@ -130,8 +136,15 @@ export default {
       }
       for (let i = 0; i < this.pool.length; i += 1) {
         const viewItem = this.pool[i];
+        const currentData = this.data[viewItem.props.index];
+        // 判断元素是否在显示范围内
+        // 或者元素本身已经不在原来的位置(data发生变化)
+        // 需要额外判断元素是否已经失效，避免同一个viewItem多次执行invalid操作
         if (
-          (viewItem.props.index < startIndex || viewItem.props.index >= endIndex)
+          (
+            (viewItem.props.index < startIndex || viewItem.props.index >= endIndex)
+            || viewItem.data !== currentData// 当data本身发生变化时，单独使用index判断元素是否生效是不够的，需要对比元素本身是否变化
+          )
           && viewItem.props.active
         ) {
           this.invalidViewItem(viewItem);
