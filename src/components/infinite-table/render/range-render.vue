@@ -171,14 +171,6 @@ export default {
   .range-render {
     position: relative;
 
-    &.range-render--horizontal {
-      overflow-x: auto;
-    }
-
-    &.range-render--vertical {
-      overflow-y: auto;
-    }
-
     .range-render__item {
       position: absolute;
       will-change: transform;

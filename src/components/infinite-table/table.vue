@@ -8,14 +8,13 @@
     <div class="infinite-table--scrollable">
       <table-header
         :header-height="tableHeaderHeight"
-        :style="{width: `${layoutSize.allColumnsWidth}px`}"
+        :style="{width: `${tableStore.layoutSize.allColumnsWidth}px`}"
         :class="tableHeaderClass"
         @click="handleDispatchEvent('header', 'click', $event)"
         @dblclick="handleDispatchEvent('header', 'dblclick', $event)"
         @contextmenu="handleDispatchEvent('header', 'contextmenu', $event)"
       />
       <table-body
-        :layout-size="layoutSize"
         @click="handleDispatchEvent('body', 'click', $event)"
         @dblclick="handleDispatchEvent('body', 'dblclick', $event)"
         @contextmenu="handleDispatchEvent('body', 'contextmenu', $event)"
@@ -142,7 +141,7 @@ export default {
         viewportWidth: 0,
         viewportHeight: 0,
         allColumnsWidth: 0,
-      }
+      },
     });
     const rowHeight = px2num(this.rowHeight);
     return {
@@ -150,7 +149,6 @@ export default {
       tableStore,
       layoutSize: {
         // 每行的行高
-        // FIXME: 统一tableStore和LayoutSize
         rowHeight,
         viewportWidth: 0,
         viewportHeight: 0,
@@ -202,18 +200,12 @@ export default {
       }
       this.tableStore.tableColumns = calculatedColumns;
 
-      this.layoutSize = {
-        rowHeight: px2num(this.rowHeight),
-        viewportWidth,
-        viewportHeight,
-        allColumnsWidth,
-      };
       this.tableStore.layoutSize = {
         rowHeight: px2num(this.rowHeight),
         viewportWidth,
         viewportHeight,
         allColumnsWidth,
-      }
+      };
     },
     getColumnIndex(column) {
       return this.$children.indexOf(column);
