@@ -52,22 +52,16 @@ export default {
       pool: [],
     };
   },
-  updated() {
-    console.log('range-render updated');
-  },
   watch: {
     offset() {
-      console.log('offset change');
       this.handleIndexChange();
     },
     viewportSize() {
-      console.log('viewportSize change');
       this.handleIndexChange();
     },
     data: {
       immediate: true,
       handler() {
-        console.log('data change');
         this.handleIndexChange();
       },
     },
