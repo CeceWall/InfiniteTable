@@ -27,8 +27,8 @@
 <script>
 import _ from 'lodash';
 import fp from 'lodash/fp';
-import InfiniteTable from './infinite-table/table.vue';
-import InfiniteTableColumn from './infinite-table/table-column';
+import InfiniteTable from '../src/table.vue';
+import InfiniteTableColumn from '../src/table-column.jsx';
 
 export default {
   name: 'HelloWorld',
@@ -66,6 +66,7 @@ export default {
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min)) + min; // 不含最大值，含最小值
       }
+
       return getRandomInt(0, 100) + 100;
     },
     getColumns(n = 50) {
@@ -84,7 +85,7 @@ export default {
           a1: true,
         },
         attrs: {
-          draggable: false,
+          draggable: true,
         },
       };
     },
@@ -93,22 +94,9 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-  h3 {
-    margin: 40px 0 0;
-  }
-
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-
-  li {
-    display: inline-block;
-    margin: 0 10px;
-  }
-
-  a {
-    color: #42b983;
+<style lang="scss">
+  html, body, #app {
+    height: 100%;
+    margin: 0;
   }
 </style>

@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import TableRow from './table-row';
+import TableRow from './table-row.jsx';
 import RangeRender from './render/range-render.vue';
 
 export default {
@@ -90,7 +90,7 @@ export default {
         class: {
           ...extraAttrs.class,
           'infinite-table__row--striped': striped && index % 2 === 1,
-          'infinite-table__row--selected': rowItem[rowKey] === selectedRow[rowKey] && selectedRow,
+          'infinite-table__row--selected': selectedRow && rowItem[rowKey] === selectedRow[rowKey],
         },
         ...extraAttrs.attrs,
       };
