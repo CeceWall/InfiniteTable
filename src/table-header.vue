@@ -8,19 +8,19 @@
       :style="{ width: `${column.width}px` }"
       @click="handleColumnSort(column)"
     >
-      {{column.label}}
+      <div class="cell-content">{{column.label}}</div>
       <div
         v-if="column.sortable"
         class="infinite-table__table-header__sortable"
       >
         <div
           class="infinite-table__sortable ascending"
-          :class="{active: sortedColumn.column === column && sortedColumn.order ==='asc'}"
+          :class="{active: getActiveClass(column, 'asc')}"
           @click.stop="handleColumnSort(column, 'asc')"
         ></div>
         <div
           class="infinite-table__sortable descending"
-          :class="{active: sortedColumn.column === column && sortedColumn.order ==='desc'}"
+          :class="{active: getActiveClass(column, 'desc')}"
           @click.stop="handleColumnSort(column, 'desc')"
         ></div>
       </div>
@@ -45,6 +45,12 @@ export default {
     },
   },
   methods: {
+    getActiveClass(column, order){
+      if(!this.sortedColumn.column){
+        return false;
+      }
+      return this.sortedColumn.column.label === column.label &&this.sortedColumn.order === order;
+    },
     handleColumnSort(column, order) {
       if (column.sortable) {
         // 排序的逻辑在tableStore中

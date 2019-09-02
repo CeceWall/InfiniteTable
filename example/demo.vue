@@ -45,16 +45,24 @@ export default {
   mounted() {
     const columns = this.getColumns();
 
-    const data = _.flow([
+    let data = _.flow([
       _.times,
       fp.map(rowIndex => columns.reduce((obj, column, columnIndex) => ({
         ...obj,
         [column]: `${rowIndex} - ${columnIndex}`,
       }), {})),
     ])(1500);
-    setTimeout(() => {
+    this.data = data;
+    setInterval(() => {
+      data = _.flow([
+        _.times,
+        fp.map(rowIndex => columns.reduce((obj, column, columnIndex) => ({
+          ...obj,
+          [column]: `${rowIndex} - ${columnIndex}`,
+        }), {})),
+      ])(500);
       this.data = data;
-    }, 1000);
+    }, 5000);
   },
   props: {
     msg: String,
