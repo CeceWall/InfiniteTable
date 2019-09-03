@@ -1,5 +1,8 @@
 <template>
-  <div class="hello" style="height: 100%;">
+  <div
+    class="hello"
+    style="height: 100%;"
+  >
     <div style="width: 100%; height: 100%">
       <infinite-table
         ref="table"
@@ -12,11 +15,12 @@
         row-height="40px"
       >
         <infinite-table-column
-          v-for="label of getColumns()"
+          v-for="(label, index) of getColumns()"
+          :key="label"
           :label="label"
           :prop="label"
           :width="getColumnWidth()"
-          :key="label"
+          :fixed="index < 2 ? 'left': index >= 48 ? 'right' : false"
           sortable
         />
       </infinite-table>
@@ -36,6 +40,9 @@ export default {
     InfiniteTable,
     InfiniteTableColumn,
   },
+  props: {
+    msg: String,
+  },
   data() {
     return {
       data: [],
@@ -47,7 +54,7 @@ export default {
 
     let data = _.flow([
       _.times,
-      fp.map(rowIndex => columns.reduce((obj, column, columnIndex) => ({
+      fp.map((rowIndex) => columns.reduce((obj, column, columnIndex) => ({
         ...obj,
         [column]: `${rowIndex} - ${columnIndex}`,
       }), {})),
@@ -56,16 +63,13 @@ export default {
     setInterval(() => {
       data = _.flow([
         _.times,
-        fp.map(rowIndex => columns.reduce((obj, column, columnIndex) => ({
+        fp.map((rowIndex) => columns.reduce((obj, column, columnIndex) => ({
           ...obj,
           [column]: `${rowIndex} - ${columnIndex}`,
         }), {})),
       ])(500);
       this.data = data;
     }, 5000);
-  },
-  props: {
-    msg: String,
   },
   methods: {
     getColumnWidth() {
@@ -80,14 +84,14 @@ export default {
     getColumns(n = 50) {
       return _.flow(
         _.times,
-        fp.map(i => i.toString(10)),
+        fp.map((i) => i.toString(10)),
       )(n);
     },
     handleDrop(e) {
       e.preventDefault();
       console.log(e);
     },
-    rowClassName(rowData, rowIndex) {
+    rowClassName() {
       return {
         class: {
           a1: true,

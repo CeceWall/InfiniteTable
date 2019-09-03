@@ -1,4 +1,5 @@
 /* eslint-disable no-underscore-dangle */
+import TableColumnStore from './store/table-column-store';
 
 function defaultComparator(a, b) {
   if (a > b) {
@@ -9,6 +10,7 @@ function defaultComparator(a, b) {
   }
   return -1;
 }
+
 
 export default class TableStore {
   constructor(options = {}) {
@@ -21,7 +23,7 @@ export default class TableStore {
     this.__layoutSize = options.layoutSize;
     this.__selectedRow = options.selectedRow;
     this.__selectedColumn = options.selectedColumn;
-    this.__tableColumns = options.tableColumns;
+    this.__tableColumns = new TableColumnStore();
     this.__tableOptions = options.tableOptions;
     this.__data = options.data;
     this.__sortedOption = {
@@ -47,11 +49,26 @@ export default class TableStore {
   }
 
   get tableColumns() {
-    return this.__tableColumns;
+    return this.__tableColumns.getTableColumns();
+  }
+
+  get leftFixTableColumns() {
+    return this.__tableColumns.leftFixedColumns;
+  }
+
+  get mainTableColumns() {
+    return this.__tableColumns.tableColumns;
+  }
+
+  get rightFixedTableColumns() {
+    return this.__tableColumns.rightFixedColumns;
   }
 
   set tableColumns(columns) {
-    this.__tableColumns = columns;
+    this.__tableColumns.clear();
+    columns.forEach((column) => {
+      this.__tableColumns.addTableColumn(column);
+    });
   }
 
   get tableOptions() {
@@ -120,12 +137,13 @@ export default class TableStore {
         this.__data = this.__data__nature.slice();
         break;
       default:
-        this.__data = this.__data__nature.slice().sort((row1, row2) => {
-          const { prop } = column;
-          const comparator = column.comparator || defaultComparator;
-          const descFlag = order === 'desc' ? -1 : 1;
-          return comparator(row1[prop], row2[prop]) * descFlag;
-        });
+        this.__data = this.__data__nature.slice()
+          .sort((row1, row2) => {
+            const { prop } = column;
+            const comparator = column.comparator || defaultComparator;
+            const descFlag = order === 'desc' ? -1 : 1;
+            return comparator(row1[prop], row2[prop]) * descFlag;
+          });
     }
   }
 }

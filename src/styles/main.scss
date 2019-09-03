@@ -1,0 +1,143 @@
+@import 'variables.scss';
+
+.infinite-table {
+  height: 100%;
+  overflow: hidden;
+  background-color: $table-background-color;
+  color: $table-text-color;
+  font-size: $table-font-size;
+}
+
+.infinite-table--scrollable {
+  overflow-x: auto;
+  overflow-y: auto;
+  /**
+  FIXME: 开启此CSS会导致白屏问题
+   */
+  //will-change: transform;
+}
+
+.infinite-table__columns-define {
+  display: none;
+}
+
+.infinite-table__table-header {
+  box-sizing: border-box;
+  background-color: $table-background-color;
+  display: flex;
+  position: relative;
+  z-index: 2;
+  border-bottom: $table-header-border-bottom;
+
+  &.infinite-table__table-header--sticky {
+    position: sticky;
+    top: 0;
+  }
+}
+
+.infinite-table__table-header, .infinite-table__body {
+  width: 100%;
+}
+
+
+.infinite-table__sortable {
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  position: absolute;
+  left: 7px;
+
+  &.descending {
+    border-top-color: #fefefe;
+    bottom: 7px;
+  }
+
+  &.ascending {
+    border-bottom-color: #fefefe;
+    top: 5px;
+  }
+
+  &.descending.active {
+    border-top-color: $table-sortable-active;
+  }
+
+  &.ascending.active {
+    border-bottom-color: $table-sortable-active;
+  }
+}
+
+.infinite-table__row--recycle {
+  position: absolute;
+  will-change: transform;
+  contain: layout;
+  z-index: 1;
+
+  &.invisible {
+    display: none;
+  }
+}
+
+.infinite-table__body {
+  position: relative;
+}
+
+.infinite-table__body__wrapper {
+  overflow: auto;
+}
+
+.infinite-table__cell {
+  text-align: left;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  overflow: hidden;
+  /* 设置flex-grow和flex-shrink为0避免cell意外收缩   */
+  flex: 0 0 auto;
+
+  &.infinite-table__cell--ellipsis {
+    .cell-content {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  &.infinite-table__cell--pointer {
+    cursor: pointer;
+  }
+
+  &.infinite-table__cell--fixed {
+    position: sticky;
+    background: inherit;
+    z-index: 1000;
+  }
+
+  .cell-content {
+    width: 100%;
+    line-height: 24px;
+    box-sizing: border-box;
+    display: block;
+    padding: 0 10px;
+    position: relative;
+  }
+}
+
+.infinite-table__row {
+  position: absolute;
+  display: flex;
+  user-select: none;
+  background: $table-background-color;
+
+  &.infinite-table__row--striped {
+    background-color: #232d37;
+  }
+
+  /**
+    因为css优先级的原因，hover和selected样式需要在striped下面写
+   */
+  &:hover, &.infinite-table__row--selected {
+    background-color: $table-row-hover-color;
+  }
+}
+

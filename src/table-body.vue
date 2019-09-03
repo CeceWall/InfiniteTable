@@ -2,17 +2,17 @@
   <div
     ref="scroll"
     class="infinite-table__body"
-    v-on="tableBodyListeners"
     :style="{height: `${layoutSize.viewportHeight}px`}"
+    v-on="tableBodyListeners"
   >
     <range-render
+      v-slot:default="{data, index}"
       :data="data"
       direction="vertical"
       :size="tableOptions.rowHeight"
       :data-key="tableOptions.rowKey"
       :viewport-size="layoutSize.viewportHeight"
       :offset="grid.offsetY"
-      v-slot:default="{data, index}"
     >
       <table-row
         v-bind="getExtraRowAttrs(data, index)"
@@ -26,7 +26,7 @@
         width: `${layoutSize.allColumnsWidth}px`
       }"
       style="position: absolute; height: 1px;"
-    ></div>
+    />
   </div>
 </template>
 
@@ -35,11 +35,19 @@ import TableRow from './table-row.jsx';
 import RangeRender from './render/range-render.vue';
 
 export default {
-  name: 'table-body',
+  name: 'TableBody',
   inject: ['tableStore'],
   components: {
     RangeRender,
     TableRow,
+  },
+  data() {
+    return {
+      grid: {
+        offsetX: 0,
+        offsetY: 0,
+      },
+    };
   },
   computed: {
     data() {
@@ -57,26 +65,18 @@ export default {
       };
     },
   },
+  watch: {
+    data() {
+      this.handleScroll();
+    },
+  },
   beforeCreate() {
     this.handing = false;
-  },
-  data() {
-    return {
-      grid: {
-        offsetX: 0,
-        offsetY: 0,
-      },
-    };
   },
   mounted() {
     this.scroll = this.getScrollElement();
     this.scroll.addEventListener('scroll', this.handleScroll);
     this.handleScroll();
-  },
-  watch: {
-    data() {
-      this.handleScroll();
-    },
   },
   methods: {
     getExtraRowAttrs(rowItem, index) {

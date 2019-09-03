@@ -9,6 +9,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "classnames": "^2.2.6",
     "core-js": "^2.6.5",
     "lodash": "^4.17.15",
     "raf": "^3.4.1",
@@ -24,6 +25,7 @@
     "babel-helper-vue-jsx-merge-props": "^2.0.3",
     "babel-plugin-transform-vue-jsx": "^4.0.1",
     "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-vue": "^5.0.0",
     "node-sass": "^4.9.0",
     "rollup": "^1.20.3",

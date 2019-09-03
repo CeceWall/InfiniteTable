@@ -1,9 +1,11 @@
 <template>
   <div
-    class="infinite-table" :style="{height: tableHeight}" :class="tableClass"
+    class="infinite-table"
+    :style="{height: tableHeight}"
+    :class="tableClass"
   >
     <div class="infinite-table__columns-define">
-      <slot></slot>
+      <slot />
     </div>
     <div class="infinite-table--scrollable">
       <table-header
@@ -26,6 +28,7 @@ import {
 } from './utils/layout';
 import EventEmitter from './event-emitter';
 import { getTableId } from './utils/table';
+import './styles/main.scss';
 
 export default {
   name: 'InfiniteTable',
@@ -91,6 +94,41 @@ export default {
       },
     },
   },
+  data() {
+    const tableId = getTableId();
+    const tableOptions = {
+      highlightRow: this.highlightRow,
+      height: this.height,
+      rowExtraAttrs: this.rowExtraAttrs,
+      headerHeight: this.headerHeight,
+      striped: this.striped,
+      rowKey: this.rowKey,
+      rowHeight: px2num(this.rowHeight),
+    };
+    const tableStore = new TableStore({
+      data: this.data,
+      tableId,
+      tableOptions,
+      layoutSize: {
+        rowHeight: tableOptions.rowHeight,
+        viewportWidth: 0,
+        viewportHeight: 0,
+        allColumnsWidth: 0,
+      },
+    });
+    const rowHeight = px2num(this.rowHeight);
+    return {
+      tableId,
+      tableStore,
+      layoutSize: {
+        // 每行的行高
+        rowHeight,
+        viewportWidth: 0,
+        viewportHeight: 0,
+        allColumnsWidth: 0,
+      },
+    };
+  },
   computed: {
     tableHeight() {
       return num2px(this.height);
@@ -115,51 +153,6 @@ export default {
       emitter: new EventEmitter(this),
     };
   },
-  data() {
-    const tableId = getTableId();
-    const tableOptions = {
-      highlightRow: this.highlightRow,
-      height: this.height,
-      rowExtraAttrs: this.rowExtraAttrs,
-      headerHeight: this.headerHeight,
-      striped: this.striped,
-      rowKey: this.rowKey,
-      rowHeight: px2num(this.rowHeight),
-    };
-    const tableStore = new TableStore({
-      data: this.data,
-      tableId,
-      tableColumns: [],
-      tableOptions,
-      layoutSize: {
-        rowHeight: tableOptions.rowHeight,
-        viewportWidth: 0,
-        viewportHeight: 0,
-        allColumnsWidth: 0,
-      },
-    });
-    const rowHeight = px2num(this.rowHeight);
-    return {
-      tableId,
-      tableStore,
-      layoutSize: {
-        // 每行的行高
-        rowHeight,
-        viewportWidth: 0,
-        viewportHeight: 0,
-        allColumnsWidth: 0,
-      },
-    };
-  },
-  created() {
-    this.$on('row-click', (row) => {
-      this.$emit('current-change', row, this.tableStore.selectedRow);
-      this.tableStore.selectedRow = row;
-    });
-  },
-  mounted() {
-    this.doLayout();
-  },
   watch: {
     // TODO 仅在resize或数据量变化导致滚动条出现变化时才计算layout
     // FIXME 数据项更新后自动更新render
@@ -172,6 +165,15 @@ export default {
     highlightRow(newVal) {
       this.tableStore.tableOptions.highlightRow = newVal;
     },
+  },
+  created() {
+    this.$on('row-click', (row) => {
+      this.$emit('current-change', row, this.tableStore.selectedRow);
+      this.tableStore.selectedRow = row;
+    });
+  },
+  mounted() {
+    this.doLayout();
   },
   methods: {
     doLayout() {
@@ -212,10 +214,10 @@ export default {
       return this.$children.indexOf(column);
     },
     addTableColumn(index, column) {
-      this.tableStore.tableColumns[index] = column;
+      this.tableStore.__tableColumns.addTableColumn(column);
     },
-    removeTableColumn(index) {
-      this.tableStore.tableColumns.splice(index, 1);
+    removeTableColumn(index, column) {
+      this.tableStore.__tableColumns.removeTableColumn(column);
     },
     selectRow(row) {
       this.tableStore.selectedRow = row;

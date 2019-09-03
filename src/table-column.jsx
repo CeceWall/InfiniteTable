@@ -8,11 +8,11 @@ const defaultColumnRender = function defaultColumnRender(props) {
 };
 
 const getColumnRenderFunc = function getColumnRenderFunc(render) {
-  return props => render(props);
+  return (props) => render(props);
 };
 
 export default {
-  name: 'infinite-table-column',
+  name: 'InfiniteTableColumn',
   props: {
     sortable: {
       type: Boolean,
@@ -20,6 +20,7 @@ export default {
     },
     comparator: {
       type: Function,
+      default: null,
     },
     draggable: {
       type: Boolean,
@@ -39,6 +40,10 @@ export default {
     prop: {
       type: String,
     },
+    fixed: {
+      type: [String, Boolean],
+      default: false,
+    },
   },
   data() {
     return {
@@ -55,7 +60,7 @@ export default {
 
     const {
       width, label, sortable, comparator,
-      prop,
+      prop, fixed,
     } = this;
 
     const scopedSlot = this.$scopedSlots.default;
@@ -77,12 +82,14 @@ export default {
       comparator,
       columnRender,
       prop,
+      fixed: fixed === true ? 'left' : fixed,
     };
     this.tableColumnIndex = index;
-    this.parent.addTableColumn(index, column);
+    this.column = column;
+    this.parent.addTableColumn(index, this.column);
   },
   beforeDestroy() {
-    this.parent.removeTableColumn(this.tableColumnIndex);
+    this.parent.removeTableColumn(this.tableColumnIndex, this.column);
   },
   render() {
     return null;

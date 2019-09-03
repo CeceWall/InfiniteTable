@@ -21,19 +21,19 @@ export default {
     vue({
       css: true,
       compilerParseOptions: {
-        outputSourceRange: true
-      }
+        outputSourceRange: true,
+      },
     }),
     replace({
-      'process.env.NODE_ENV': JSON.stringify('development')
+      'process.env.NODE_ENV': JSON.stringify('development'),
     }),
     resolve({
-      mainFields: ['module', 'main']
+      mainFields: ['module', 'main'],
     }),
     common(),
     babel({
-      // exclude: 'node_modules/**',
-      include: 'src/**/*.jsx',
+      exclude: 'node_modules/**',
+      // include: 'src/**/*.jsx',
       sourceMaps: 'both',
     }),
     sourcemaps(),
@@ -42,11 +42,11 @@ export default {
       open: true,
       contentBase: path.join(__dirname, '..', 'example'),
       host: 'localhost',
-      port: 10001
+      port: 10001,
     }),
     livereload({
       verbose: true,
-      watch: path.join(__dirname, '..', 'example')
-    })
-  ]
+      watch: path.join(__dirname, '..', 'example'),
+    }),
+  ],
 };

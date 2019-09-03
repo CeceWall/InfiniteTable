@@ -1,14 +1,25 @@
 <template>
-  <div class="infinite-table__table-header" :style="{height: headerHeight}">
+  <div
+    class="infinite-table__table-header"
+    :style="{height: headerHeight}"
+  >
     <div
       v-for="column of tableStore.tableColumns"
       :key="column.label"
       class="infinite-table__cell"
-      :class="{ 'infinite-table__cell--pointer': column.sortable }"
-      :style="{ width: `${column.width}px` }"
+      :class="{
+        'infinite-table__cell--pointer': column.sortable,
+        'infinite-table__cell--fixed': column.fixed,
+      }"
+      :style="{
+        width: `${column.width}px`,
+        ...getFixedStyle(column),
+      }"
       @click="handleColumnSort(column)"
     >
-      <div class="cell-content">{{column.label}}</div>
+      <div class="cell-content">
+        {{ column.label }}
+      </div>
       <div
         v-if="column.sortable"
         class="infinite-table__table-header__sortable"
@@ -17,20 +28,19 @@
           class="infinite-table__sortable ascending"
           :class="{active: getActiveClass(column, 'asc')}"
           @click.stop="handleColumnSort(column, 'asc')"
-        ></div>
+        />
         <div
           class="infinite-table__sortable descending"
           :class="{active: getActiveClass(column, 'desc')}"
           @click.stop="handleColumnSort(column, 'desc')"
-        ></div>
+        />
       </div>
     </div>
   </div>
-
 </template>
 <script>
 export default {
-  name: 'table-header',
+  name: 'TableHeader',
   inject: ['tableStore'],
   props: {
     headerHeight: {
@@ -45,11 +55,15 @@ export default {
     },
   },
   methods: {
-    getActiveClass(column, order){
-      if(!this.sortedColumn.column){
+    getFixedStyle(column) {
+      // FIXME: 不直接调用__tableColumns中的方法
+      return this.tableStore.__tableColumns.getFixedColumnStyle(column);
+    },
+    getActiveClass(column, order) {
+      if (!this.sortedColumn.column) {
         return false;
       }
-      return this.sortedColumn.column.label === column.label &&this.sortedColumn.order === order;
+      return this.sortedColumn.column.label === column.label && this.sortedColumn.order === order;
     },
     handleColumnSort(column, order) {
       if (column.sortable) {
