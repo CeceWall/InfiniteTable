@@ -7,10 +7,12 @@ export default {
   components: { RangeRender },
   props: {
     data: {
+      type: Object,
       require: true,
     },
     offsetX: {
       type: Number,
+      default: 0,
     },
   },
   methods: {
@@ -18,8 +20,8 @@ export default {
       // FIXME: 不直接使用__tableColumns的方法
       return this.tableStore.__tableColumns.getFixedColumnStyle(column);
     },
-    handleRowClick() {
-      this.emitter.dispatch('row-click', this.data);
+    dispatchRowEvent(eventName, data, column, e) {
+      this.emitter.dispatch(eventName, data, column, e);
     },
     renderTableCell(props) {
       const { data } = this;
@@ -41,6 +43,15 @@ export default {
             // FIXME: 修复直接引用__tableColumns的问题
             ...this.getFixedStyle(columnOption),
           }}
+          {
+            ...{
+              on: {
+                click: (e) => this.dispatchRowEvent('row-click', data, columnOption, e),
+                contextmenu: (e) => this.dispatchRowEvent('row-contextmenu', data, columnOption, e),
+                dblclick: (e) => this.dispatchRowEvent('row-dblclick', data, columnOption, e),
+              },
+            }
+          }
         >
           <div class="cell-content">
             {columnRender({ row: data, options: columnOption })}
@@ -61,9 +72,6 @@ export default {
         style: {
           width: `${layoutSize.allColumnsWidth}px`,
           height: `${tableOptions.rowHeight}px`,
-        },
-        on: {
-          click: this.handleRowClick,
         },
       }, [
         leftFixTableColumns.map((column) => this.renderTableCell({ data: column })),

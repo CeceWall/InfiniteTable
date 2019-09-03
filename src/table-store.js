@@ -21,7 +21,7 @@ export default class TableStore {
     this.eventEmitter = options.eventEmitter;
     this.rowHeight = options.rowHeight;
     this.__layoutSize = options.layoutSize;
-    this.__selectedRow = options.selectedRow;
+    this.__selectedRow = null;
     this.__selectedColumn = options.selectedColumn;
     this.__tableColumns = new TableColumnStore();
     this.__tableOptions = options.tableOptions;

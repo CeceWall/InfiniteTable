@@ -168,8 +168,10 @@ export default {
   },
   created() {
     this.$on('row-click', (row) => {
-      this.$emit('current-change', row, this.tableStore.selectedRow);
-      this.tableStore.selectedRow = row;
+      if (!this.tableStore.selectedRow || this.tableStore.selectedRow[this.rowKey] !== row[this.rowKey]) {
+        this.$emit('current-change', row, this.tableStore.selectedRow);
+        this.tableStore.selectedRow = row;
+      }
     });
   },
   mounted() {
