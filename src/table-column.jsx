@@ -98,9 +98,7 @@ export default {
       return [].indexOf.call(this.$parent.$refs.columnsDef.children, this.$el);
     },
     mayUpdateLayout() {
-      if (!this.$parent.initial) {
-        this.$parent.doLayout();
-      }
+      this.$parent.doLayout();
     },
   },
   render(h) {

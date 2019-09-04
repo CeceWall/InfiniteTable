@@ -52,10 +52,5 @@ export default {
       }],
     };
   },
-  mounted() {
-    setInterval(() => {
-      this.visible = !this.visible;
-    }, 1000);
-  },
 };
 </script>

@@ -8,6 +8,7 @@ import CustomColumnDemo from './demos/custom-column.vue';
 import CustomRowAttrsDemo from './demos/custom-row-attrs.vue';
 import FixedHeaderDemo from './demos/fixed-header.vue';
 import HighlightCurrentRowDemo from './demos/highlight-current-row.vue';
+import LargeTableDemo from './demos/large-table.vue';
 
 Vue.component('infinite-table', InfiniteTable);
 Vue.component('infinite-table-column', InfiniteTableColumn);
@@ -38,6 +39,10 @@ const router = new VueRouter({
     {
       path: '/highlight-current-row',
       component: HighlightCurrentRowDemo,
+    },
+    {
+      path: '/large-table',
+      component: LargeTableDemo,
     },
   ],
 });

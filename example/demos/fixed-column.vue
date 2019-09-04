@@ -61,11 +61,6 @@ export default {
       }],
     };
   },
-  mounted() {
-    setInterval(() => {
-      this.visible = !this.visible;
-    }, 5000);
-  },
 };
 </script>
 

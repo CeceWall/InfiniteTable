@@ -7,6 +7,7 @@
       <router-link to="/custom-row-attrs">自定义行属性</router-link>
       <router-link to="/fixed-header">固定表头</router-link>
       <router-link to="/highlight-current-row">高亮选中行</router-link>
+      <router-link to="/large-table">大数据量渲染</router-link>
     </div>
     <div class="table-container">
       <router-view></router-view>
@@ -21,6 +22,10 @@ export default {
 </script>
 
 <style lang="scss">
+  html, body, #app {
+    margin: 0;
+    height: 100%;
+  }
   .example-page {
     height: 100%;
     display: flex;

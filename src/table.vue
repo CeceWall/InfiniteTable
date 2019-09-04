@@ -23,6 +23,7 @@
 
 <script>
 import ResizeObserver from 'resize-observer-polyfill';
+import debounce from 'lodash/debounce';
 import TableHeader from './table-header.vue';
 import TableBody from './table-body.vue';
 import TableStore from './table-store';
@@ -179,7 +180,7 @@ export default {
     },
   },
   created() {
-    this.initial = true;
+    this.doLayout = debounce(this.doLayout, 100);
     this.$on('row-click', (row) => {
       if (
         !this.tableStore.selectedRow
@@ -196,7 +197,6 @@ export default {
     });
     this.resizeObserver.observe(this.$refs.table);
     this.doLayout();
-    this.initial = false;
   },
   beforeDestroy() {
     this.resizeObserver.disconnect();
