@@ -8,6 +8,7 @@
       <router-link to="/fixed-header">固定表头</router-link>
       <router-link to="/highlight-current-row">高亮选中行</router-link>
       <router-link to="/large-table">大数据量渲染</router-link>
+      <router-link to="/header-column-resize">表头改变大小</router-link>
     </div>
     <div class="table-container">
       <router-view></router-view>

@@ -4,12 +4,13 @@
     :style="{height: headerHeight}"
   >
     <div
-      v-for="column of tableStore.tableColumns"
+      v-for="(column,columnIndex) of tableStore.tableColumns"
       :key="column.label"
       class="infinite-table__cell"
       :class="{
         'infinite-table__cell--pointer': column.sortable,
         'infinite-table__cell--fixed': column.fixed,
+        'hover': !resizeIndicator.visible && (mouseEnterIndex === columnIndex || mouseEnterIndex - 1 ===columnIndex)
       }"
       :style="{
         width: `${column.width}px`,
@@ -36,6 +37,12 @@
         />
       </div>
     </div>
+    <div
+      v-if="resizeIndicator.visible"
+      ref="resizeIndicator"
+      class="infinite-table__resize-indicator"
+      :style="{left: `${resizeIndicator.left}px`}"
+    />
   </div>
 </template>
 <script>
@@ -47,6 +54,18 @@ export default {
       type: String,
       required: true,
     },
+  },
+  data() {
+    return {
+      mouseEnterIndex: -1,
+      resizeIndicator: {
+        activeIndex: -1,
+        startX: 0,
+        hover: false,
+        visible: false,
+        left: -9999,
+      },
+    };
   },
   computed: {
     sortedColumn() {

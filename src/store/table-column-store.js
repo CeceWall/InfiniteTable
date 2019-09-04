@@ -102,7 +102,11 @@ export default class TableColumnStore {
   }
 
   replaceTableColumn(prevColumn, nextColumn) {
-    const columnStore = this.getTableColumnStore(column.fixed);
+    const prevIndex = this.allTableColumns.findIndex((item) => item.label === prevColumn.label);
+    if (prevIndex !== -1) {
+      this.allTableColumns.splice(prevIndex, 1, nextColumn);
+    }
+    this.updateTableColumns();
   }
 
   getTableColumns() {
