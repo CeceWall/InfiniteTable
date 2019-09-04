@@ -23,14 +23,6 @@ export default {
       type: Function,
       default: null,
     },
-    draggable: {
-      type: Boolean,
-      default: false,
-    },
-    resizeable: {
-      type: Boolean,
-      default: false,
-    },
     width: {
       type: [Number, String],
     },

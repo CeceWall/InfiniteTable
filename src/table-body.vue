@@ -36,7 +36,7 @@ import RangeRender from './render/range-render.vue';
 
 export default {
   name: 'TableBody',
-  inject: ['tableStore'],
+  inject: ['tableStore', 'tableOptions'],
   components: {
     RangeRender,
     TableRow,
@@ -52,9 +52,6 @@ export default {
   computed: {
     data() {
       return this.tableStore.data;
-    },
-    tableOptions() {
-      return this.tableStore.tableOptions;
     },
     layoutSize() {
       return this.tableStore.layoutSize;

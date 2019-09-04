@@ -3,7 +3,7 @@ import RangeRender from './render/range-render.vue';
 
 export default {
   name: 'TableRow',
-  inject: ['tableStore', 'emitter'],
+  inject: ['tableStore', 'emitter', 'tableOptions'],
   components: { RangeRender },
   props: {
     data: {
@@ -25,7 +25,7 @@ export default {
     },
     renderTableCell(props) {
       const { data } = this;
-      const { tableOptions } = this.tableStore;
+      const { tableOptions } = this;
       const { data: columnOption } = props;
       const { columnRender } = columnOption;
       const cellClassNames = classNames(
@@ -62,10 +62,11 @@ export default {
   },
   render(h) {
     const {
-      tableOptions, layoutSize, leftFixTableColumns,
+      layoutSize, leftFixTableColumns,
       mainTableColumns, rightFixedTableColumns,
     } = this.tableStore;
-    const { offsetX } = this;
+
+    const { offsetX, tableOptions } = this;
     return (
       h('div', {
         class: 'infinite-table__row',

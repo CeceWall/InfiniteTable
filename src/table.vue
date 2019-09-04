@@ -56,6 +56,7 @@ export default {
      */
     height: {
       type: [Number, String],
+      default: '100%',
     },
     /**
      * 表头的高度
@@ -101,20 +102,10 @@ export default {
   },
   data() {
     const tableId = getTableId();
-    const tableOptions = {
-      highlightRow: this.highlightRow,
-      rowExtraAttrs: this.rowExtraAttrs,
-      headerHeight: this.headerHeight,
-      striped: this.striped,
-      rowKey: this.rowKey,
-      rowHeight: px2num(this.rowHeight),
-    };
     const tableStore = new TableStore({
       data: this.data,
       tableId,
-      tableOptions,
       layoutSize: {
-        rowHeight: tableOptions.rowHeight,
         viewportWidth: 0,
         viewportHeight: 0,
         allColumnsWidth: 0,
@@ -134,6 +125,15 @@ export default {
     };
   },
   computed: {
+    tableOptions() {
+      return {
+        rowExtraAttrs: this.rowExtraAttrs,
+        headerHeight: this.headerHeight,
+        striped: this.striped,
+        rowKey: this.rowKey,
+        rowHeight: px2num(this.rowHeight),
+      };
+    },
     tableHeight() {
       // FIXME: 默认高度分配目前有问题，当有横向滚动条时，长度计算错误
       let height;
@@ -158,6 +158,7 @@ export default {
   provide() {
     return {
       tableStore: this.tableStore,
+      tableOptions: this.tableOptions,
       emitter: new EventEmitter(this),
     };
   },
@@ -170,13 +171,11 @@ export default {
         this.doLayout();
       },
     },
-    height() {
-      this.$nextTick(() => {
+    tableOptions: {
+      deep: true,
+      handler() {
         this.doLayout();
-      });
-    },
-    highlightRow(newVal) {
-      this.tableStore.tableOptions.highlightRow = newVal;
+      },
     },
   },
   created() {
