@@ -37,7 +37,8 @@ export function doColumnWidthLayout(tableWidth, columns) {
   let defaultColumnRestWidth = tableWidth;
   const totalColumnWidth = columns.reduce((totalWidth, column) => {
     let columnWidth = column.width;
-    if (!columnWidth) {
+    const { hasWidth } = column;
+    if (!hasWidth) {
       defaultWidthColumnCount += 1;
       columnWidth = defaultColumnWidth;
     } else {
@@ -48,8 +49,9 @@ export function doColumnWidthLayout(tableWidth, columns) {
 
   let n = 0;
   return columns.map((column) => {
+    const { hasWidth } = column;
     let { width } = column;
-    if (!width) {
+    if (!hasWidth) {
       if (totalColumnWidth <= tableWidth) {
         width = calcDefaultColumnWidth(defaultColumnRestWidth, defaultWidthColumnCount, n);
         n += 1;

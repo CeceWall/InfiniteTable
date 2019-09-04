@@ -1,10 +1,13 @@
 <template>
   <div
+    ref="table"
     class="infinite-table"
     :style="{height: tableHeight}"
-    :class="tableClass"
   >
-    <div class="infinite-table__columns-define">
+    <div
+      ref="columnsDef"
+      class="infinite-table__columns-define"
+    >
       <slot />
     </div>
     <div class="infinite-table--scrollable">
@@ -19,6 +22,7 @@
 </template>
 
 <script>
+import ResizeObserver from 'resize-observer-polyfill';
 import TableHeader from './table-header.vue';
 import TableBody from './table-body.vue';
 import TableStore from './table-store';
@@ -98,7 +102,6 @@ export default {
     const tableId = getTableId();
     const tableOptions = {
       highlightRow: this.highlightRow,
-      height: this.height,
       rowExtraAttrs: this.rowExtraAttrs,
       headerHeight: this.headerHeight,
       striped: this.striped,
@@ -131,15 +134,19 @@ export default {
   },
   computed: {
     tableHeight() {
-      return num2px(this.height);
+      // FIXME: 默认高度分配目前有问题，当有横向滚动条时，长度计算错误
+      let height;
+      if (this.height) {
+        height = this.height;
+      } else if (this.data.length > 0) {
+        height = (this.layoutSize.rowHeight * this.data.length) + this.headerHeight;
+      } else {
+        height = 250;
+      }
+      return num2px(height);
     },
     tableHeaderHeight() {
       return num2px(this.headerHeight);
-    },
-    tableClass() {
-      return {
-        'infinite-table--scrollable': this.tableHeight,
-      };
     },
     tableHeaderClass() {
       return {
@@ -162,20 +169,37 @@ export default {
         this.doLayout();
       },
     },
+    height() {
+      this.$nextTick(() => {
+        this.doLayout();
+      });
+    },
     highlightRow(newVal) {
       this.tableStore.tableOptions.highlightRow = newVal;
     },
   },
   created() {
+    this.initial = true;
     this.$on('row-click', (row) => {
-      if (!this.tableStore.selectedRow || this.tableStore.selectedRow[this.rowKey] !== row[this.rowKey]) {
+      if (
+        !this.tableStore.selectedRow
+        || this.tableStore.selectedRow[this.rowKey] !== row[this.rowKey]
+      ) {
         this.$emit('current-change', row, this.tableStore.selectedRow);
         this.tableStore.selectedRow = row;
       }
     });
   },
   mounted() {
+    this.resizeObserver = new ResizeObserver(() => {
+      this.doLayout();
+    });
+    this.resizeObserver.observe(this.$refs.table);
     this.doLayout();
+    this.initial = false;
+  },
+  beforeDestroy() {
+    this.resizeObserver.disconnect();
   },
   methods: {
     doLayout() {
@@ -212,24 +236,8 @@ export default {
         allColumnsWidth,
       };
     },
-    getColumnIndex(column) {
-      return this.$children.indexOf(column);
-    },
-    addTableColumn(index, column) {
-      this.tableStore.__tableColumns.addTableColumn(column);
-    },
-    removeTableColumn(index, column) {
-      this.tableStore.__tableColumns.removeTableColumn(column);
-    },
     selectRow(row) {
       this.tableStore.selectedRow = row;
-    },
-    handleDispatchEvent(component, type, e) {
-      this.$emit(`${component}-row-${type}`, {
-        event: e,
-        column: this.tableStore.selectedColumn,
-        row: this.tableStore.selectedRow,
-      });
     },
   },
 };

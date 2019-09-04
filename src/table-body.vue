@@ -87,6 +87,9 @@ export default {
         extraAttrs = rowExtraAttrs(rowItem, index);
       }
       return {
+        style: {
+          ...extraAttrs.style,
+        },
         class: {
           ...extraAttrs.class,
           'infinite-table__row--striped': striped && index % 2 === 1,

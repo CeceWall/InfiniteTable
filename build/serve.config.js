@@ -12,7 +12,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 export default {
   input: path.join(__dirname, '../example/main.js'),
   output: {
-    file: path.join(__dirname, '..', 'example', 'demo.js'),
+    file: path.join(__dirname, '..', 'example/scripts', 'demo.js'),
     format: 'iife',
     name: 'demo',
     sourcemap: 'inline',
@@ -32,8 +32,8 @@ export default {
     }),
     common(),
     babel({
-      exclude: 'node_modules/**',
-      // include: 'src/**/*.jsx',
+      // exclude: 'node_modules/**',
+      include: 'src/**/*.jsx',
       sourceMaps: 'both',
     }),
     sourcemaps(),

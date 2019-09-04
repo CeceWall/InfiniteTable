@@ -21,6 +21,7 @@
           :prop="label"
           :width="getColumnWidth()"
           :fixed="index < 2 ? 'left': index >= 48 ? 'right' : false"
+          :comparator="cellComparator"
           sortable
         />
       </infinite-table>
@@ -39,9 +40,6 @@ export default {
   components: {
     InfiniteTable,
     InfiniteTableColumn,
-  },
-  props: {
-    msg: String,
   },
   data() {
     return {
@@ -90,6 +88,14 @@ export default {
     handleDrop(e) {
       e.preventDefault();
       console.log(e);
+    },
+    cellComparator(a, b) {
+      if (a > b) {
+        return 1;
+      } if (a < b) {
+        return -1;
+      }
+      return 0;
     },
     rowClassName() {
       return {

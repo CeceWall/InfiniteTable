@@ -3,13 +3,14 @@ import SassPlugin from 'rollup-plugin-sass';
 import BabelPlugin from 'rollup-plugin-babel';
 import CommonJSPlugin from 'rollup-plugin-commonjs';
 import css from 'rollup-plugin-css-only';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 export default {
   input: 'src/table.vue',
   output: {
     file: 'dist/infinite-table.js',
     format: 'esm',
-    sourcemap: true
+    sourcemap: true,
   },
   plugins: [
     css(),
@@ -21,9 +22,9 @@ export default {
     }),
     BabelPlugin({
       include: 'src/**/*.jsx',
-      // exclude: 'node_modules/**',
-      runtimeHelpers: false,
+      sourceMaps: 'both',
     }),
+    sourcemaps(),
     SassPlugin({
       output: 'dist/infinite-table.css',
     }),

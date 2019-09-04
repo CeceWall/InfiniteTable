@@ -1,5 +1,6 @@
 export default class TableColumnStore {
   constructor() {
+    this.allTableColumns = [];
     this.tableColumns = [];
     this.leftFixedColumns = [];
     this.rightFixedColumns = [];
@@ -71,20 +72,37 @@ export default class TableColumnStore {
     return {};
   }
 
-  addTableColumn(column) {
-    const columnStore = this.getTableColumnStore(column.fixed);
-    columnStore.push(column);
-    if (column.fixed) {
-      this.setFixedPosition(column);
+  updateTableColumns() {
+    this.tableColumns = this.allTableColumns.filter((item) => !item.fixed);
+    this.leftFixedColumns = this.allTableColumns.filter((item) => item.fixed === 'left' || item.fixed === true);
+    this.rightFixedColumns = this.allTableColumns.filter((item) => item.fixed === 'right');
+
+    // TODO: 修改setFixedPosition方法的实现，目前会导致O(n2)的问题
+    this.leftFixedColumns.forEach((column) => this.setFixedPosition(column));
+    this.rightFixedColumns.forEach((column) => this.setFixedPosition(column));
+  }
+
+  addTableColumn(column, index) {
+    const columnStore = this.allTableColumns; // this.getTableColumnStore(column.fixed);
+    if (typeof index === 'number') {
+      columnStore.splice(index, 0, column);
+    } else {
+      columnStore.push(column);
     }
+    this.updateTableColumns();
   }
 
   removeTableColumn(column) {
-    const columnStore = this.getTableColumnStore(column.fixed);
-    const index = columnStore.indexOf(column);
+    const columnStore = this.allTableColumns;
+    const index = columnStore.findIndex((item) => item.label === column.label);
     if (index !== -1) {
       columnStore.splice(index, 1);
     }
+    this.updateTableColumns();
+  }
+
+  replaceTableColumn(prevColumn, nextColumn) {
+    const columnStore = this.getTableColumnStore(column.fixed);
   }
 
   getTableColumns() {
@@ -104,8 +122,7 @@ export default class TableColumnStore {
   }
 
   clear() {
-    this.tableColumns = [];
-    this.leftFixedColumns = [];
-    this.rightFixedColumns = [];
+    this.allTableColumns = [];
+    this.updateTableColumns();
   }
 }

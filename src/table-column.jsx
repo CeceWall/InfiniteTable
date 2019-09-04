@@ -13,6 +13,7 @@ const getColumnRenderFunc = function getColumnRenderFunc(render) {
 
 export default {
   name: 'InfiniteTableColumn',
+  inject: ['tableStore'],
   props: {
     sortable: {
       type: Boolean,
@@ -56,8 +57,6 @@ export default {
     },
   },
   mounted() {
-    const index = this.parent.getColumnIndex(this);
-
     const {
       width, label, sortable, comparator,
       prop, fixed,
@@ -75,8 +74,9 @@ export default {
     }
 
     const widthValue = Number.isNaN(parseFloat(width)) ? null : parseFloat(width);
-    const column = {
+    this.column = {
       width: widthValue,
+      hasWidth: !!widthValue,
       label,
       sortable,
       comparator,
@@ -84,14 +84,26 @@ export default {
       prop,
       fixed: fixed === true ? 'left' : fixed,
     };
-    this.tableColumnIndex = index;
-    this.column = column;
-    this.parent.addTableColumn(index, this.column);
+
+    this.tableColumnIndex = this.getColumnIndex();
+    this.tableStore.__tableColumns.addTableColumn(this.column, this.tableColumnIndex);
+    this.mayUpdateLayout();
   },
   beforeDestroy() {
-    this.parent.removeTableColumn(this.tableColumnIndex, this.column);
+    this.tableStore.__tableColumns.removeTableColumn(this.column);
+    this.mayUpdateLayout();
   },
-  render() {
-    return null;
+  methods: {
+    getColumnIndex() {
+      return [].indexOf.call(this.$parent.$refs.columnsDef.children, this.$el);
+    },
+    mayUpdateLayout() {
+      if (!this.$parent.initial) {
+        this.$parent.doLayout();
+      }
+    },
+  },
+  render(h) {
+    return h('div');
   },
 };
