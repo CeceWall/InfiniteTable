@@ -2,7 +2,7 @@
 
 ## Props
 
-| 属性名              | 类型                                      |      | 说明                                    | 默认值 |
+| 属性名              | 类型                                      | 必填 | 说明                                    | 默认值 |
 | ------------------- | ----------------------------------------- | ---- | --------------------------------------- | ------ |
 | data                | Array                                     |      | 要展示的列表内容                        |        |
 | height              | [Number, String]                          | 是   | 定义表格的高度，可以使用数组或css来设置 |        |
@@ -12,6 +12,7 @@
 | striped             | Boolean                                   | 否   | 是否采用明暗间隔的行                    | true   |
 | highlightCurrentRow | Boolean                                   | 否   | 是否高亮选中的行                        | true   |
 |                     | [`function(rowItem, rowIndex)`, `Object`] | 否   | 渲染行时，而外添加的class和attrs        |        |
+| headerResizable     | Boolean                                   | 否   | 表头的元素是否可以通过鼠标调整大小      | false  |
 
 
 

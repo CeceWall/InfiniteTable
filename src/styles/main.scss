@@ -6,6 +6,7 @@
   background-color: $table-background-color;
   color: $table-text-color;
   font-size: $table-font-size;
+  position: relative;
 }
 
 .infinite-table--scrollable {
@@ -33,6 +34,14 @@
   &.infinite-table__table-header--sticky {
     position: sticky;
     top: 0;
+  }
+
+  .infinite-table__cell {
+    border-right: 1px solid transparent;
+
+    &.hover {
+      border-right: 1px solid white;
+    }
   }
 }
 
@@ -87,6 +96,7 @@
 }
 
 .infinite-table__cell {
+  box-sizing: border-box;
   text-align: left;
   position: relative;
   display: flex;
@@ -140,5 +150,15 @@
   &:hover, &.infinite-table__row--selected {
     background-color: $table-row-hover-color;
   }
+}
+
+.infinite-table__resize-indicator {
+  position: absolute;
+  left: 200px;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px solid #ebeef5;
+  z-index: 10;
 }
 

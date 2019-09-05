@@ -17,6 +17,10 @@
         ...getFixedStyle(column),
       }"
       @click="handleColumnSort(column)"
+      @mouseenter="handleMouseEnter(columnIndex, $event)"
+      @mouseleave="handleMouseLeave(columnIndex, $event)"
+      @mousemove="handleMouseMove"
+      @mousedown="handleMouseDown(columnIndex, $event)"
     >
       <div class="cell-content">
         {{ column.label }}
@@ -48,7 +52,7 @@
 <script>
 export default {
   name: 'TableHeader',
-  inject: ['tableStore'],
+  inject: ['tableStore', 'tableOptions', 'emitter'],
   props: {
     headerHeight: {
       type: String,
@@ -74,6 +78,55 @@ export default {
     },
   },
   methods: {
+    handleMouseEnter(columnIndex) {
+      this.mouseEnterIndex = columnIndex;
+    },
+    handleMouseLeave() {
+      this.mouseEnterIndex = -1;
+    },
+    handleMouseDown(columnIndex, event) {
+      const { headerResizable } = this.tableOptions;
+      if (headerResizable) {
+        if (this.resizeIndicator.hover) {
+          this.resizeIndicator.visible = true;
+          this.resizeIndicator.left = event.pageX;
+          this.resizeIndicator.startX = event.pageX;
+          document.body.addEventListener('mousemove', this.handleResizeIndicatorMove);
+          document.body.addEventListener('mouseup', this.handleResizeIndicatorMouseUp);
+        }
+      }
+    },
+    handleResizeIndicatorMouseUp(event) {
+      if (this.tableOptions.headerResizable) {
+        if (this.resizeIndicator.visible) {
+          const { activeIndex, startX } = this.resizeIndicator;
+          const { pageX } = event;
+          const activeColumn = this.tableStore.tableColumns[activeIndex];
+          this.emitter.dispatch('column-resize', activeIndex, activeColumn, pageX - startX);
+        }
+        this.resizeIndicator.visible = false;
+        document.body.removeEventListener('mousemove', this.handleResizeIndicatorMove);
+        document.body.removeEventListener('mousemove', this.handleResizeIndicatorMouseUp);
+      }
+    },
+    handleMouseMove(event) {
+      const { currentTarget, pageX } = event;
+      const cellRect = currentTarget.getBoundingClientRect();
+      if (this.tableOptions.headerResizable) {
+        if (cellRect.right - pageX < 8 || pageX - cellRect.left < 8) {
+          document.body.style.cursor = 'col-resize';
+          this.resizeIndicator.hover = true;
+          const activeIndex = cellRect.right - pageX < 8 ? this.mouseEnterIndex : this.mouseEnterIndex - 1;
+          this.resizeIndicator.activeIndex = activeIndex;
+        } else {
+          document.body.style.cursor = 'initial';
+          this.resizeIndicator.hover = false;
+        }
+      }
+    },
+    handleResizeIndicatorMove(event) {
+      this.resizeIndicator.left = event.pageX;
+    },
     getFixedStyle(column) {
       // FIXME: 不直接调用__tableColumns中的方法
       return this.tableStore.__tableColumns.getFixedColumnStyle(column);

@@ -99,6 +99,14 @@ export default {
         return {};
       },
     },
+    headerResizable: {
+      type: Boolean,
+      default: false,
+    },
+    rowDraggable: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     const tableId = getTableId();
@@ -132,6 +140,7 @@ export default {
         striped: this.striped,
         rowKey: this.rowKey,
         rowHeight: px2num(this.rowHeight),
+        headerResizable: this.headerResizable,
       };
     },
     tableHeight() {
