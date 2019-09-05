@@ -55,18 +55,15 @@ export default {
       const column = this.generateColumnOption();
       this.tableStore.__tableColumns.replaceTableColumn(this.column, column);
       this.column = column;
-      this.mayUpdateLayout();
     },
   },
   mounted() {
     this.column = this.generateColumnOption();
     this.tableColumnIndex = this.getColumnIndex();
     this.tableStore.__tableColumns.addTableColumn(this.column, this.tableColumnIndex);
-    this.mayUpdateLayout();
   },
   beforeDestroy() {
     this.tableStore.__tableColumns.removeTableColumn(this.column);
-    this.mayUpdateLayout();
   },
   methods: {
     getColumnIndex() {
@@ -100,9 +97,6 @@ export default {
         prop,
         fixed: fixed === true ? 'left' : fixed,
       };
-    },
-    mayUpdateLayout() {
-      this.$parent.doLayout();
     },
   },
   render(h) {

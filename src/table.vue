@@ -191,6 +191,13 @@ export default {
         this.doLayout();
       },
     },
+    'tableStore.__tableColumns.allTableColumns': {
+      handler() {
+        this.$nextTick(() => {
+          this.doLayout();
+        });
+      },
+    },
   },
   created() {
     this.doLayout = debounce(this.doLayout, 100);
@@ -240,7 +247,13 @@ export default {
       if (hasHorizontalScroller) {
         viewportHeight -= getScrollWidth();
       }
-      this.tableStore.tableColumns = calculatedColumns;
+
+
+      // 避免doLayout时又改变了tableColumns导致循环调用
+      if (allColumnsWidth !== this.lastAllColumnsWidth) {
+        this.tableStore.tableColumns = calculatedColumns;
+      }
+      this.lastAllColumnsWidth = allColumnsWidth;
 
       this.tableStore.layoutSize = {
         rowHeight: px2num(this.rowHeight),
