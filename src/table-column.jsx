@@ -25,13 +25,15 @@ export default {
     },
     width: {
       type: [Number, String],
+      default: 0,
     },
     label: {
       type: String,
-      require: true,
+      required: true,
     },
     prop: {
       type: String,
+      default: '',
     },
     fixed: {
       type: [String, Boolean],

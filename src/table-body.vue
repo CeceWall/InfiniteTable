@@ -16,6 +16,7 @@
     >
       <table-row
         v-bind="getExtraRowAttrs(data, index)"
+        :index="index"
         :offset-x="grid.offsetX"
         :data="data"
       />

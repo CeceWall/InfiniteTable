@@ -10,6 +10,7 @@ import FixedHeaderDemo from './demos/fixed-header.vue';
 import HighlightCurrentRowDemo from './demos/highlight-current-row.vue';
 import LargeTableDemo from './demos/large-table.vue';
 import HeaderColumnResizeDemo from './demos/header-column-resize.vue';
+import RowDraggableDemo from './demos/row-draggable.vue';
 
 Vue.component('infinite-table', InfiniteTable);
 Vue.component('infinite-table-column', InfiniteTableColumn);
@@ -48,6 +49,10 @@ const router = new VueRouter({
     {
       path: '/header-column-resize',
       component: HeaderColumnResizeDemo,
+    },
+    {
+      path: '/row-draggable',
+      component: RowDraggableDemo,
     },
   ],
 });

@@ -103,6 +103,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    headerOrderDraggable: {
+      type: Boolean,
+      default: false,
+    },
     rowDraggable: {
       type: Boolean,
       default: false,
@@ -141,6 +145,7 @@ export default {
         rowKey: this.rowKey,
         rowHeight: px2num(this.rowHeight),
         headerResizable: this.headerResizable,
+        rowDraggable: this.rowDraggable,
       };
     },
     tableHeight() {

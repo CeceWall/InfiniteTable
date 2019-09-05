@@ -6,9 +6,13 @@ export default {
   inject: ['tableStore', 'emitter', 'tableOptions'],
   components: { RangeRender },
   props: {
+    index: {
+      type: Number,
+      required: true,
+    },
     data: {
       type: Object,
-      require: true,
+      required: true,
     },
     offsetX: {
       type: Number,
@@ -37,6 +41,7 @@ export default {
       return (
         <div
           class={cellClassNames}
+          draggable={tableOptions.rowDraggable}
           style={{
             width: `${columnOption.width}px`,
             height: `${tableOptions.rowHeight}px`,
@@ -49,6 +54,10 @@ export default {
                 click: (e) => this.dispatchRowEvent('row-click', data, columnOption, e),
                 contextmenu: (e) => this.dispatchRowEvent('row-contextmenu', data, columnOption, e),
                 dblclick: (e) => this.dispatchRowEvent('row-dblclick', data, columnOption, e),
+                dragstart: (e) => this.dispatchRowEvent('row-dragstart', data, columnOption, e),
+                dragend: (e) => this.dispatchRowEvent('row-dragend', data, columnOption, e),
+                dragover: (e) => this.dispatchRowEvent('row-dragover', data, columnOption, e),
+                drop: (e) => this.dispatchRowEvent('row-drop', data, columnOption, e),
               },
             }
           }
