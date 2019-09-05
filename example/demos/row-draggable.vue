@@ -62,9 +62,12 @@ export default {
   methods: {
     handleRowDragStart(rowItem, column, event) {
       this.dragStartItem = rowItem;
+      event.dataTransfer.setData('row-item', rowItem.id);
     },
     handleRowDragOver(rowItem, column, event) {
-      event.preventDefault();
+      if ([].indexOf.call(event.dataTransfer.types, 'row-item') !== -1) {
+        event.preventDefault();
+      }
     },
     handleRowDrop(rowItem, column, event) {
       const dropIndex = this.tableData.indexOf(rowItem);
