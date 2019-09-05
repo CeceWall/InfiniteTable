@@ -11,6 +11,7 @@ import HighlightCurrentRowDemo from './demos/highlight-current-row.vue';
 import LargeTableDemo from './demos/large-table.vue';
 import HeaderColumnResizeDemo from './demos/header-column-resize.vue';
 import RowDraggableDemo from './demos/row-draggable.vue';
+import DragHeaderOrderDemo from './demos/drag-header-order.vue';
 
 Vue.component('infinite-table', InfiniteTable);
 Vue.component('infinite-table-column', InfiniteTableColumn);
@@ -54,6 +55,10 @@ const router = new VueRouter({
       path: '/row-draggable',
       component: RowDraggableDemo,
     },
+    {
+      path: '/drag-header-order',
+      component: DragHeaderOrderDemo,
+    }
   ],
 });
 

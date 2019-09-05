@@ -16,11 +16,16 @@
         width: `${column.width}px`,
         ...getFixedStyle(column),
       }"
+      :draggable="tableOptions.headerOrderDraggable"
       @click="handleColumnSort(column)"
       @mouseenter="handleMouseEnter(columnIndex, $event)"
       @mouseleave="handleMouseLeave(columnIndex, $event)"
       @mousemove="handleMouseMove"
       @mousedown="handleMouseDown(columnIndex, $event)"
+      @dragstart="handleHeaderDragStart(columnIndex, $event)"
+      @dragover="handleHeaderDragOver(columnIndex, $event)"
+      @dragend="handleHeaderDragEnd(columnIndex, $event)"
+      @drop="handleHeaderDrop(columnIndex, $event)"
     >
       <div class="cell-content">
         {{ column.label }}
@@ -50,6 +55,8 @@
   </div>
 </template>
 <script>
+const HEADER_DRAG_DATA_TYPE = 'headerColumnIndex'.toLowerCase();
+
 export default {
   name: 'TableHeader',
   inject: ['tableStore', 'tableOptions', 'emitter'],
@@ -76,6 +83,9 @@ export default {
       const { column, order } = this.tableStore.sortedOption;
       return { column, order };
     },
+  },
+  beforeDestroy() {
+    document.body.style.cursor = 'initial';
   },
   methods: {
     handleMouseEnter(columnIndex) {
@@ -114,11 +124,13 @@ export default {
       const cellRect = currentTarget.getBoundingClientRect();
       if (this.tableOptions.headerResizable) {
         if (cellRect.right - pageX < 8 || pageX - cellRect.left < 8) {
+          currentTarget.draggable = false;
           document.body.style.cursor = 'col-resize';
           this.resizeIndicator.hover = true;
           const activeIndex = cellRect.right - pageX < 8 ? this.mouseEnterIndex : this.mouseEnterIndex - 1;
           this.resizeIndicator.activeIndex = activeIndex;
         } else {
+          currentTarget.draggable = true;
           document.body.style.cursor = 'initial';
           this.resizeIndicator.hover = false;
         }
@@ -126,6 +138,25 @@ export default {
     },
     handleResizeIndicatorMove(event) {
       this.resizeIndicator.left = event.pageX;
+    },
+    handleHeaderDragStart(columnIndex, event) {
+      event.dataTransfer.setData(HEADER_DRAG_DATA_TYPE, columnIndex);
+    },
+    handleHeaderDragOver(columnIndex, event) {
+      const index = [].indexOf.call(event.dataTransfer.types, HEADER_DRAG_DATA_TYPE);
+      if (index !== -1) {
+        event.preventDefault();
+      }
+    },
+    handleHeaderDragEnd() {},
+    handleHeaderDrop(columnIndex, event) {
+      this.emitter.dispatch('header-drop');
+      const dragIndex = parseInt(event.dataTransfer.getData(HEADER_DRAG_DATA_TYPE), 10);
+      if (typeof dragIndex === 'number' && dragIndex >= 0) {
+        const dragColumn = this.tableStore.tableColumns[dragIndex];
+        this.tableStore.__tableColumns.removeTableColumn(dragColumn);
+        this.tableStore.__tableColumns.addTableColumn(dragColumn, columnIndex);
+      }
     },
     getFixedStyle(column) {
       // FIXME: 不直接调用__tableColumns中的方法

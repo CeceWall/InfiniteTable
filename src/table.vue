@@ -146,6 +146,7 @@ export default {
         rowHeight: px2num(this.rowHeight),
         headerResizable: this.headerResizable,
         rowDraggable: this.rowDraggable,
+        headerOrderDraggable: this.headerOrderDraggable,
       };
     },
     tableHeight() {
