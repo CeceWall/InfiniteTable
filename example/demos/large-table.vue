@@ -5,10 +5,12 @@
       :data="data"
       height="100%"
       :highlight-row="highlightRow"
+      highlight-current-cell
       row-key="0"
       :row-extra-attrs="rowClassName"
       header-height="60px"
       row-height="40px"
+      multiple-selection
     >
       <infinite-table-column
         v-for="(label, index) of columns"
@@ -45,7 +47,7 @@ export default {
         ...obj,
         [column]: `${rowIndex} - ${columnIndex}`,
       }), {})),
-    ])(10000);
+    ])(1000);
     this.data = data.map(item => Object.freeze(item));
   },
   methods: {
@@ -58,7 +60,7 @@ export default {
 
       return getRandomInt(0, 100) + 100;
     },
-    getColumns(n = 500) {
+    getColumns(n = 50) {
       return _.flow(
         _.times,
         fp.map((i) => i.toString(10)),

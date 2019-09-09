@@ -3,6 +3,10 @@
     ref="table"
     class="infinite-table"
     :style="{height: tableHeight}"
+    tabindex="0"
+    @keydown="handleKeyEvent($event, 'DOWN')"
+    @keyup="handleKeyEvent($event, 'UP')"
+    @click.capture="focus"
   >
     <div
       ref="columnsDef"
@@ -34,6 +38,11 @@ import {
 import EventEmitter from './event-emitter';
 import { getTableId } from './utils/table';
 import './styles/main.scss';
+
+const KeyStatus = {
+  UP: 'UP',
+  DOWN: 'DOWN',
+};
 
 export default {
   name: 'InfiniteTable',
@@ -90,6 +99,14 @@ export default {
       type: Boolean,
       default: true,
     },
+    multipleSelection: {
+      type: Boolean,
+      default: false,
+    },
+    highlightCurrentCell: {
+      type: Boolean,
+      default: false,
+    },
     /**
      * 渲染行时，额外添加的class名
      */
@@ -115,6 +132,7 @@ export default {
   data() {
     const tableId = getTableId();
     const tableStore = new TableStore({
+      context: this,
       data: this.data,
       tableId,
       layoutSize: {
@@ -125,6 +143,10 @@ export default {
     });
     const rowHeight = px2num(this.rowHeight);
     return {
+      composeKey: {
+        shift: false,
+        control: false,
+      },
       tableId,
       tableStore,
       layoutSize: {
@@ -147,6 +169,8 @@ export default {
         headerResizable: this.headerResizable,
         rowDraggable: this.rowDraggable,
         headerOrderDraggable: this.headerOrderDraggable,
+        highlightCurrentCell: this.highlightCurrentCell,
+        multipleSelection: this.multipleSelection,
       };
     },
     tableHeight() {
@@ -203,13 +227,14 @@ export default {
   created() {
     this.doLayout = debounce(this.doLayout, 100);
     this.$on('row-click', (row) => {
-      if (
-        !this.tableStore.selectedRow
-        || this.tableStore.selectedRow[this.rowKey] !== row[this.rowKey]
-      ) {
-        this.$emit('current-change', row, this.tableStore.selectedRow);
-        this.tableStore.selectedRow = row;
-      }
+      const { tableSelection } = this.tableStore;
+      tableSelection.focusedRow = row;
+      const multiple = this.composeKey.control && this.tableOptions.multipleSelection;
+      tableSelection.addSelectedRows(row, multiple);
+      this.$emit('current-change', tableSelection.selectedRows);
+    });
+    this.$on('cell-click', (rowItem, columnOption) => {
+      this.tableStore.selectedColumn = columnOption;
     });
   },
   mounted() {
@@ -265,6 +290,36 @@ export default {
     },
     selectRow(row) {
       this.tableStore.selectedRow = row;
+    },
+    handleChangeSelect(event, keyStatus = KeyStatus.UP) {
+      if (keyStatus === KeyStatus.UP) {
+        console.log(event);
+      }
+    },
+    handleComposeKeyEvent(event, keyStatus) {
+      this.$set(this.composeKey, event.key.toLowerCase(), keyStatus === KeyStatus.DOWN);
+    },
+    handleKeyEvent(event, keyStatus) {
+      const { key } = event;
+      const eventDispatcher = [
+        {
+          rule: /^Arrow(Down|Up|Left|Right)/i,
+          method: this.handleChangeSelect,
+        },
+        {
+          rule: /(Control|Shift)/i,
+          method: this.handleComposeKeyEvent,
+        },
+      ];
+      for (let i = 0; i < eventDispatcher.length; i += 1) {
+        const dispatchItem = eventDispatcher[i];
+        if (dispatchItem.rule.test(key)) {
+          dispatchItem.method.call(this, event, keyStatus);
+        }
+      }
+    },
+    focus() {
+      this.$refs.table.focus();
     },
   },
 };

@@ -1,8 +1,6 @@
 .DS_Store
 node_modules
 /dist
-example/scripts/demo.js
-example/infinite-table.css
 
 # local env files
 .env.local

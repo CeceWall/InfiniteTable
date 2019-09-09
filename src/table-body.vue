@@ -78,8 +78,8 @@ export default {
   },
   methods: {
     getExtraRowAttrs(rowItem, index) {
-      const { striped, rowExtraAttrs, rowKey } = this.tableOptions;
-      const { selectedRow } = this.tableStore;
+      const { striped, rowExtraAttrs } = this.tableOptions;
+      const { tableSelection } = this.tableStore;
       let extraAttrs = rowExtraAttrs;
       if (typeof rowExtraAttrs === 'function') {
         extraAttrs = rowExtraAttrs(rowItem, index);
@@ -91,7 +91,7 @@ export default {
         class: {
           ...extraAttrs.class,
           'infinite-table__row--striped': striped && index % 2 === 1,
-          'infinite-table__row--selected': selectedRow && rowItem[rowKey] === selectedRow[rowKey],
+          'infinite-table__row--selected': tableSelection.hasSelected(rowItem),
         },
         ...extraAttrs.attrs,
       };

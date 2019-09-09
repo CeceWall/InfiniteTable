@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import TableColumnStore from './store/table-column-store';
+import TableSelectionStore from './store/table-selection-store';
 
 function defaultComparator(a, b) {
   if (a > b) {
@@ -17,13 +18,17 @@ export default class TableStore {
     if (!options.tableId) {
       console.error('TableStore: 缺少必要的tableId参数');
     }
+    this.context = options.context;
     this.tableId = options.tableId;
     this.eventEmitter = options.eventEmitter;
     this.rowHeight = options.rowHeight;
     this.__layoutSize = options.layoutSize;
-    this.__selectedRow = null;
-    this.__selectedColumn = options.selectedColumn;
+    this.__selectedRow = {};
+    this.__selectedColumn = {};
     this.__tableColumns = new TableColumnStore();
+    this.tableSelection = new TableSelectionStore({
+      rowKey: this.context.rowKey,
+    });
     this.__tableOptions = options.tableOptions;
     this.__data = options.data;
     this.__sortedOption = {

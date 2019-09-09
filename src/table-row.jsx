@@ -28,13 +28,17 @@ export default {
       this.emitter.dispatch(eventName, data, column, e);
     },
     renderTableCell(props) {
-      const { data } = this;
+      const { data, tableStore } = this;
       const { tableOptions } = this;
+      const { selectedColumn, selectedRow } = tableStore;
+      const { rowKey, highlightCurrentCell } = tableOptions;
       const { data: columnOption } = props;
       const { columnRender } = columnOption;
+      const cellSelected = highlightCurrentCell && (selectedColumn.label === columnOption.label && selectedRow[rowKey] === data[rowKey]);
       const cellClassNames = classNames(
         'infinite-table__cell', 'infinite-table__cell--ellipsis',
         {
+          'infinite-table__cell--selected': cellSelected,
           'infinite-table__cell--fixed': !!columnOption.fixed,
         },
       );
@@ -51,7 +55,10 @@ export default {
           {
             ...{
               on: {
-                click: (e) => this.dispatchRowEvent('row-click', data, columnOption, e),
+                click: (e) => {
+                  this.dispatchRowEvent('cell-click', data, columnOption, e);
+                  this.dispatchRowEvent('row-click', data, columnOption, e);
+                },
                 contextmenu: (e) => this.dispatchRowEvent('row-contextmenu', data, columnOption, e),
                 dblclick: (e) => this.dispatchRowEvent('row-dblclick', data, columnOption, e),
                 dragstart: (e) => this.dispatchRowEvent('row-dragstart', data, columnOption, e),
