@@ -23,8 +23,6 @@ export default class TableStore {
     this.eventEmitter = options.eventEmitter;
     this.rowHeight = options.rowHeight;
     this.__layoutSize = options.layoutSize;
-    this.__selectedRow = {};
-    this.__selectedColumn = {};
     this.__tableColumns = new TableColumnStore();
     this.tableSelection = new TableSelectionStore({
       rowKey: this.context.rowKey,
@@ -36,23 +34,6 @@ export default class TableStore {
       order: 'asc',
     };
   }
-
-  get selectedRow() {
-    return this.__selectedRow;
-  }
-
-  set selectedRow(row) {
-    this.__selectedRow = row;
-  }
-
-  get selectedColumn() {
-    return this.__selectedColumn;
-  }
-
-  set selectedColumn(column) {
-    this.__selectedColumn = column;
-  }
-
   get tableColumns() {
     return this.__tableColumns.getTableColumns();
   }

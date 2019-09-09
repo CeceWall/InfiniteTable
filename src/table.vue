@@ -227,14 +227,10 @@ export default {
   created() {
     this.doLayout = debounce(this.doLayout, 100);
     this.$on('row-click', (row) => {
-      const { tableSelection } = this.tableStore;
-      tableSelection.focusedRow = row;
-      const multiple = this.composeKey.control && this.tableOptions.multipleSelection;
-      tableSelection.addSelectedRows(row, multiple);
-      this.$emit('current-change', tableSelection.selectedRows);
+      this.selectRow(row);
     });
     this.$on('cell-click', (rowItem, columnOption) => {
-      this.tableStore.selectedColumn = columnOption;
+      this.tableStore.tableSelection.selectedColumn = columnOption;
     });
   },
   mounted() {
@@ -289,15 +285,27 @@ export default {
       };
     },
     selectRow(row) {
-      this.tableStore.selectedRow = row;
+      const { tableSelection } = this.tableStore;
+      tableSelection.focusedRow = row;
+      const multiple = this.composeKey.control && this.tableOptions.multipleSelection;
+      tableSelection.addSelectedRows(row, multiple);
+      this.$emit('current-change', tableSelection.selectedRows);
     },
     handleChangeSelect(event, keyStatus = KeyStatus.UP) {
-      if (keyStatus === KeyStatus.UP) {
-        console.log(event);
+      if (keyStatus === KeyStatus.DOWN) {
+        const match = /Arrow(Up|Down|Left|Right)/i.exec(event.key);
+        if (match) {
+          const direction = match[1].toLowerCase();
+          this.move(direction);
+        }
       }
     },
     handleComposeKeyEvent(event, keyStatus) {
       this.$set(this.composeKey, event.key.toLowerCase(), keyStatus === KeyStatus.DOWN);
+    },
+    handleDispatchKeyEvent(event, keyStatus) {
+      const { focusedRow, selectedColumn } = this.tableStore.tableSelection;
+      this.$emit(`key-${keyStatus.toLowerCase()}`, focusedRow, selectedColumn, event);
     },
     handleKeyEvent(event, keyStatus) {
       const { key } = event;
@@ -310,12 +318,58 @@ export default {
           rule: /(Control|Shift)/i,
           method: this.handleComposeKeyEvent,
         },
+        {
+          rule: /(.*)/i,
+          method: this.handleDispatchKeyEvent,
+        },
       ];
       for (let i = 0; i < eventDispatcher.length; i += 1) {
         const dispatchItem = eventDispatcher[i];
         if (dispatchItem.rule.test(key)) {
           dispatchItem.method.call(this, event, keyStatus);
+          break;
         }
+      }
+    },
+    move(direction) {
+      // TODO: 元素不可见时，自动滚动列表
+      const { tableColumns } = this.tableStore;
+      const { focusedRow, selectedColumn } = this.tableStore.tableSelection;
+      const { data } = this.tableStore;
+      let index = data.indexOf(focusedRow);
+      let columnIndex = tableColumns.findIndex((item) => item.label === selectedColumn.label);
+      if (index === -1) {
+        index = 0;
+      }
+      if (columnIndex === -1) {
+        columnIndex = 0;
+      }
+      let row;
+      switch (direction) {
+        case 'up':
+          index = index === 0 ? 0 : index - 1;
+          row = this.tableStore.data[index];
+          this.selectRow(row);
+          break;
+        case 'down':
+          index = index === data.length - 1 ? data.length : index + 1;
+          row = this.tableStore.data[index];
+          this.selectRow(row);
+          break;
+        case 'left':
+          columnIndex = columnIndex === 0 ? 0 : columnIndex - 1;
+          this.tableStore.tableSelection.selectedColumn = this.tableStore.tableColumns[columnIndex];
+          break;
+        case 'right':
+          if (columnIndex === tableColumns.length - 1) {
+            columnIndex = tableColumns.length - 1;
+          } else {
+            columnIndex += 1;
+          }
+          this.tableStore.tableSelection.selectedColumn = this.tableStore.tableColumns[columnIndex];
+          break;
+        default:
+          break;
       }
     },
     focus() {

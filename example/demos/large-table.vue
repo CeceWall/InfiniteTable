@@ -84,7 +84,7 @@ export default {
           a1: true,
         },
         attrs: {
-          draggable: true,
+          draggable: false,
         },
       };
     },
