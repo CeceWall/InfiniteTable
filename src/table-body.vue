@@ -13,6 +13,8 @@
       :data-key="tableOptions.rowKey"
       :viewport-size="layoutSize.viewportHeight"
       :offset="grid.offsetY"
+      :trail-size="2"
+      :leading-size="2"
     >
       <table-row
         v-bind="getExtraRowAttrs(data, index)"

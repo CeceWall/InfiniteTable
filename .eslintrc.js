@@ -14,4 +14,11 @@ module.exports = {
   parserOptions: {
     parser: 'babel-eslint',
   },
+  settings: {
+    'import/resolver': {
+      webpack:{
+        config: './build/webpack.config.js'
+      }
+    }
+  }
 };
