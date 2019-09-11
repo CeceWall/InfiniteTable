@@ -1,15 +1,4 @@
-const defaultColumnRender = function defaultColumnRender(props) {
-  const { options, row } = props;
-  const { prop } = options;
-  if (prop) {
-    return row[prop];
-  }
-  return '';
-};
-
-const getColumnRenderFunc = function getColumnRenderFunc(render) {
-  return (props) => render(props);
-};
+import TableColumnItem from '@/store/table-column-item';
 
 export default {
   name: 'InfiniteTableColumn',
@@ -45,11 +34,6 @@ export default {
       columnWidth: this.width,
     };
   },
-  computed: {
-    parent() {
-      return this.$parent;
-    },
-  },
   watch: {
     width() {
       const column = this.generateColumnOption();
@@ -77,26 +61,17 @@ export default {
 
       const scopedSlot = this.$scopedSlots.default;
       if (!scopedSlot && !prop) {
-        console.error('table-column: prop和slot-scope必须存在一个');
+        throw new Error('[table-column]: prop和slot-scope必须存在一个');
       }
-      let columnRender;
-      if (scopedSlot) {
-        columnRender = getColumnRenderFunc(scopedSlot);
-      } else {
-        columnRender = getColumnRenderFunc(defaultColumnRender);
-      }
-
-      const widthValue = Number.isNaN(parseFloat(width)) ? null : parseFloat(width);
-      return {
-        width: widthValue,
-        hasWidth: !!widthValue,
+      return new TableColumnItem({
+        width,
         label,
         sortable,
         comparator,
-        columnRender,
         prop,
-        fixed: fixed === true ? 'left' : fixed,
-      };
+        renderFunction: scopedSlot,
+        fixed,
+      });
     },
   },
   render(h) {

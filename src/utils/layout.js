@@ -55,13 +55,11 @@ export function px2num(str) {
  */
 export function getClientSize(el) {
   if (el instanceof HTMLElement) {
-    const height = el.clientHeight;
-    const width = el.clientWidth;
+    const { width, height } = el.getBoundingClientRect();
     return {
       height,
       width,
     };
   }
-  console.error('getClientSize错误: el不是HTMLElement对象');
-  return null;
+  throw new Error('getClientSize错误: el不是HTMLElement对象');
 }

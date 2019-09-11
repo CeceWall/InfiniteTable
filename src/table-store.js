@@ -1,25 +1,11 @@
 /* eslint-disable no-underscore-dangle */
+import _ from 'lodash';
 import TableColumnStore from './store/table-column-store';
 import TableSelectionStore from './store/table-selection-store';
 
-function defaultComparator(a, b) {
-  if (a > b) {
-    return 1;
-  }
-  if (a === b) {
-    return 0;
-  }
-  return -1;
-}
-
-
 export default class TableStore {
   constructor(options = {}) {
-    if (!options.tableId) {
-      console.error('TableStore: 缺少必要的tableId参数');
-    }
     this.context = options.context;
-    this.tableId = options.tableId;
     this.eventEmitter = options.eventEmitter;
     this.rowHeight = options.rowHeight;
     this.__layoutSize = options.layoutSize;
@@ -34,11 +20,12 @@ export default class TableStore {
       order: 'asc',
     };
   }
+
   get tableColumns() {
     return this.__tableColumns.getTableColumns();
   }
 
-  get leftFixTableColumns() {
+  get leftFixedTableColumns() {
     return this.__tableColumns.leftFixedColumns;
   }
 
@@ -126,10 +113,19 @@ export default class TableStore {
         this.__data = this.__data__nature.slice()
           .sort((row1, row2) => {
             const { prop } = column;
-            const comparator = column.comparator || defaultComparator;
+            const { comparator } = column;
             const descFlag = order === 'desc' ? -1 : 1;
             return comparator(row1[prop], row2[prop]) * descFlag;
           });
     }
+  }
+
+  isSameRow(rowItem1, rowItem2) {
+    const { rowKey } = this.context;
+    return _.get(rowItem1, rowKey) === _.get(rowItem2, rowKey);
+  }
+
+  isSameColumn(column1, column2) {
+    return column1.label === column2.label;
   }
 }

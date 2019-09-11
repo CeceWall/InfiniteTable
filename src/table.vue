@@ -36,7 +36,6 @@ import {
   getScrollWidth, num2px, getClientSize, px2num,
 } from './utils/layout';
 import EventEmitter from './event-emitter';
-import { getTableId } from './utils/table';
 import './styles/main.scss';
 
 const KeyStatus = {
@@ -130,32 +129,21 @@ export default {
     },
   },
   data() {
-    const tableId = getTableId();
     const tableStore = new TableStore({
       context: this,
       data: this.data,
-      tableId,
       layoutSize: {
         viewportWidth: 0,
         viewportHeight: 0,
         allColumnsWidth: 0,
       },
     });
-    const rowHeight = px2num(this.rowHeight);
     return {
       composeKey: {
         shift: false,
         control: false,
       },
-      tableId,
       tableStore,
-      layoutSize: {
-        // 每行的行高
-        rowHeight,
-        viewportWidth: 0,
-        viewportHeight: 0,
-        allColumnsWidth: 0,
-      },
     };
   },
   computed: {
@@ -179,7 +167,7 @@ export default {
       if (this.height) {
         height = this.height;
       } else if (this.data.length > 0) {
-        height = (this.layoutSize.rowHeight * this.data.length) + this.headerHeight;
+        height = (this.tableOptions.rowHeight * this.data.length) + this.headerHeight;
       } else {
         height = 250;
       }

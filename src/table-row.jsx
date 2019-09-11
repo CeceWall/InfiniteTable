@@ -6,10 +6,6 @@ export default {
   inject: ['tableStore', 'emitter', 'tableOptions'],
   components: { RangeRender },
   props: {
-    index: {
-      type: Number,
-      required: true,
-    },
     data: {
       type: Object,
       required: true,
@@ -29,26 +25,30 @@ export default {
     },
     renderTableCell(props) {
       const { data, tableStore } = this;
-      const { tableOptions } = this;
       const { focusedRow, selectedColumn } = tableStore.tableSelection;
-      const { highlightCurrentCell } = tableOptions;
+      const { highlightCurrentCell, rowDraggable, rowHeight } = this.tableOptions;
       const { data: columnOption } = props;
       const { columnRender } = columnOption;
-      const cellSelected = highlightCurrentCell && (selectedColumn.label === columnOption.label && focusedRow === data);
+      const cellSelected = highlightCurrentCell && (
+        tableStore.isSameColumn(selectedColumn, columnOption)
+        && tableStore.isSameRow(data, focusedRow)
+      );
       const cellClassNames = classNames(
         'infinite-table__cell', 'infinite-table__cell--ellipsis',
         {
           'infinite-table__cell--selected': cellSelected,
           'infinite-table__cell--fixed': !!columnOption.fixed,
+          'fixed-left': columnOption.fixed === 'left',
+          'fixed-right': columnOption.fixed === 'right',
         },
       );
       return (
         <div
           class={cellClassNames}
-          draggable={tableOptions.rowDraggable}
+          draggable={rowDraggable}
           style={{
             width: `${columnOption.width}px`,
-            height: `${tableOptions.rowHeight}px`,
+            height: `${rowHeight}px`,
             // FIXME: 修复直接引用__tableColumns的问题
             ...this.getFixedStyle(columnOption),
           }}
@@ -78,7 +78,7 @@ export default {
   },
   render(h) {
     const {
-      layoutSize, leftFixTableColumns,
+      layoutSize, leftFixedTableColumns,
       mainTableColumns, rightFixedTableColumns,
     } = this.tableStore;
 
@@ -91,7 +91,7 @@ export default {
           height: `${tableOptions.rowHeight}px`,
         },
       }, [
-        leftFixTableColumns.map((column) => this.renderTableCell({ data: column })),
+        leftFixedTableColumns.map((column) => this.renderTableCell({ data: column })),
         h('range-render', {
           style: {
             width: `${layoutSize.allColumnsWidth}px`,
@@ -103,11 +103,9 @@ export default {
             sizeField: 'width',
             offset: offsetX,
             viewportSize: layoutSize.viewportWidth,
-            startIndex: this.startIndex,
-            endIndex: this.endIndex,
           },
           scopedSlots: {
-            default: (props) => this.renderTableCell(props),
+            default: this.renderTableCell,
           },
         }),
         rightFixedTableColumns.map((column) => this.renderTableCell({ data: column })),
