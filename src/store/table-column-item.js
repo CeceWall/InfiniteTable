@@ -34,8 +34,8 @@ export default class TableColumnItem {
       fixed: false,
     };
     const o = { ...defaultOptions, ...options };
-    if (o.renderFunction) {
-      this.columnRender = getColumnRenderFunc(o.renderFunction);
+    if (o.render) {
+      this.columnRender = getColumnRenderFunc(o.render);
     } else {
       this.columnRender = getColumnRenderFunc(defaultColumnRender);
     }

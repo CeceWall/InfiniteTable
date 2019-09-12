@@ -1,17 +1,5 @@
-export function getContentSize(el) {
-  if (el instanceof HTMLElement) {
-    const height = el.clientHeight;
-    const width = el.clientWidth;
-    return {
-      height,
-      width,
-    };
-  }
-  return null;
-}
-
 /**
- * 计算分配宽度为默认值的列宽度
+ * 计算分配宽度为默认值的列宽度, 分配的规则是，将不能整除的部分加再在index较小的元素上
  * @param totalWidth 总共要分配的宽度
  * @param totalColumn 总共要分配的列数
  * @param index 当前列的index

@@ -69,7 +69,7 @@ export default {
         sortable,
         comparator,
         prop,
-        renderFunction: scopedSlot,
+        render: scopedSlot,
         fixed,
       });
     },

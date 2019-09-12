@@ -9,6 +9,7 @@
     @click.capture="focus"
   >
     <div
+      v-if="tableColumns.length === 0"
       ref="columnsDef"
       class="infinite-table__columns-define"
     >
@@ -37,6 +38,7 @@ import {
 } from './utils/layout';
 import EventEmitter from './event-emitter';
 import './styles/main.scss';
+import TableColumnItem from '@/store/table-column-item';
 
 const KeyStatus = {
   UP: 'UP',
@@ -119,13 +121,25 @@ export default {
       type: Boolean,
       default: false,
     },
+    /**
+     * 标明表头的顺序是否可以通过拖拽改变
+     */
     headerOrderDraggable: {
       type: Boolean,
       default: false,
     },
+    /**
+     * 标明行是否可以拖拽
+     */
     rowDraggable: {
       type: Boolean,
       default: false,
+    },
+    tableColumns: {
+      type: Array,
+      default() {
+        return [];
+      },
     },
   },
   data() {
@@ -198,6 +212,16 @@ export default {
         this.doLayout();
       },
     },
+    tableColumns: {
+      immediate: true,
+      handler() {
+        this.tableStore.__tableColumns.clear();
+        this.tableColumns.map((column) => new TableColumnItem({ ...column }))
+          .forEach((columnOption) => {
+            this.tableStore.__tableColumns.addTableColumn(columnOption);
+          });
+      },
+    },
     tableOptions: {
       deep: true,
       handler() {
@@ -260,7 +284,7 @@ export default {
 
 
       // 避免doLayout时又改变了tableColumns导致循环调用
-      if (allColumnsWidth !== this.lastAllColumnsWidth) {
+      if (this.tableColumns.length || allColumnsWidth !== this.lastAllColumnsWidth) {
         this.tableStore.tableColumns = calculatedColumns;
       }
       this.lastAllColumnsWidth = allColumnsWidth;

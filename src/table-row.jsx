@@ -6,6 +6,10 @@ export default {
   inject: ['tableStore', 'emitter', 'tableOptions'],
   components: { RangeRender },
   props: {
+    index: {
+      type: Number,
+      required: true,
+    },
     data: {
       type: Object,
       required: true,
@@ -24,7 +28,7 @@ export default {
       this.emitter.dispatch(eventName, data, column, e);
     },
     renderTableCell(props) {
-      const { data, tableStore } = this;
+      const { data, tableStore, index } = this;
       const { focusedRow, selectedColumn } = tableStore.tableSelection;
       const { highlightCurrentCell, rowDraggable, rowHeight } = this.tableOptions;
       const { data: columnOption } = props;
@@ -70,7 +74,7 @@ export default {
           }
         >
           <div class="cell-content">
-            {columnRender({ row: data, options: columnOption })}
+            {columnRender({ row: data, options: columnOption, rowIndex: index })}
           </div>
         </div>
       );
