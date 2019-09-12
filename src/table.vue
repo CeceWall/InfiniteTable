@@ -15,7 +15,10 @@
     >
       <slot />
     </div>
-    <div class="infinite-table--scrollable">
+    <div
+      ref="scrollElement"
+      class="infinite-table--scrollable"
+    >
       <table-header
         :header-height="tableHeaderHeight"
         :style="{width: `${tableStore.layoutSize.allColumnsWidth}px`}"
@@ -28,7 +31,7 @@
 
 <script>
 import ResizeObserver from 'resize-observer-polyfill';
-import debounce from 'lodash/debounce';
+import _ from 'lodash';
 import TableHeader from './table-header.vue';
 import TableBody from './table-body.vue';
 import TableStore from './table-store';
@@ -237,7 +240,7 @@ export default {
     },
   },
   created() {
-    this.doLayout = debounce(this.doLayout, 100);
+    this.doLayout = _.debounce(this.doLayout, 100);
     this.$on('row-click', (row) => {
       this.selectRow(row);
     });
@@ -343,6 +346,23 @@ export default {
         }
       }
     },
+    tryScrollInvisibleElem(rowIndex, columnIndex, rowPosition, columnPosition) {
+      const { rowHeight } = this.tableOptions;
+      const { scrollTop, scrollLeft } = this.$refs.scrollElement;
+      const { viewportWidth, viewportHeight } = this.tableStore.layoutSize;
+      if (rowPosition === 'top' && rowIndex * rowHeight < scrollTop) {
+        this.scrollToRow(this.tableStore.data[rowIndex], rowPosition);
+      } else if (rowPosition === 'bottom' && (rowIndex + 1) * rowHeight > scrollTop + viewportHeight) {
+        this.scrollToRow(this.tableStore.data[rowIndex], rowPosition);
+      }
+      const column = this.tableStore.tableColumns[columnIndex];
+      const offset = this.tableStore.__tableColumns.getColumnOffset(column);
+      if (columnPosition === 'left' && scrollLeft > offset) {
+        this.scrollToColumn(column);
+      } else if (columnPosition === 'right' && scrollLeft + viewportWidth < offset + column.width) {
+        this.scrollToColumn(column, 'right');
+      }
+    },
     move(direction) {
       // TODO: 元素不可见时，自动滚动列表
       const { tableColumns } = this.tableStore;
@@ -360,17 +380,20 @@ export default {
       switch (direction) {
         case 'up':
           index = index === 0 ? 0 : index - 1;
+          this.tryScrollInvisibleElem(index, columnIndex, 'top', 'left');
           row = this.tableStore.data[index];
           this.selectRow(row);
           break;
         case 'down':
-          index = index === data.length - 1 ? data.length : index + 1;
+          index = index === data.length - 1 ? data.length - 1 : index + 1;
+          this.tryScrollInvisibleElem(index, columnIndex, 'bottom', 'left');
           row = this.tableStore.data[index];
           this.selectRow(row);
           break;
         case 'left':
           columnIndex = columnIndex === 0 ? 0 : columnIndex - 1;
           this.tableStore.tableSelection.selectedColumn = this.tableStore.tableColumns[columnIndex];
+          this.tryScrollInvisibleElem(index, columnIndex, 'top', 'left');
           break;
         case 'right':
           if (columnIndex === tableColumns.length - 1) {
@@ -379,6 +402,7 @@ export default {
             columnIndex += 1;
           }
           this.tableStore.tableSelection.selectedColumn = this.tableStore.tableColumns[columnIndex];
+          this.tryScrollInvisibleElem(index, columnIndex, 'top', 'right');
           break;
         default:
           break;
@@ -386,6 +410,35 @@ export default {
     },
     focus() {
       this.$refs.table.focus();
+    },
+    scrollToColumn(column, position = 'left') {
+      const { layoutSize } = this.tableStore;
+      const offset = this.tableStore.__tableColumns.getColumnOffset(column);
+      if (offset >= 0) {
+        let positionOffset = 0;
+        if (position === 'middle') {
+          positionOffset = -1 * ((layoutSize.viewportWidth / 2) - column.width);
+        } else if (position === 'right') {
+          positionOffset = -1 * (layoutSize.viewportWidth - column.width);
+        }
+        this.$refs.scrollElement.scrollLeft = offset + positionOffset;
+      }
+    },
+    scrollToRow(rowItem, position = 'top') {
+      const { rowHeight } = this.tableOptions;
+      const { data, layoutSize } = this.tableStore;
+      const rowItemValue = _.get(rowItem, this.rowKey);
+      const index = data.findIndex((item) => _.get(item, this.rowKey) === rowItemValue);
+      if (index !== -1) {
+        let positionOffset = 0;
+        if (position === 'middle') {
+          positionOffset = -1 * ((layoutSize.viewportHeight / 2) - rowHeight);
+        } else if (position === 'bottom') {
+          positionOffset = -1 * (layoutSize.viewportHeight - rowHeight);
+        }
+        const y = rowHeight * index;
+        this.$refs.scrollElement.scrollTo(this.$refs.scrollElement.scrollLeft, y + positionOffset);
+      }
     },
   },
 };

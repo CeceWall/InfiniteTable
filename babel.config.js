@@ -7,7 +7,7 @@ module.exports = {
       },
     ],
   ],
-  plugins: ['transform-vue-jsx'],
+  plugins: ['transform-vue-jsx', 'lodash'],
   env: {
     test: {
       presets: [

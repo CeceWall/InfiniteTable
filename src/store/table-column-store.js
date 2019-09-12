@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export default class TableColumnStore {
   constructor() {
     this.allTableColumns = [];
@@ -56,6 +58,14 @@ export default class TableColumnStore {
     const index = columnStore.indexOf(column);
     const positionMap = this.getPositionMap(column.fixed);
     return positionMap.get(index);
+  }
+
+  getColumnOffset(column) {
+    const columns = [...this.leftFixedColumns, ...this.tableColumns, ...this.rightFixedColumns];
+    const index = columns.findIndex((item) => item.label === column.label);
+    if (index !== -1) {
+      return _.sumBy(columns.slice(0, index), 'width');
+    }
   }
 
   /**

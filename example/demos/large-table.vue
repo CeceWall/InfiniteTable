@@ -1,27 +1,35 @@
 <template>
-  <div style="width: 100%; height: 100%">
-    <infinite-table
-      ref="table"
-      :data="data"
-      height="100%"
-      :highlight-row="highlightRow"
-      highlight-current-cell
-      row-key="0"
-      :row-extra-attrs="rowClassName"
-      header-height="60px"
-      row-height="40px"
-      multiple-selection
-    >
-      <infinite-table-column
-        v-for="(label, index) of columns"
-        :key="label"
-        :label="label"
-        :prop="label"
-        :width="getColumnWidth()"
-        :comparator="cellComparator"
-        sortable
-      />
-    </infinite-table>
+  <div style="height: 100%">
+    <div style="height: 50px">
+      <input
+        v-model="searchValue"
+        @keypress.enter="onSearch"
+      >
+    </div>
+    <div style="width: 100%; height: calc(100% - 50px);">
+      <infinite-table
+        ref="table"
+        :data="data"
+        height="100%"
+        :highlight-row="highlightRow"
+        highlight-current-cell
+        row-key="0"
+        :row-extra-attrs="rowClassName"
+        header-height="60px"
+        row-height="40px"
+        multiple-selection
+      >
+        <infinite-table-column
+          v-for="(label, index) of columns"
+          :key="label"
+          :label="label"
+          :prop="label"
+          :width="getColumnWidth()"
+          :comparator="cellComparator"
+          sortable
+        />
+      </infinite-table>
+    </div>
   </div>
 </template>
 
@@ -34,8 +42,9 @@ export default {
   data() {
     return {
       data: [],
-      columns:[],
+      columns: [],
       highlightRow: true,
+      searchValue: '',
     };
   },
   mounted() {
@@ -47,7 +56,7 @@ export default {
         [column]: `${rowIndex} - ${columnIndex}`,
       }), {})),
     ])(1000);
-    this.data = data.map(item => Object.freeze(item));
+    this.data = data.map((item) => Object.freeze(item));
   },
   methods: {
     getColumnWidth() {
@@ -76,6 +85,12 @@ export default {
         return -1;
       }
       return 0;
+    },
+    onSearch(event) {
+      const rowItem = this.data.find((item) => item[0] === this.searchValue);
+      if (rowItem) {
+        this.$refs.table.scrollToRow(rowItem, 'bottom');
+      }
     },
     rowClassName() {
       return {
