@@ -22,29 +22,6 @@ export default class TableStore {
     };
   }
 
-  // get tableColumns() {
-  //   return this.__tableColumns.getTableColumns();
-  // }
-
-  get leftFixedTableColumns() {
-    return this.__tableColumns.leftFixedColumns;
-  }
-
-  get mainTableColumns() {
-    return this.__tableColumns.mainColumns;
-  }
-
-  get rightFixedTableColumns() {
-    return this.__tableColumns.rightFixedColumns;
-  }
-
-  // set tableColumns(columns) {
-  //   this.__tableColumns.clear();
-  //   columns.forEach((column) => {
-  //     this.__tableColumns.addTableColumn(column);
-  //   });
-  // }
-
   get tableOptions() {
     return this.__tableOptions;
   }

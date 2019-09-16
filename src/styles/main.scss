@@ -124,6 +124,10 @@
     z-index: 1000;
   }
 
+  &.infinite-table__cell--resizeable{
+    cursor: col-resize;
+  }
+
   &.infinite-table__cell--selected {
     background: indianred;
   }
