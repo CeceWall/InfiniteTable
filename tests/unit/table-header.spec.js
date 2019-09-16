@@ -104,11 +104,15 @@ describe('测试TableHeader', () => {
     document.body.dispatchEvent(mouseUpEvent);
     // 期待鼠标松开时触发事件
     expect(wrapper.vm.emitter.dispatch.calledWith('column-resize', 1, columns[1], 93)).to.be.true;
-
+    wrapper.vm.resizeIndicator.hover = false;
     const firstCell = wrapper.find('.infinite-table__cell:nth-of-type(1)');
-    firstCell.element.dispatchEvent(mouseMoveEvent);
+    const firstCellRect = firstCell.element.getBoundingClientRect();
+    const firstMouseMoveEvent = new MouseEvent('mousemove', {
+      clientX: firstCellRect.left + 7,
+    });
+    firstCell.element.dispatchEvent(firstMouseMoveEvent);
     // 期待第一个元素无法触发左边的resize
-    expect(wrapper.vm.resizeIndicator.hover).to.be.false
+    expect(wrapper.vm.resizeIndicator.hover).to.be.false;
   });
 
   it('测试表头可以拖动', () => {
