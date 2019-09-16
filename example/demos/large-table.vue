@@ -24,6 +24,7 @@
           :key="label"
           :label="label"
           :prop="label"
+          :fixed="index <=3 ? 'left' : index > columns.length - 3? 'right' : false"
           :width="getColumnWidth()"
           :comparator="cellComparator"
           sortable

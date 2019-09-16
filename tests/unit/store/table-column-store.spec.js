@@ -69,6 +69,10 @@ describe('测试TableColumnStore', () => {
     columnStore.removeTableColumn({ label: 100 });
     expect(columnStore.columns.length).to.equal(originLength);
   });
+  it('测试获取leftFixedWidth和rightFixedWidth', () => {
+    expect(columnStore.leftFixedColumnWidth).to.equal(600);
+    expect(columnStore.rightFixedColumnWidth).to.equal(600);
+  });
   it('测试clear方法', () => {
     // 测试清除
     columnStore.clear();

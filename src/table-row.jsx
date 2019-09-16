@@ -80,7 +80,10 @@ export default {
   },
   render(h) {
     const { layoutSize } = this.tableStore;
-    const { leftFixedColumns, rightFixedColumns, mainColumns } = this.tableStore.tableColumns;
+    const {
+      leftFixedColumns, rightFixedColumns, mainColumns,
+      leftFixedColumnWidth, rightFixedColumnWidth,
+    } = this.tableStore.tableColumns;
 
     const { offsetX, tableOptions } = this;
     return (
@@ -102,7 +105,7 @@ export default {
             direction: 'horizontal',
             sizeField: 'width',
             offset: offsetX,
-            viewportSize: layoutSize.viewportWidth,
+            viewportSize: layoutSize.viewportWidth - leftFixedColumnWidth - rightFixedColumnWidth,
           },
           scopedSlots: {
             default: this.renderTableCell,

@@ -45,8 +45,10 @@ const provide = Vue.observable({
     },
     tableColumns: {
       leftFixedColumns: [...leftFixedColumns],
+      leftFixedColumnWidth: 123,
       mainColumns: [...mainTableColumns],
       rightFixedColumns: [...rightFixedColumns],
+      rightFixedColumnWidth: 123,
       getFixedColumnStyle: sinon.stub().returns({ left: '123px' }),
     },
     tableSelection: {
@@ -78,7 +80,9 @@ describe('测试table-row组件', () => {
     expect(props.direction).to.equal('horizontal');
     expect(props.sizeField).to.equal('width');
     expect(props.dataKey).to.equal('label');
-    expect(props.viewportSize).to.equal(provide.tableStore.layoutSize.viewportWidth);
+    const { layoutSize, tableColumns } = provide.tableStore;
+    const viewportSize = layoutSize.viewportWidth - tableColumns.leftFixedColumnWidth - tableColumns.rightFixedColumnWidth;
+    expect(props.viewportSize).to.equal(viewportSize);
     expect(props.size).to.be.null;
     // 测试fixed列是否按照数据进行渲染
     expect(wrapper.findAll('.fixed-left').length).to.equal(leftFixedColumns.length);
