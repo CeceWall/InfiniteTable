@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import _ from 'lodash';
 
 export default class TableColumnStore {
@@ -10,7 +11,7 @@ export default class TableColumnStore {
     this.rightFixedPositionMap = new Map();
   }
 
-  getTableColumnStore(fixed) {
+  _getTableColumnStore(fixed) {
     let columnStore = this.tableColumns;
     if (fixed === 'left') {
       columnStore = this.leftFixedColumns;
@@ -20,16 +21,16 @@ export default class TableColumnStore {
     return columnStore;
   }
 
-  getPositionMap(fixed) {
+  _getPositionMap(fixed) {
     if (fixed === 'right') {
       return this.rightFixedPositionMap;
     }
     return this.leftFixedPositionMap;
   }
 
-  setFixedPosition(column) {
-    const columnStore = this.getTableColumnStore(column.fixed);
-    const positionMap = this.getPositionMap(column.fixed);
+  _setFixedPosition(column) {
+    const columnStore = this._getTableColumnStore(column.fixed);
+    const positionMap = this._getPositionMap(column.fixed);
 
     if (column.fixed === 'left') {
       const index = columnStore.length - 1;
@@ -53,10 +54,10 @@ export default class TableColumnStore {
     }
   }
 
-  getFixedPosition(column) {
-    const columnStore = this.getTableColumnStore(column.fixed);
-    const index = columnStore.indexOf(column);
-    const positionMap = this.getPositionMap(column.fixed);
+  _getFixedPosition(column) {
+    const columnStore = this._getTableColumnStore(column.fixed);
+    const index = columnStore.findIndex((item) => column.label === item.label);
+    const positionMap = this._getPositionMap(column.fixed);
     return positionMap.get(index);
   }
 
@@ -66,6 +67,7 @@ export default class TableColumnStore {
     if (index !== -1) {
       return _.sumBy(columns.slice(0, index), 'width');
     }
+    return -1;
   }
 
   /**
@@ -76,30 +78,30 @@ export default class TableColumnStore {
   getFixedColumnStyle(column) {
     if (column.fixed) {
       return {
-        [column.fixed]: `${this.getFixedPosition(column)}px`,
+        [column.fixed]: `${this._getFixedPosition(column)}px`,
       };
     }
     return {};
   }
 
-  updateTableColumns() {
+  _updateTableColumns() {
     this.tableColumns = this.allTableColumns.filter((item) => !item.fixed);
     this.leftFixedColumns = this.allTableColumns.filter((item) => item.fixed === 'left' || item.fixed === true);
     this.rightFixedColumns = this.allTableColumns.filter((item) => item.fixed === 'right');
 
     // TODO: 修改setFixedPosition方法的实现，目前会导致O(n2)的问题
-    this.leftFixedColumns.forEach((column) => this.setFixedPosition(column));
-    this.rightFixedColumns.forEach((column) => this.setFixedPosition(column));
+    this.leftFixedColumns.forEach((column) => this._setFixedPosition(column));
+    this.rightFixedColumns.forEach((column) => this._setFixedPosition(column));
   }
 
   addTableColumn(column, index) {
-    const columnStore = this.allTableColumns; // this.getTableColumnStore(column.fixed);
+    const columnStore = this.allTableColumns;
     if (typeof index === 'number') {
       columnStore.splice(index, 0, column);
     } else {
       columnStore.push(column);
     }
-    this.updateTableColumns();
+    this._updateTableColumns();
   }
 
   removeTableColumn(column) {
@@ -108,7 +110,7 @@ export default class TableColumnStore {
     if (index !== -1) {
       columnStore.splice(index, 1);
     }
-    this.updateTableColumns();
+    this._updateTableColumns();
   }
 
   replaceTableColumn(prevColumn, nextColumn) {
@@ -116,7 +118,7 @@ export default class TableColumnStore {
     if (prevIndex !== -1) {
       this.allTableColumns.splice(prevIndex, 1, nextColumn);
     }
-    this.updateTableColumns();
+    this._updateTableColumns();
   }
 
   getTableColumns() {
@@ -137,6 +139,6 @@ export default class TableColumnStore {
 
   clear() {
     this.allTableColumns = [];
-    this.updateTableColumns();
+    this._updateTableColumns();
   }
 }

@@ -1,6 +1,7 @@
+import _ from 'lodash';
 import { px2num } from '@/utils/layout';
 
-function defaultComparator(a, b) {
+export function defaultComparator(a, b) {
   if (a > b) {
     return 1;
   }
@@ -10,11 +11,22 @@ function defaultComparator(a, b) {
   return -1;
 }
 
-const defaultColumnRender = function defaultColumnRender(props) {
+/**
+ * 默认的列渲染方法
+ * 返回row中[prop]字段中的数据
+ * prop可以使用a.b.c等复杂方式表示
+ *
+ * @param {{options: Object, row: Object}} props 渲染列时的对象
+ * @return {string}
+ */
+export const defaultColumnRender = function defaultColumnRender(props) {
+  if (!props || !props.options || !props.row) {
+    return '';
+  }
   const { options, row } = props;
   const { prop } = options;
   if (prop) {
-    return row[prop];
+    return _.get(row, prop);
   }
   return '';
 };
@@ -23,7 +35,23 @@ const getColumnRenderFunc = function getColumnRenderFunc(render) {
   return (props) => render(props);
 };
 
+/**
+ * 创建TableColumnItem的选项
+ *
+ * @typedef {Object} TableColumnItemOptions
+ * @property {string} label
+ * @property {string} width
+ * @property {boolean} sortable
+ * @property {string} prop
+ * @property {boolean} fixed
+ * @property {function} render
+ * @property {function} comparator
+ *
+ */
 export default class TableColumnItem {
+  /**
+   * @param {TableColumnItemOptions} options
+   */
   constructor(options) {
     const defaultOptions = {
       width: null,
@@ -34,6 +62,9 @@ export default class TableColumnItem {
       fixed: false,
     };
     const o = { ...defaultOptions, ...options };
+    if (!o.label) {
+      throw new Error('[TableColumnItem]: Column中必须包含唯一的label字段');
+    }
     if (o.render) {
       this.columnRender = getColumnRenderFunc(o.render);
     } else {

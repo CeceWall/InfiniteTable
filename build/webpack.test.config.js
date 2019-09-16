@@ -11,4 +11,9 @@ module.exports = merge(baseConfig, {
     path: path.resolve(__dirname, './dist'),
     filename: 'build.js',
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('test'),
+    }),
+  ],
 });
