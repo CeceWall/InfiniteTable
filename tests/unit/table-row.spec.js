@@ -43,18 +43,16 @@ const provide = Vue.observable({
       viewportHeight: 520,
       allColumnsWidth: 3840,
     },
-    __tableColumns: {
+    tableColumns: {
+      leftFixedColumns: [...leftFixedColumns],
+      mainColumns: [...mainTableColumns],
+      rightFixedColumns: [...rightFixedColumns],
       getFixedColumnStyle: sinon.stub().returns({ left: '123px' }),
     },
     tableSelection: {
       focusedRow: {},
       selectedColumn: {},
     },
-    leftFixedTableColumns: [...leftFixedColumns],
-    mainTableColumns: [
-      ...mainTableColumns,
-    ],
-    rightFixedTableColumns: [...rightFixedColumns],
   },
   tableOptions: {
     rowHeight: 48,
@@ -69,6 +67,7 @@ describe('测试table-row组件', () => {
       attachToDocument: true,
       sync: false,
       propsData: {
+        index: 0,
         data: { ...data },
         offsetX: 0,
       },
@@ -84,7 +83,7 @@ describe('测试table-row组件', () => {
     // 测试fixed列是否按照数据进行渲染
     expect(wrapper.findAll('.fixed-left').length).to.equal(leftFixedColumns.length);
     expect(wrapper.findAll('.fixed-right').length).to.equal(rightFixedColumns.length);
-    const { callCount } = provide.tableStore.__tableColumns.getFixedColumnStyle;
+    const { callCount } = provide.tableStore.tableColumns.getFixedColumnStyle;
     expect(callCount).to.equal(leftFixedColumns.length + rightFixedColumns.length);
     expect(wrapper.find('.fixed-left').element.style.left).to.equal('123px');
 

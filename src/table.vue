@@ -20,7 +20,7 @@
       class="infinite-table--scrollable"
     >
       <table-header
-        :header-height="tableHeaderHeight"
+        :header-height="tableOptions.headerHeight"
         :style="{width: `${tableStore.layoutSize.allColumnsWidth}px`}"
         :class="tableHeaderClass"
       />
@@ -167,7 +167,7 @@ export default {
     tableOptions() {
       return {
         rowExtraAttrs: this.rowExtraAttrs,
-        headerHeight: this.headerHeight,
+        headerHeight: px2num(this.headerHeight),
         striped: this.striped,
         rowKey: this.rowKey,
         rowHeight: px2num(this.rowHeight),
@@ -189,9 +189,6 @@ export default {
         height = 250;
       }
       return num2px(height);
-    },
-    tableHeaderHeight() {
-      return num2px(this.headerHeight);
     },
     tableHeaderClass() {
       return {
@@ -218,10 +215,10 @@ export default {
     tableColumns: {
       immediate: true,
       handler() {
-        this.tableStore.__tableColumns.clear();
+        this.tableStore.tableColumns.clear();
         this.tableColumns.map((column) => new TableColumnItem({ ...column }))
           .forEach((columnOption) => {
-            this.tableStore.__tableColumns.addTableColumn(columnOption);
+            this.tableStore.tableColumns.addTableColumn(columnOption);
           });
       },
     },
@@ -231,7 +228,7 @@ export default {
         this.doLayout();
       },
     },
-    'tableStore.__tableColumns.allTableColumns': {
+    'tableStore.tableColumns.columns': {
       handler() {
         this.$nextTick(() => {
           this.doLayout();
@@ -263,7 +260,7 @@ export default {
       // FIXME 修复列不如容器宽时，出现横向滚动条的问题
       // 获取容器的clientHeight和clientWidth
       const containerSize = getClientSize(this.$el);
-      const tableHeaderHeight = parseFloat(this.headerHeight);
+      const tableHeaderHeight = this.tableOptions.headerHeight;
       let viewportWidth = containerSize.width;
       const tableBodyHeight = getTableBodyHeight(this.rowHeight, this.data.length);
       // 如果container的高度不为0（为0代表未使用css设置高度）而且container的高度小于TableBody的高度,说明需要有纵向滚动条
@@ -277,7 +274,7 @@ export default {
       // 如果存在没设置宽度的column，那么先用默认的column宽度计算column的总宽度
       // 若总宽度小于viewport的宽度，将总宽度减去已设置的宽度，未设置宽度的column均分剩余的宽度。
       // 否则，未设置宽度的column设置为默认宽度
-      const calculatedColumns = doColumnWidthLayout(viewportWidth, this.tableStore.tableColumns);
+      const calculatedColumns = doColumnWidthLayout(viewportWidth, this.tableStore.tableColumns.columns);
       const allColumnsWidth = calculatedColumns.reduce((sum, column) => sum + column.width, 0);
       const hasHorizontalScroller = allColumnsWidth > viewportWidth;
       let viewportHeight = containerSize.height - tableHeaderHeight;
@@ -288,7 +285,11 @@ export default {
 
       // 避免doLayout时又改变了tableColumns导致循环调用
       if (this.tableColumns.length || allColumnsWidth !== this.lastAllColumnsWidth) {
-        this.tableStore.tableColumns = calculatedColumns;
+        // TODO: 不使用循环添加columns
+        this.tableStore.tableColumns.clear();
+        calculatedColumns.forEach((item) => {
+          this.tableStore.tableColumns.addTableColumn(item);
+        });
       }
       this.lastAllColumnsWidth = allColumnsWidth;
 
@@ -355,8 +356,8 @@ export default {
       } else if (rowPosition === 'bottom' && (rowIndex + 1) * rowHeight > scrollTop + viewportHeight) {
         this.scrollToRow(this.tableStore.data[rowIndex], rowPosition);
       }
-      const column = this.tableStore.tableColumns[columnIndex];
-      const offset = this.tableStore.__tableColumns.getColumnOffset(column);
+      const column = this.tableStore.tableColumns.columns[columnIndex];
+      const offset = this.tableStore.tableColumns.getColumnOffset(column);
       if (columnPosition === 'left' && scrollLeft > offset) {
         this.scrollToColumn(column);
       } else if (columnPosition === 'right' && scrollLeft + viewportWidth < offset + column.width) {
@@ -365,11 +366,11 @@ export default {
     },
     move(direction) {
       // TODO: 元素不可见时，自动滚动列表
-      const { tableColumns } = this.tableStore;
+      const { columns } = this.tableStore.tableColumns;
       const { focusedRow, selectedColumn } = this.tableStore.tableSelection;
       const { data } = this.tableStore;
       let index = data.indexOf(focusedRow);
-      let columnIndex = tableColumns.findIndex((item) => item.label === selectedColumn.label);
+      let columnIndex = columns.findIndex((item) => item.label === selectedColumn.label);
       if (index === -1) {
         index = 0;
       }
@@ -392,16 +393,16 @@ export default {
           break;
         case 'left':
           columnIndex = columnIndex === 0 ? 0 : columnIndex - 1;
-          this.tableStore.tableSelection.selectedColumn = this.tableStore.tableColumns[columnIndex];
+          this.tableStore.tableSelection.selectedColumn = columns[columnIndex];
           this.tryScrollInvisibleElem(index, columnIndex, 'top', 'left');
           break;
         case 'right':
-          if (columnIndex === tableColumns.length - 1) {
-            columnIndex = tableColumns.length - 1;
+          if (columnIndex === columns.length - 1) {
+            columnIndex = columns.length - 1;
           } else {
             columnIndex += 1;
           }
-          this.tableStore.tableSelection.selectedColumn = this.tableStore.tableColumns[columnIndex];
+          this.tableStore.tableSelection.selectedColumn = columns[columnIndex];
           this.tryScrollInvisibleElem(index, columnIndex, 'top', 'right');
           break;
         default:
@@ -413,7 +414,7 @@ export default {
     },
     scrollToColumn(column, position = 'left') {
       const { layoutSize } = this.tableStore;
-      const offset = this.tableStore.__tableColumns.getColumnOffset(column);
+      const offset = this.tableStore.tableColumns.getColumnOffset(column);
       if (offset >= 0) {
         let positionOffset = 0;
         if (position === 'middle') {

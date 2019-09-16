@@ -3,7 +3,9 @@ import TableColumnStore from '@/store/table-column-store';
 import TableColumnItem from '@/store/table-column-item';
 
 describe('测试TableColumnStore', () => {
-  it('测试不使用index添加column', () => {
+  let columnStore;
+  beforeEach(() => {
+    columnStore = new TableColumnStore();
     const tableColumns = [
       new TableColumnItem({ label: 1, width: 200, fixed: 'right' }),
       new TableColumnItem({ label: 2, width: 100 }),
@@ -16,16 +18,18 @@ describe('测试TableColumnStore', () => {
       new TableColumnItem({ label: 9, width: 400 }),
       new TableColumnItem({ label: 10, width: 200, fixed: 'left' }),
     ];
-    const columnStore = new TableColumnStore();
     tableColumns.forEach((column) => {
       columnStore.addTableColumn(column);
     });
-
-    const labels = columnStore.getTableColumns().map((column) => column.label);
+  });
+  it('测试不使用index添加column', () => {
+    const labels = columnStore.columns.map((column) => column.label);
     expect(labels).to.deep.equal([4, 7, 10, 2, 3, 5, 9, 1, 6, 8]);
     expect(columnStore.leftFixedColumns.map((column) => column.label)).to.deep.equal([4, 7, 10]);
     expect(columnStore.rightFixedColumns.map((column) => column.label)).to.deep.equal([1, 6, 8]);
-    expect(columnStore.tableColumns.map((column) => column.label)).to.deep.equal([2, 3, 5, 9]);
+    expect(columnStore.mainColumns.map((column) => column.label)).to.deep.equal([2, 3, 5, 9]);
+  });
+  it('测试获取fixedStyle', () => {
     // 测试获取fixedPosition
     const fixedPosition = [
       { label: 4, fixed: 'left' },
@@ -40,21 +44,34 @@ describe('测试TableColumnStore', () => {
         return fixedStyle.left || fixedStyle.right;
       });
     expect(fixedPosition).to.deep.equal(['0px', '200px', '400px', '400px', '200px', '0px']);
+  });
+  it('测试获取columnOffset', () => {
+    // 测试获取column的offset
+    expect(columnStore.getColumnOffset({ label: 10, fixed: 'left' })).to.equal(400);
+  });
+  it('测试替换column', () => {
     // 测试替换column
     const nextColumn = new TableColumnItem({ label: 14, fixed: 'left' });
     columnStore.replaceTableColumn({ label: 4 }, nextColumn);
     expect(columnStore.leftFixedColumns[0].label).to.equal(nextColumn.label);
+  });
+  it('测试使用index添加', () => {
     // 测试使用index添加
     const additionalColumn = new TableColumnItem({ label: 20, fixed: 'right' });
     columnStore.addTableColumn(additionalColumn, 0);
     expect(columnStore.rightFixedColumns[0].label).to.equal(20);
-    // 测试获取column的offset
-    expect(columnStore.getColumnOffset({ label: 10 })).to.equal(2000);
+  });
+  it('测试删除column', () => {
     // 测试删除column
-    columnStore.removeTableColumn({ label: 20 });
-    expect(columnStore.rightFixedColumns[0].label).to.equal(1);
+    columnStore.removeTableColumn({ label: 4 });
+    expect(columnStore.leftFixedColumns[0].label).to.equal(7);
+    const originLength = columnStore.columns.length;
+    columnStore.removeTableColumn({ label: 100 });
+    expect(columnStore.columns.length).to.equal(originLength);
+  });
+  it('测试clear方法', () => {
     // 测试清除
     columnStore.clear();
-    expect(columnStore.getTableColumns().length).to.equal(0);
+    expect(columnStore.columns.length).to.equal(0);
   });
 });

@@ -21,8 +21,7 @@ export default {
   },
   methods: {
     getFixedStyle(column) {
-      // FIXME: 不直接使用__tableColumns的方法
-      return this.tableStore.__tableColumns.getFixedColumnStyle(column);
+      return this.tableStore.tableColumns.getFixedColumnStyle(column);
     },
     dispatchRowEvent(eventName, data, column, e) {
       this.emitter.dispatch(eventName, data, column, e);
@@ -53,7 +52,6 @@ export default {
           style={{
             width: `${columnOption.width}px`,
             height: `${rowHeight}px`,
-            // FIXME: 修复直接引用__tableColumns的问题
             ...this.getFixedStyle(columnOption),
           }}
           {
@@ -81,10 +79,8 @@ export default {
     },
   },
   render(h) {
-    const {
-      layoutSize, leftFixedTableColumns,
-      mainTableColumns, rightFixedTableColumns,
-    } = this.tableStore;
+    const { layoutSize } = this.tableStore;
+    const { leftFixedColumns, rightFixedColumns, mainColumns } = this.tableStore.tableColumns;
 
     const { offsetX, tableOptions } = this;
     return (
@@ -95,14 +91,14 @@ export default {
           height: `${tableOptions.rowHeight}px`,
         },
       }, [
-        leftFixedTableColumns.map((column) => this.renderTableCell({ data: column })),
+        leftFixedColumns.map((column) => this.renderTableCell({ data: column })),
         h('range-render', {
           style: {
             width: `${layoutSize.allColumnsWidth}px`,
           },
           props: {
             dataKey: 'label',
-            data: mainTableColumns,
+            data: mainColumns,
             direction: 'horizontal',
             sizeField: 'width',
             offset: offsetX,
@@ -112,7 +108,7 @@ export default {
             default: this.renderTableCell,
           },
         }),
-        rightFixedTableColumns.map((column) => this.renderTableCell({ data: column })),
+        rightFixedColumns.map((column) => this.renderTableCell({ data: column })),
       ])
     );
   },

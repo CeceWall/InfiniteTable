@@ -1,10 +1,10 @@
 <template>
   <div
     class="infinite-table__table-header"
-    :style="{height: headerHeight}"
+    :style="{height: `${headerHeight}px`}"
   >
     <div
-      v-for="(column,columnIndex) of tableStore.tableColumns"
+      v-for="(column,columnIndex) of tableColumns.columns"
       :key="column.label"
       class="infinite-table__cell"
       :class="{
@@ -61,8 +61,9 @@ export default {
   name: 'TableHeader',
   inject: ['tableStore', 'tableOptions', 'emitter'],
   props: {
+    // 表头的高度，数字
     headerHeight: {
-      type: String,
+      type: Number,
       required: true,
     },
   },
@@ -79,6 +80,9 @@ export default {
     };
   },
   computed: {
+    tableColumns() {
+      return this.tableStore.tableColumns;
+    },
     sortedColumn() {
       const { column, order } = this.tableStore.sortedOption;
       return { column, order };
@@ -153,14 +157,13 @@ export default {
       this.emitter.dispatch('header-drop');
       const dragIndex = parseInt(event.dataTransfer.getData(HEADER_DRAG_DATA_TYPE), 10);
       if (typeof dragIndex === 'number' && dragIndex >= 0) {
-        const dragColumn = this.tableStore.tableColumns[dragIndex];
-        this.tableStore.__tableColumns.removeTableColumn(dragColumn);
-        this.tableStore.__tableColumns.addTableColumn(dragColumn, columnIndex);
+        const dragColumn = this.tableColumns.columns[dragIndex];
+        this.tableStore.tableColumns.removeTableColumn(dragColumn);
+        this.tableStore.tableColumns.addTableColumn(dragColumn, columnIndex);
       }
     },
     getFixedStyle(column) {
-      // FIXME: 不直接调用__tableColumns中的方法
-      return this.tableStore.__tableColumns.getFixedColumnStyle(column);
+      return this.tableStore.tableColumns.getFixedColumnStyle(column);
     },
     getActiveClass(column, order) {
       if (!this.sortedColumn.column) {

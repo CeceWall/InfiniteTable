@@ -37,17 +37,17 @@ export default {
   watch: {
     width() {
       const column = this.generateColumnOption();
-      this.tableStore.__tableColumns.replaceTableColumn(this.column, column);
+      this.tableStore.tableColumns.replaceTableColumn(this.column, column);
       this.column = column;
     },
   },
   mounted() {
     this.column = this.generateColumnOption();
     this.tableColumnIndex = this.getColumnIndex();
-    this.tableStore.__tableColumns.addTableColumn(this.column, this.tableColumnIndex);
+    this.tableStore.tableColumns.addTableColumn(this.column, this.tableColumnIndex);
   },
   beforeDestroy() {
-    this.tableStore.__tableColumns.removeTableColumn(this.column);
+    this.tableStore.tableColumns.removeTableColumn(this.column);
   },
   methods: {
     getColumnIndex() {

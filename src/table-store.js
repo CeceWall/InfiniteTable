@@ -9,10 +9,11 @@ export default class TableStore {
     this.eventEmitter = options.eventEmitter;
     this.rowHeight = options.rowHeight;
     this.__layoutSize = options.layoutSize;
-    this.__tableColumns = new TableColumnStore();
+    // this.__tableColumns = new TableColumnStore();
     this.tableSelection = new TableSelectionStore({
       rowKey: this.context.rowKey,
     });
+    this.tableColumns = new TableColumnStore();
     this.__tableOptions = options.tableOptions;
     this.__data = options.data;
     this.__sortedOption = {
@@ -21,28 +22,28 @@ export default class TableStore {
     };
   }
 
-  get tableColumns() {
-    return this.__tableColumns.getTableColumns();
-  }
+  // get tableColumns() {
+  //   return this.__tableColumns.getTableColumns();
+  // }
 
   get leftFixedTableColumns() {
     return this.__tableColumns.leftFixedColumns;
   }
 
   get mainTableColumns() {
-    return this.__tableColumns.tableColumns;
+    return this.__tableColumns.mainColumns;
   }
 
   get rightFixedTableColumns() {
     return this.__tableColumns.rightFixedColumns;
   }
 
-  set tableColumns(columns) {
-    this.__tableColumns.clear();
-    columns.forEach((column) => {
-      this.__tableColumns.addTableColumn(column);
-    });
-  }
+  // set tableColumns(columns) {
+  //   this.__tableColumns.clear();
+  //   columns.forEach((column) => {
+  //     this.__tableColumns.addTableColumn(column);
+  //   });
+  // }
 
   get tableOptions() {
     return this.__tableOptions;
