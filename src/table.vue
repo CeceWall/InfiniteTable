@@ -351,17 +351,36 @@ export default {
       const { rowHeight } = this.tableOptions;
       const { scrollTop, scrollLeft } = this.$refs.scrollElement;
       const { viewportWidth, viewportHeight } = this.tableStore.layoutSize;
-      if (rowPosition === 'top' && rowIndex * rowHeight < scrollTop) {
-        this.scrollToRow(this.tableStore.data[rowIndex], rowPosition);
-      } else if (rowPosition === 'bottom' && (rowIndex + 1) * rowHeight > scrollTop + viewportHeight) {
+      /**
+       * 如果当前的行高度小于scrollTop(当前行在视窗上面）
+       * 或者当前行的底部大于scrollTop加上视窗高度(当前在视窗下面)
+       * 就尝试使用scrollToRow方法将当前行滚动出来
+       */
+      if (
+        rowIndex * rowHeight < scrollTop
+        || (rowIndex + 1) * rowHeight > scrollTop + viewportHeight
+      ) {
         this.scrollToRow(this.tableStore.data[rowIndex], rowPosition);
       }
-      const column = this.tableStore.tableColumns.columns[columnIndex];
-      const offset = this.tableStore.tableColumns.getColumnOffset(column);
-      if (columnPosition === 'left' && scrollLeft > offset) {
-        this.scrollToColumn(column);
-      } else if (columnPosition === 'right' && scrollLeft + viewportWidth < offset + column.width) {
-        this.scrollToColumn(column, 'right');
+
+      const { tableColumns } = this.tableStore;
+      const column = tableColumns.columns[columnIndex];
+      // 固定列永远显示在视窗区域，无需处理
+      if (column.fixed !== false) {
+        return;
+      }
+      const offset = tableColumns.getColumnOffset(column);
+      const { leftFixedColumnWidth, rightFixedColumnWidth } = tableColumns;
+      /**
+       * 如果在左侧固定列下面或是在右侧固定列下面
+       * 就尝试滚动到指定的column
+       */
+      const beneathTheLeft = scrollLeft + leftFixedColumnWidth > offset;
+      if (
+        beneathTheLeft
+        || scrollLeft + viewportWidth - rightFixedColumnWidth < offset + column.width
+      ) {
+        this.scrollToColumn(column, beneathTheLeft ? 'left' : 'right');
       }
     },
     move(direction) {
@@ -413,8 +432,8 @@ export default {
       this.$refs.table.focus();
     },
     scrollToColumn(column, position = 'left') {
-      const { layoutSize } = this.tableStore;
-      const offset = this.tableStore.tableColumns.getColumnOffset(column);
+      const { layoutSize, tableColumns } = this.tableStore;
+      const offset = tableColumns.getColumnOffset(column);
       if (offset >= 0) {
         let positionOffset = 0;
         if (position === 'middle') {
@@ -422,7 +441,13 @@ export default {
         } else if (position === 'right') {
           positionOffset = -1 * (layoutSize.viewportWidth - column.width);
         }
-        this.$refs.scrollElement.scrollLeft = offset + positionOffset;
+        let fixedOffset = 0;
+        if (position === 'left' && column.fixed !== 'left') {
+          fixedOffset = tableColumns.leftFixedColumnWidth;
+        } else if (position === 'right' && column.fixed !== 'right') {
+          fixedOffset = tableColumns.rightFixedColumnWidth * -1;
+        }
+        this.$refs.scrollElement.scrollLeft = offset + positionOffset - fixedOffset;
       }
     },
     scrollToRow(rowItem, position = 'top') {

@@ -17,14 +17,16 @@
         :row-extra-attrs="rowClassName"
         header-height="60px"
         row-height="40px"
+        header-resizable
+        header-order-draggable
         multiple-selection
       >
+<!--        :fixed="index <=3 ? 'left' : index > columns.length - 3? 'right' : false"-->
         <infinite-table-column
           v-for="(label, index) of columns"
           :key="label"
           :label="label"
           :prop="label"
-          :fixed="index <=3 ? 'left' : index > columns.length - 3? 'right' : false"
           :width="getColumnWidth()"
           :comparator="cellComparator"
           sortable
