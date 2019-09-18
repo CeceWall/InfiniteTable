@@ -19,7 +19,7 @@ export default {
       tableColumns: [
         {
           label: '日期',
-          render: ({ row, options }) => <div>{row.date}</div>,
+          render: ({ row, options }) => <div style="color: yellow">{row.date}</div>,
         },
         {
           label: '名称',

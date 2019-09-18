@@ -151,6 +151,12 @@
     background-color: #232d37;
   }
 
+  &.infinite-table__row--fixed {
+    position: sticky;
+    z-index: 1001;
+    background: inherit;
+  }
+
   /**
     因为css优先级的原因，hover和selected样式需要在striped下面写
    */

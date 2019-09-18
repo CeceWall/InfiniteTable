@@ -12,6 +12,7 @@
       <router-link to="/row-draggable">行拖动</router-link>
       <router-link to="/drag-header-order">拖动表头排序</router-link>
       <router-link to="/jsx-column">JSX列定义</router-link>
+      <router-link to="/all-features">所有功能</router-link>
     </div>
     <div class="table-container">
       <router-view></router-view>

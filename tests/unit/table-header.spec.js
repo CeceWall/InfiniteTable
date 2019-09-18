@@ -50,9 +50,11 @@ describe('测试TableHeader', () => {
             columns: [...columns],
             getFixedColumnStyle,
           },
-          sortedOption: {
-            column: columns[1],
-            order: 'asc',
+          dataStore: {
+            sortedOption: {
+              column: columns[1],
+              order: 'asc',
+            },
           },
         }),
       },
@@ -65,7 +67,7 @@ describe('测试TableHeader', () => {
 
     sortElement = wrapper.find('.infinite-table__cell:nth-of-type(4) .infinite-table__sortable.descending');
     sortElement.trigger('click');
-    const { sortedOption } = wrapper.vm.tableStore;
+    const { sortedOption } = wrapper.vm.tableStore.dataStore;
     expect(sortedOption.column.label).to.equal(columns[3].label);
     expect(sortedOption.order).to.equal('desc');
   });

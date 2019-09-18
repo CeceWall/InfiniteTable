@@ -82,8 +82,7 @@ export default {
       return this.tableStore.tableColumns;
     },
     sortedColumn() {
-      const { column, order } = this.tableStore.sortedOption;
-      return { column, order };
+      return this.tableStore.dataStore.sortedOption;
     },
   },
   beforeDestroy() {
@@ -189,10 +188,9 @@ export default {
     handleColumnSort(column, order) {
       if (column.sortable) {
         // 排序的逻辑在tableStore中
-        this.$set(this.tableStore, 'sortedOption', {
-          column,
-          order,
-        });
+        this.tableStore.dataStore.sortedOption = {
+          column, order,
+        };
       }
     },
   },

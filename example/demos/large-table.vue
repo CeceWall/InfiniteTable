@@ -20,8 +20,9 @@
         header-resizable
         header-order-draggable
         multiple-selection
+        :top-fixed-keys="['0 - 0', '100 - 0']"
       >
-<!--        :fixed="index <=3 ? 'left' : index > columns.length - 3? 'right' : false"-->
+        <!--        :fixed="index <=3 ? 'left' : index > columns.length - 3? 'right' : false"-->
         <infinite-table-column
           v-for="(label, index) of columns"
           :key="label"
@@ -30,6 +31,7 @@
           :width="getColumnWidth()"
           :comparator="cellComparator"
           sortable
+          :fixed="index <=3 ? 'left' : index > columns.length - 3? 'right' : false"
         />
       </infinite-table>
     </div>

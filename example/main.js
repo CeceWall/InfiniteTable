@@ -13,6 +13,7 @@ import HeaderColumnResizeDemo from './demos/header-column-resize.vue';
 import RowDraggableDemo from './demos/row-draggable.vue';
 import DragHeaderOrderDemo from './demos/drag-header-order.vue';
 import JSXColumnDemo from './demos/jsx-column.vue';
+import AllFeaturesDemo from './demos/all-features.vue';
 
 Vue.component('infinite-table', InfiniteTable);
 Vue.component('infinite-table-column', InfiniteTableColumn);
@@ -63,6 +64,10 @@ const router = new VueRouter({
     {
       path: '/jsx-column',
       component: JSXColumnDemo,
+    },
+    {
+      path: '/all-features',
+      component: AllFeaturesDemo,
     },
   ],
 });

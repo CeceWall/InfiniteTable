@@ -1,31 +1,53 @@
 <template>
   <div
-    ref="scroll"
     class="infinite-table__body"
-    :style="{height: `${layoutSize.viewportHeight}px`}"
+    :style="{
+      height: `${layoutSize.viewportHeight}px`,
+      'transform-style': `${fixedData.length >= 0 ? 'preserve-3d' : 'initial'}`
+    }"
     v-on="tableBodyListeners"
   >
+    <!-- FIXME: 修复使用index作为key -->
+    <div
+      style="position: relative;"
+      :style="{
+        height: `${fixedData.length * tableOptions.rowHeight}px`,
+        transform: `translate3d(0px, ${grid.offsetY}px, 1px)`
+      }"
+    >
+      <table-row
+        v-for="(rowData, index) of fixedData"
+        :key="index"
+        v-bind="getExtraRowAttrs(data, index)"
+        :index="index"
+        :offset-x="grid.offsetX"
+        :data="rowData"
+        :style="{
+          position: 'relative',
+        }"
+      />
+    </div>
     <range-render
-      v-slot:default="{data, index}"
+      v-slot:default="{data: rowData, index}"
       :data="data"
       direction="vertical"
       :size="tableOptions.rowHeight"
       :data-key="tableOptions.rowKey"
-      :viewport-size="layoutSize.viewportHeight"
+      :viewport-size="layoutSize.viewportHeight - fixedData.length * tableOptions.rowHeight"
       :offset="grid.offsetY"
-      :trail-size="2"
-      :leading-size="2"
+      :trail-size="1"
+      :leading-size="1"
     >
       <table-row
-        v-bind="getExtraRowAttrs(data, index)"
-        :index="index"
+        v-bind="getExtraRowAttrs(rowData, index + fixedData.length)"
+        :index="index + fixedData.length"
         :offset-x="grid.offsetX"
-        :data="data"
+        :data="rowData"
       />
     </range-render>
     <div
       :style="{
-        transform:`translateY(${data.length * tableOptions.rowHeight}px)`,
+        transform:`translateY(${(data.length) * tableOptions.rowHeight}px)`,
         width: `${layoutSize.allColumnsWidth}px`
       }"
       style="position: absolute; height: 1px;"
@@ -54,7 +76,10 @@ export default {
   },
   computed: {
     data() {
-      return this.tableStore.data;
+      return this.tableStore.dataStore.data;
+    },
+    fixedData() {
+      return this.tableStore.dataStore.fixedData;
     },
     layoutSize() {
       return this.tableStore.layoutSize;

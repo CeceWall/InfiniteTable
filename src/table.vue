@@ -144,11 +144,18 @@ export default {
         return [];
       },
     },
+    topFixedKeys: {
+      type: Array,
+      default() {
+        return [];
+      },
+    },
   },
   data() {
     const tableStore = new TableStore({
       context: this,
       data: this.data,
+      fixedKeys: this.topFixedKeys,
       layoutSize: {
         viewportWidth: 0,
         viewportHeight: 0,
@@ -208,9 +215,12 @@ export default {
     // FIXME 数据项更新后自动更新render
     data: {
       handler(newData) {
-        this.tableStore.data = newData;
+        this.tableStore.dataStore.updateData(newData);
         this.doLayout();
       },
+    },
+    topFixedKeys(nextFixedKeys) {
+      this.tableStore.dataStore.updateFixedKeys(nextFixedKeys);
     },
     tableColumns: {
       immediate: true,
@@ -351,16 +361,19 @@ export default {
       const { rowHeight } = this.tableOptions;
       const { scrollTop, scrollLeft } = this.$refs.scrollElement;
       const { viewportWidth, viewportHeight } = this.tableStore.layoutSize;
+      const { allData, fixedData } = this.tableStore.dataStore;
       /**
+       * 如果行是row是固定行那么不做任何操作
        * 如果当前的行高度小于scrollTop(当前行在视窗上面）
        * 或者当前行的底部大于scrollTop加上视窗高度(当前在视窗下面)
        * 就尝试使用scrollToRow方法将当前行滚动出来
        */
+      const beneathTheTop = rowIndex * rowHeight < scrollTop + (fixedData.length * rowHeight);
       if (
-        rowIndex * rowHeight < scrollTop
-        || (rowIndex + 1) * rowHeight > scrollTop + viewportHeight
+        rowIndex >= fixedData.length
+        && (beneathTheTop || (rowIndex + 1) * rowHeight > scrollTop + viewportHeight)
       ) {
-        this.scrollToRow(this.tableStore.data[rowIndex], rowPosition);
+        this.scrollToRow(allData[rowIndex], beneathTheTop ? 'top' : 'bottom');
       }
 
       const { tableColumns } = this.tableStore;
@@ -387,8 +400,8 @@ export default {
       // TODO: 元素不可见时，自动滚动列表
       const { columns } = this.tableStore.tableColumns;
       const { focusedRow, selectedColumn } = this.tableStore.tableSelection;
-      const { data } = this.tableStore;
-      let index = data.indexOf(focusedRow);
+      const { allData } = this.tableStore.dataStore;
+      let index = allData.indexOf(focusedRow);
       let columnIndex = columns.findIndex((item) => item.label === selectedColumn.label);
       if (index === -1) {
         index = 0;
@@ -401,13 +414,13 @@ export default {
         case 'up':
           index = index === 0 ? 0 : index - 1;
           this.tryScrollInvisibleElem(index, columnIndex, 'top', 'left');
-          row = this.tableStore.data[index];
+          row = allData[index];
           this.selectRow(row);
           break;
         case 'down':
-          index = index === data.length - 1 ? data.length - 1 : index + 1;
+          index = index === allData.length - 1 ? allData.length - 1 : index + 1;
           this.tryScrollInvisibleElem(index, columnIndex, 'bottom', 'left');
-          row = this.tableStore.data[index];
+          row = allData[index];
           this.selectRow(row);
           break;
         case 'left':
@@ -452,12 +465,15 @@ export default {
     },
     scrollToRow(rowItem, position = 'top') {
       const { rowHeight } = this.tableOptions;
-      const { data, layoutSize } = this.tableStore;
+      const { dataStore, layoutSize } = this.tableStore;
+      const { allData, fixedData } = dataStore;
       const rowItemValue = _.get(rowItem, this.rowKey);
-      const index = data.findIndex((item) => _.get(item, this.rowKey) === rowItemValue);
+      const index = allData.findIndex((item) => _.get(item, this.rowKey) === rowItemValue);
       if (index !== -1) {
         let positionOffset = 0;
-        if (position === 'middle') {
+        if (position === 'top') {
+          positionOffset = -1 * fixedData.length * rowHeight;
+        } else if (position === 'middle') {
           positionOffset = -1 * ((layoutSize.viewportHeight / 2) - rowHeight);
         } else if (position === 'bottom') {
           positionOffset = -1 * (layoutSize.viewportHeight - rowHeight);
