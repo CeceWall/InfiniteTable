@@ -1,20 +1,17 @@
 const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-  entry: './src/main.js',
   mode: process.env.NODE_ENV || 'development',
   devtool: 'inline-cheap-module-source-map',
-  output: {
-    path: path.resolve(__dirname, './dist'),
-    filename: 'build.js',
-  },
   module: {
     rules: [
       {
         test: /\.s[ac]ss$/i,
         use: [
-          'style-loader',
+          process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,
           'css-loader',
           'sass-loader',
         ],
@@ -54,5 +51,9 @@ module.exports = {
   },
   plugins: [
     new VueLoaderPlugin(),
+    new MiniCssExtractPlugin({
+      filename: 'infinite-table.css',
+    }),
+    new CleanWebpackPlugin(),
   ],
 };

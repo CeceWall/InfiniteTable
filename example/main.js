@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Example from './example.vue';
-import InfiniteTable from '../src/table.vue';
-import InfiniteTableColumn from '../src/table-column.jsx';
+import InfiniteTable from '../src/index';
 import BasicUsageDemo from './demos/basic-usage.vue';
 import FixedColumnDemo from './demos/fixed-column.vue';
 import CustomColumnDemo from './demos/custom-column.vue';
@@ -15,8 +14,7 @@ import DragHeaderOrderDemo from './demos/drag-header-order.vue';
 import JSXColumnDemo from './demos/jsx-column.vue';
 import AllFeaturesDemo from './demos/all-features.vue';
 
-Vue.component('infinite-table', InfiniteTable);
-Vue.component('infinite-table-column', InfiniteTableColumn);
+Vue.use(InfiniteTable);
 
 // eslint-disable-next-line no-undef
 const router = new VueRouter({

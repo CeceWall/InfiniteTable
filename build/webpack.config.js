@@ -3,12 +3,17 @@ const path = require('path');
 const webpack = require('webpack');
 const baseConfig = require('./webpack.base.config');
 
-
 module.exports = merge(baseConfig, {
+  entry: './src/index.js',
   mode: 'production',
-  devtool: 'eval-source-map',
+  devtool: 'cheap-module-source-map',
   output: {
-    path: path.resolve(__dirname, './dist'),
-    filename: 'infinite-table.common.js',
+    filename: 'infinite-table.js',
+    library: 'InfiniteTable',
+    libraryExport: 'default',
+    libraryTarget: 'umd',
   },
+  externals: {
+    vue: 'Vue',
+  }
 });
