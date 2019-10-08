@@ -1,6 +1,6 @@
 {
   "name": "infinite-table",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "serve": "cross-env NODE_ENV=development webpack-dev-server --config build/webpack.dev.config.js",
