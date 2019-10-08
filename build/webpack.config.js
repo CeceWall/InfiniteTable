@@ -13,7 +13,7 @@ module.exports = merge(baseConfig, {
     libraryTarget: 'umd',
   },
   externals: {
-    vue: 'Vue',
+    vue: 'vue',
   },
   plugins: [
     new BundleAnalyzerPlugin(),
