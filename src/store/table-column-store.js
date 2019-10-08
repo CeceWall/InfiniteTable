@@ -83,12 +83,8 @@ export default class TableColumnStore {
         },
       },
     });
-    Object.defineProperty(this, '_vm', {
-      value: _vm,
-      configurable: false,
-      writable: false,
-      enumerable: false,
-    });
+
+    this._vm = _vm;
   }
 
   getColumnOffset(column) {

@@ -224,6 +224,7 @@ export default {
     },
     tableColumns: {
       immediate: true,
+      deep: true,
       handler() {
         this.tableStore.tableColumns.clear();
         this.tableColumns.map((column) => new TableColumnItem({ ...column }))

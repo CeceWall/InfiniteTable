@@ -19,7 +19,7 @@
       @mouseenter="handleMouseEnter(columnIndex, $event)"
       @mouseleave="handleMouseLeave(columnIndex, $event)"
       @mousemove="handleMouseMove(columnIndex, $event)"
-      @mousedown="handleMouseDown(columnIndex, $event)"
+      @mousedown.capture="handleMouseDown(columnIndex, $event)"
       @dragstart="handleHeaderDragStart(columnIndex, $event)"
       @dragover="handleHeaderDragOver(columnIndex, $event)"
       @dragend="handleHeaderDragEnd(columnIndex, $event)"
@@ -27,21 +27,21 @@
     >
       <div class="cell-content">
         {{ column.label }}
-      </div>
-      <div
-        v-if="column.sortable"
-        class="infinite-table__table-header__sortable"
-      >
         <div
-          class="infinite-table__sortable ascending"
-          :class="{active: getActiveClass(column, 'asc')}"
-          @click.stop="handleColumnSort(column, 'asc')"
-        />
-        <div
-          class="infinite-table__sortable descending"
-          :class="{active: getActiveClass(column, 'desc')}"
-          @click.stop="handleColumnSort(column, 'desc')"
-        />
+          v-if="column.sortable"
+          class="infinite-table__table-header__sortable"
+        >
+          <div
+            class="infinite-table__sortable ascending"
+            :class="{active: getActiveClass(column, 'asc')}"
+            @click.stop="handleColumnSort(column, 'asc')"
+          />
+          <div
+            class="infinite-table__sortable descending"
+            :class="{active: getActiveClass(column, 'desc')}"
+            @click.stop="handleColumnSort(column, 'desc')"
+          />
+        </div>
       </div>
     </div>
     <div
@@ -105,17 +105,27 @@ export default {
     handleMouseLeave() {
       this.mouseEnterIndex = -1;
     },
+    /**
+     * 鼠标在单元格上按下时触发这个方法
+     * @param columnIndex
+     * @param event
+     */
     handleMouseDown(columnIndex, event) {
       const { headerResizable } = this.tableOptions;
-      if (headerResizable) {
-        if (this.resizeIndicator.hover) {
-          this.resizeIndicator.visible = true;
-          this.resizeIndicator.left = this.getParentScrollLeft() + event.clientX;
-          this.resizeIndicator.startX = event.clientX;
-          document.body.addEventListener('mousemove', this.handleResizeIndicatorMove);
-          document.body.addEventListener('mouseup', this.handleResizeIndicatorMouseUp);
-        }
+      // 如果鼠标按下时，鼠标在可以resize的区域内
+      if (headerResizable && this.resizeIndicator.hover) {
+        this.resizeIndicator.visible = true;
+        this.resizeIndicator.left = this.getParentScrollLeft() + event.clientX;
+        this.resizeIndicator.startX = event.clientX;
+        document.body.addEventListener('mousemove', this.handleResizeIndicatorMove);
+        document.body.addEventListener('mouseup', this.handleResizeIndicatorMouseUp);
+        // 处于resize状态时，禁用单击事件
+        document.body.addEventListener('click', this.stopPropagationClickEvent, true);
       }
+    },
+    stopPropagationClickEvent(event) {
+      event.stopPropagation();
+      event.stopImmediatePropagation();
     },
     handleResizeIndicatorMouseUp(event) {
       if (this.tableOptions.headerResizable) {
@@ -128,6 +138,9 @@ export default {
         this.resizeIndicator.visible = false;
         document.body.removeEventListener('mousemove', this.handleResizeIndicatorMove);
         document.body.removeEventListener('mousemove', this.handleResizeIndicatorMouseUp);
+        setTimeout(() => {
+          document.body.removeEventListener('click', this.stopPropagationClickEvent, true);
+        });
       }
     },
     getParentScrollLeft() {
@@ -138,9 +151,9 @@ export default {
       return 0;
     },
     handleMouseMove(columnIndex, event) {
-      const { currentTarget, pageX } = event;
-      const cellRect = currentTarget.getBoundingClientRect();
-      if (this.tableOptions.headerResizable) {
+      if (this.tableOptions.headerResizable && !this.resizeIndicator.visible) {
+        const { currentTarget, pageX } = event;
+        const cellRect = currentTarget.getBoundingClientRect();
         // 判断是否靠近右侧边缘或者 靠近左侧边缘且不是第一个
         if (cellRect.right - pageX < 8 || (pageX - cellRect.left < 8 && columnIndex > 0)) {
           currentTarget.draggable = false;
@@ -186,6 +199,7 @@ export default {
         && this.sortedColumn.order === order;
     },
     handleColumnSort(column, order) {
+      // 如果column可以排序，并且TableHeader不处于resize模式中，就设置sortOption
       if (column.sortable) {
         // 排序的逻辑在tableStore中
         this.tableStore.dataStore.sortedOption = {
