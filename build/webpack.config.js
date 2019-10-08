@@ -1,6 +1,5 @@
 const merge = require('webpack-merge');
-const path = require('path');
-const webpack = require('webpack');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const baseConfig = require('./webpack.base.config');
 
 module.exports = merge(baseConfig, {
@@ -15,5 +14,8 @@ module.exports = merge(baseConfig, {
   },
   externals: {
     vue: 'Vue',
-  }
+  },
+  plugins: [
+    new BundleAnalyzerPlugin(),
+  ],
 });
