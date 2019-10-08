@@ -7,7 +7,7 @@
     "build": "cross-env NODE_ENV=production webpack --config build/webpack.config.js",
     "test": "cross-env NODE_ENV=test karma start karma.conf.js"
   },
-  "module": "src/index.js",
+  "module": "dist/infinite-table.js",
   "main": "dist/infinite-table.js",
   "dependencies": {
     "classnames": "^2.2.6",
