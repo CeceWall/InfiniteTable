@@ -1,5 +1,5 @@
-import _ from 'lodash';
 import { px2num } from '@/utils/layout';
+import { get } from '@/utils/object';
 
 export function defaultComparator(a, b) {
   if (a > b) {
@@ -26,7 +26,7 @@ export const defaultColumnRender = function defaultColumnRender(props) {
   const { options, row } = props;
   const { prop } = options;
   if (prop) {
-    return _.get(row, prop);
+    return get(row, prop);
   }
   return '';
 };

@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import Vue from 'vue';
-import _ from 'lodash';
+import { sumBy } from '@/utils/collection';
 
 export default class TableColumnStore {
   constructor() {
@@ -16,10 +16,10 @@ export default class TableColumnStore {
           return this.allTableColumns.filter((column) => column.fixed === 'right');
         },
         leftFixedColumnWidth() {
-          return _.sumBy(this.leftFixedColumns, 'width');
+          return sumBy(this.leftFixedColumns, (item) => item.width);
         },
         rightFixedColumnWidth() {
-          return _.sumBy(this.rightFixedColumns, 'width');
+          return sumBy(this.rightFixedColumns, (item) => item.width);
         },
         mainColumns() {
           return this.allTableColumns.filter((column) => !column.fixed);

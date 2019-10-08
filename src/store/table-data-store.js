@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import _ from 'lodash';
+import { get } from '@/utils/object';
 import { isSameColumn } from './utils';
 
 function createDataStore(options) {
@@ -14,11 +14,11 @@ function createDataStore(options) {
     computed: {
       fixedData() {
         const set = new Set(this.fixedKeys);
-        return this.data.filter((dataItem) => set.has(_.get(dataItem, this.dataKey)));
+        return this.data.filter((dataItem) => set.has(get(dataItem, this.dataKey)));
       },
       normalData() {
         const set = new Set(this.fixedKeys);
-        const data = this.data.filter((dataItem) => !set.has(_.get(dataItem, this.dataKey)));
+        const data = this.data.filter((dataItem) => !set.has(get(dataItem, this.dataKey)));
         return this.compareDataItem(data);
       },
       allData() {
@@ -34,7 +34,7 @@ function createDataStore(options) {
         const { comparator, prop } = column;
         return data.sort((row1, row2) => {
           const descFlag = order === 'desc' ? -1 : 1;
-          return comparator.call(null, _.get(row1, prop), _.get(row2, prop)) * descFlag;
+          return comparator.call(null, get(row1, prop), get(row2, prop)) * descFlag;
         });
       },
       setData(nextData) {

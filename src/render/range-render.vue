@@ -16,7 +16,7 @@
 
 <script>
 import { calcAccumulationIndex, calcFixedIndex } from './transform';
-import { get } from './utils';
+import { get } from '@/utils/object';
 
 /**
  * RangeRender 按需渲染列表的组件

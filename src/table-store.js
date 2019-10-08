@@ -1,8 +1,8 @@
 /* eslint-disable no-underscore-dangle */
-import _ from 'lodash';
 import TableColumnStore from './store/table-column-store';
 import TableSelectionStore from './store/table-selection-store';
 import TableDataStore from '@/store/table-data-store';
+import { get } from '@/utils/object';
 
 export default class TableStore {
   constructor(options = {}) {
@@ -30,7 +30,7 @@ export default class TableStore {
 
   isSameRow(rowItem1, rowItem2) {
     const { rowKey } = this.context;
-    return _.get(rowItem1, rowKey) === _.get(rowItem2, rowKey);
+    return get(rowItem1, rowKey) === get(rowItem2, rowKey);
   }
 
   isSameColumn(column1, column2) {

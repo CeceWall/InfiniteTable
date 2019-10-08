@@ -31,7 +31,9 @@
 
 <script>
 import ResizeObserver from 'resize-observer-polyfill';
-import _ from 'lodash';
+import { debounce } from 'debounce';
+import TableColumnItem from '@/store/table-column-item';
+import { get } from '@/utils/object';
 import TableHeader from './table-header.vue';
 import TableBody from './table-body.vue';
 import TableStore from './table-store';
@@ -41,7 +43,6 @@ import {
 } from './utils/layout';
 import EventEmitter from './event-emitter';
 import './styles/main.scss';
-import TableColumnItem from '@/store/table-column-item';
 
 const KeyStatus = {
   UP: 'UP',
@@ -248,7 +249,7 @@ export default {
     },
   },
   created() {
-    this.doLayout = _.debounce(this.doLayout, 100);
+    this.doLayout = debounce(this.doLayout, 100);
     this.$on('row-click', (row) => {
       this.selectRow(row);
     });
@@ -295,7 +296,7 @@ export default {
 
 
       // 避免doLayout时又改变了tableColumns导致循环调用
-      if (this.tableColumns.length || allColumnsWidth !== this.lastAllColumnsWidth) {
+      if (allColumnsWidth !== this.lastAllColumnsWidth) {
         // TODO: 不使用循环添加columns
         this.tableStore.tableColumns.clear();
         calculatedColumns.forEach((item) => {
@@ -468,8 +469,8 @@ export default {
       const { rowHeight } = this.tableOptions;
       const { dataStore, layoutSize } = this.tableStore;
       const { allData, fixedData } = dataStore;
-      const rowItemValue = _.get(rowItem, this.rowKey);
-      const index = allData.findIndex((item) => _.get(item, this.rowKey) === rowItemValue);
+      const rowItemValue = get(rowItem, this.rowKey);
+      const index = allData.findIndex((item) => get(item, this.rowKey) === rowItemValue);
       if (index !== -1) {
         let positionOffset = 0;
         if (position === 'top') {
