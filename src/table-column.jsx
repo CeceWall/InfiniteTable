@@ -10,7 +10,7 @@ export default {
     },
     comparator: {
       type: Function,
-      default: null,
+      default: undefined,
     },
     width: {
       type: [Number, String],

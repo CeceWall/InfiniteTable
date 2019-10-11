@@ -45,11 +45,12 @@ describe('测试TableColumnItem', () => {
     item.columnRender();
     expect(render.called).to.be.true;
 
-    item = new TableColumnItem({ label: '123' });
+    item = new TableColumnItem({ label: '123', comparator: undefined });
     expect(item.prop).to.be.empty;
     expect(item.width).to.be.equal(0);
     expect(item.sortable).to.be.false;
     expect(item.fixed).to.be.false;
+    expect(item.comparator).to.not.be.undefined;
     // item.comparator();
     // item.columnRender();
     // expect(defaultColumnRender.called).to.be.true;

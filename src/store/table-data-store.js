@@ -34,6 +34,9 @@ function createDataStore(options) {
         const { comparator, prop } = column;
         return data.sort((row1, row2) => {
           const descFlag = order === 'desc' ? -1 : 1;
+          if (!comparator) {
+            throw new Error('[TableDataStore]: comparator意外为空');
+          }
           return comparator.call(null, get(row1, prop), get(row2, prop)) * descFlag;
         });
       },

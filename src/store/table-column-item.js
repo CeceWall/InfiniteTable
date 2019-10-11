@@ -1,3 +1,4 @@
+import defaults from 'defaults';
 import { px2num } from '@/utils/layout';
 import { get } from '@/utils/object';
 
@@ -61,7 +62,7 @@ export default class TableColumnItem {
       prop: '',
       fixed: false,
     };
-    const o = { ...defaultOptions, ...options };
+    const o = defaults(options, defaultOptions);
     if (!o.label) {
       throw new Error('[TableColumnItem]: Column中必须包含唯一的label字段');
     }
