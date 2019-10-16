@@ -247,14 +247,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-  .range-render {
-    position: relative;
-
-    .range-render__item {
-      position: absolute;
-      will-change: transform;
-    }
-  }
-</style>

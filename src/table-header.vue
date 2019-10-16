@@ -210,17 +210,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-  .infinite-table__table-header__sortable {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    height: 34px;
-    width: 24px;
-    vertical-align: middle;
-    cursor: pointer;
-    overflow: initial;
-    position: relative;
-  }
-</style>
