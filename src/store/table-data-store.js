@@ -2,6 +2,16 @@ import Vue from 'vue';
 import { get } from '@/utils/object';
 import { isSameColumn } from './utils';
 
+export function defaultComparator(a, b) {
+  if (a > b) {
+    return 1;
+  }
+  if (a === b) {
+    return 0;
+  }
+  return -1;
+}
+
 function createDataStore(options) {
   return new Vue({
     data: {
@@ -31,13 +41,16 @@ function createDataStore(options) {
         if (!order || !column || order === 'nature') {
           return data;
         }
-        const { comparator, prop } = column;
+        const { comparator, sortBy } = column;
+        if (!comparator && !sortBy) {
+          return data;
+        }
         return data.sort((row1, row2) => {
           const descFlag = order === 'desc' ? -1 : 1;
           if (!comparator) {
-            throw new Error('[TableDataStore]: comparator意外为空');
+            return defaultComparator(get(row1, sortBy), get(row2, sortBy)) * descFlag;
           }
-          return comparator.call(null, get(row1, prop), get(row2, prop)) * descFlag;
+          return comparator.call(null, row1, row2) * descFlag;
         });
       },
       setData(nextData) {

@@ -19,6 +19,8 @@ export default {
       tableColumns: [
         {
           label: '日期',
+          sortable: true,
+          comparator: (a, b) => a.address.localeCompare(b),
           render: ({ row, options }) => <div style="color: yellow">{row.date}</div>,
         },
         {

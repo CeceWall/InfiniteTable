@@ -28,6 +28,10 @@ export default {
       type: [String, Boolean],
       default: false,
     },
+    sortBy: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -56,7 +60,7 @@ export default {
     generateColumnOption() {
       const {
         width, label, sortable, comparator,
-        prop, fixed,
+        prop, fixed, sortBy,
       } = this;
 
       const scopedSlot = this.$scopedSlots.default;
@@ -66,6 +70,7 @@ export default {
       return new TableColumnItem({
         width,
         label,
+        sortBy,
         sortable,
         comparator,
         prop,
