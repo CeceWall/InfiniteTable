@@ -2,11 +2,13 @@ $table-highlight-color: #3c9afb !default;
 
 $table-text-color: #fff !default;
 $table-background-color: #243443 !default;
+$--table-row-striped-background-color--dark: #2d2d2d !default;
 $table-font-size: 14px !default;
 
 $table-header-border-bottom: 1px solid #252629;
 
-$table-sortable-active: $table-highlight-color !default;
-$table-row-hover-color: $table-highlight-color !default;
+$table-row-hover-color: #2050A0 !default;
+$table-sortable-active: $table-row-hover-color;
+
 
 //$table-background-color: !
