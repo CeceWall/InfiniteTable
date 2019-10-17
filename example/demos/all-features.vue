@@ -62,35 +62,35 @@ const tableColumns = [
     width: 80,
     sortable: true,
     fixed: 'left',
-    render: ({ rowIndex }) => `${rowIndex}-0`,
+    render: (h, { rowIndex }) => `${rowIndex}-0`,
   },
   {
     label: '1',
     width: 80,
     sortable: true,
     fixed: 'left',
-    render: ({ rowIndex }) => `${rowIndex}-1`,
+    render: (h, { rowIndex }) => `${rowIndex}-1`,
   },
   {
     label: '2',
     width: 80,
     sortable: true,
     fixed: 'left',
-    render: ({ rowIndex }) => `${rowIndex}-2`,
+    render: (h, { rowIndex }) => `${rowIndex}-2`,
   },
   {
     label: '3',
     width: 80,
     sortable: true,
     fixed: 'left',
-    render: ({ rowIndex }) => `${rowIndex}-3`,
+    render: (h, { rowIndex }) => `${rowIndex}-3`,
   },
   {
     label: '4',
     width: 80,
     sortable: true,
     fixed: 'left',
-    render: ({ rowIndex }) => `${rowIndex}-4`,
+    render: (h, { rowIndex }) => `${rowIndex}-4`,
   },
 ];
 
@@ -112,7 +112,7 @@ export default {
         width: 80,
         sortable: true,
         fixed: false,
-        render: ({ rowIndex }) => `${rowIndex}-${columnIndex}`,
+        render: (h, { rowIndex }) => `${rowIndex}-${columnIndex}`,
       });
     },
     removeColumn() {

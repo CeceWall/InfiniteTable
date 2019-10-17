@@ -74,7 +74,7 @@ export default {
         sortable,
         comparator,
         prop,
-        render: scopedSlot,
+        render: scopedSlot ? (h, props) => scopedSlot(props) : undefined,
         fixed,
       });
     },

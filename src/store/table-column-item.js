@@ -7,10 +7,11 @@ import { get } from '@/utils/object';
  * 返回row中[prop]字段中的数据
  * prop可以使用a.b.c等复杂方式表示
  *
+ * @param h
  * @param {{options: Object, row: Object}} props 渲染列时的对象
  * @return {string}
  */
-export const defaultColumnRender = function defaultColumnRender(props) {
+export const defaultColumnRender = function defaultColumnRender(h, props) {
   if (!props || !props.options || !props.row) {
     return '';
   }
@@ -20,10 +21,6 @@ export const defaultColumnRender = function defaultColumnRender(props) {
     return get(row, prop);
   }
   return '';
-};
-
-const getColumnRenderFunc = function getColumnRenderFunc(render) {
-  return (props) => render(props);
 };
 
 /**
@@ -62,10 +59,10 @@ export default class TableColumnItem {
         console.error('[TableColumnItem]: 使用render函数时排序需要设置sortBy字段');
       }
       this.sortBy = o.sortBy;
-      this.columnRender = getColumnRenderFunc(o.render);
+      this.columnRender = o.render;
     } else {
       this.sortBy = o.sortBy || o.prop;
-      this.columnRender = getColumnRenderFunc(defaultColumnRender);
+      this.columnRender = defaultColumnRender;
     }
     this.width = px2num(o.width);
     this.hasWidth = !!this.width;

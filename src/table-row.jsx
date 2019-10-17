@@ -72,7 +72,7 @@ export default {
           }
         >
           <div class="cell-content">
-            {columnRender({ row: data, options: columnOption, rowIndex: index })}
+            {columnRender(this.$createElement, { row: data, options: columnOption, rowIndex: index })}
           </div>
         </div>
       );

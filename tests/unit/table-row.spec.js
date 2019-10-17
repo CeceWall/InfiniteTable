@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { shallowMount } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
 import Vue from 'vue';
 import TableRow from '@/table-row.jsx';
 import TableColumnItem from '@/store/table-column-item';
@@ -21,7 +21,7 @@ const leftFixedColumns = [
   }),
 ];
 const mainTableColumns = [
-  new TableColumnItem({ label: 'b', prop: 'b', width: 123 }),
+  new TableColumnItem({ label: 'b', width: 123, render: sinon.stub().returns('1234') }),
   new TableColumnItem({ label: 'c', prop: 'c', width: 123 }),
   new TableColumnItem({ label: 'd', prop: 'd', width: 123 }),
   new TableColumnItem({ label: 'e', prop: 'e', width: 123 }),
@@ -31,41 +31,43 @@ const rightFixedColumns = [
     label: 'f', prop: 'f', width: 123, fixed: 'right',
   }),
 ];
-const provide = Vue.observable({
-  emitter: {
-    dispatch: sinon.spy(),
-  },
-  tableStore: {
-    isSameColumn: sinon.stub().onSecondCall().returns(true).returns(false),
-    isSameRow: sinon.stub().returns(true),
-    layoutSize: {
-      viewportWidth: 1120,
-      viewportHeight: 520,
-      allColumnsWidth: 3840,
-    },
-    tableColumns: {
-      leftFixedColumns: [...leftFixedColumns],
-      leftFixedColumnWidth: 123,
-      mainColumns: [...mainTableColumns],
-      rightFixedColumns: [...rightFixedColumns],
-      rightFixedColumnWidth: 123,
-      getFixedColumnStyle: sinon.stub().returns({ left: '123px' }),
-    },
-    tableSelection: {
-      focusedRow: {},
-      selectedColumn: {},
-    },
-  },
-  tableOptions: {
-    rowHeight: 48,
-    rowDraggable: false,
-    highlightCurrentCell: true,
-  },
-});
-
 describe('测试table-row组件', () => {
-  it('测试渲染RangeRender应带有宽高信息', (done) => {
-    const wrapper = shallowMount(TableRow, {
+  let wrapper;
+  let provide;
+  beforeEach(() => {
+    provide = Vue.observable({
+      emitter: {
+        dispatch: sinon.spy(),
+      },
+      tableStore: {
+        isSameColumn: sinon.stub().onSecondCall().returns(true).returns(false),
+        isSameRow: sinon.stub().returns(true),
+        layoutSize: {
+          viewportWidth: 1120,
+          viewportHeight: 520,
+          allColumnsWidth: 3840,
+        },
+        tableColumns: {
+          leftFixedColumns: [...leftFixedColumns],
+          leftFixedColumnWidth: 123,
+          mainColumns: [...mainTableColumns],
+          rightFixedColumns: [...rightFixedColumns],
+          rightFixedColumnWidth: 123,
+          getFixedColumnStyle: sinon.stub().returns({ left: '123px' }),
+        },
+        tableSelection: {
+          focusedRow: {},
+          selectedColumn: {},
+        },
+      },
+      tableOptions: {
+        rowHeight: 48,
+        rowDraggable: false,
+        highlightCurrentCell: true,
+      },
+    });
+
+    wrapper = mount(TableRow, {
       attachToDocument: true,
       sync: false,
       propsData: {
@@ -75,6 +77,35 @@ describe('测试table-row组件', () => {
       },
       provide,
     });
+  });
+  it('测试事件', (done) => {
+    // 测试事件
+    const element = wrapper.find('.fixed-left');
+    element.trigger('click');
+    const event = sinon.match.instanceOf(Event);
+    const { dispatch } = provide.emitter;
+    expect(dispatch.getCall(0)
+      .calledWith('cell-click', data, leftFixedColumns[0], event)).to.be.true;
+    expect(dispatch.getCall(1)
+      .calledWith('row-click', data, leftFixedColumns[0], event)).to.be.true;
+    const events = ['contextmenu', 'dblclick', 'dragstart', 'dragend', 'dragover', 'drop'];
+    for (let i = 0; i < events; i += 1) {
+      dispatch.resetHistory();
+      const eventName = events[i];
+      element.trigger(eventName);
+      expect(dispatch.firstCall.calledWith(`row-${eventName}`, data, leftFixedColumns[0], event));
+    }
+    done();
+  });
+  it('测试渲染函数columnRender被正确调用', () => {
+    const props = sinon.match({
+      row: data,
+      options: mainTableColumns[0],
+      rowIndex: 0,
+    });
+    expect(mainTableColumns[0].columnRender.calledWithExactly(wrapper.vm.$createElement, props)).to.be.true;
+  });
+  it('测试fixed列渲染和main渲染', (done) => {
     const props = wrapper.find(RangeRender).props();
     // 测试传递给RangeRender的Props是否正确
     expect(props.direction).to.equal('horizontal');
@@ -87,8 +118,6 @@ describe('测试table-row组件', () => {
     // 测试fixed列是否按照数据进行渲染
     expect(wrapper.findAll('.fixed-left').length).to.equal(leftFixedColumns.length);
     expect(wrapper.findAll('.fixed-right').length).to.equal(rightFixedColumns.length);
-    const { callCount } = provide.tableStore.tableColumns.getFixedColumnStyle;
-    expect(callCount).to.equal(leftFixedColumns.length + rightFixedColumns.length);
     expect(wrapper.find('.fixed-left').element.style.left).to.equal('123px');
 
     // 测试单元格选中是否生效
@@ -96,20 +125,6 @@ describe('测试table-row组件', () => {
     expect(provide.tableStore.isSameRow.called).to.be.true;
     expect(wrapper.find('.infinite-table__cell--selected.fixed-right').isEmpty()).not.to.be.true;
 
-    // 测试事件
-    const element = wrapper.find('.fixed-left');
-    element.trigger('click');
-    const event = sinon.match.instanceOf(Event);
-    const { dispatch } = provide.emitter;
-    expect(dispatch.getCall(0).calledWith('cell-click', data, leftFixedColumns[0], event)).to.be.true;
-    expect(dispatch.getCall(1).calledWith('row-click', data, leftFixedColumns[0], event)).to.be.true;
-    const events = ['contextmenu', 'dblclick', 'dragstart', 'dragend', 'dragover', 'drop'];
-    for (let i = 0; i < events; i += 1) {
-      dispatch.resetHistory();
-      const eventName = events[i];
-      element.trigger(eventName);
-      expect(dispatch.firstCall.calledWith(`row-${eventName}`, data, leftFixedColumns[0], event));
-    }
     done();
   });
 });

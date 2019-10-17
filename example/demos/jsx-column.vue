@@ -11,27 +11,13 @@
 
 <script lang="jsx">
 import _ from 'lodash';
+import tableColumns from './columns.jsx'
 
 export default {
   name: 'JSXColumn',
   data() {
     return {
-      tableColumns: [
-        {
-          label: '日期',
-          sortable: true,
-          comparator: (a, b) => a.address.localeCompare(b),
-          render: ({ row, options }) => <div style="color: yellow">{row.date}</div>,
-        },
-        {
-          label: '名称',
-          render: ({ row, options }) => <div>{row.name}</div>,
-        },
-        {
-          label: '地址',
-          prop: 'address',
-        },
-      ],
+      tableColumns,
       visible: true,
       tableData: [{
         id: 1,
