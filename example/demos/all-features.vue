@@ -48,7 +48,8 @@
         :top-fixed-keys="['0 - 0', '100 - 0']"
         :table-columns="tableColumns"
         @column-resize="handleColumnResize"
-      />
+      >
+      </infinite-table>
     </div>
   </div>
 </template>

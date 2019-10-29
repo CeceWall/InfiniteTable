@@ -19,6 +19,14 @@
   outline: none;
 }
 
+.infinite-table__empty-content {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .infinite-table--scrollable {
   overflow-x: auto;
   overflow-y: auto;
@@ -60,6 +68,10 @@
 
   .infinite-table__cell {
     border-right: 1px solid transparent;
+
+    &.hover {
+      border-right: 1px solid white;
+    }
   }
 }
 

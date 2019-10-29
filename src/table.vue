@@ -24,7 +24,19 @@
         :style="{width: `${tableStore.layoutSize.allColumnsWidth}px`}"
         :class="tableHeaderClass"
       />
-      <table-body />
+      <table-body v-if="data.length > 0" />
+    </div>
+    <div
+      v-if="data.length === 0"
+      class="infinite-table__empty-content"
+    >
+      <slot
+        v-if="$slots.empty"
+        name="empty"
+      />
+      <template v-else>
+        暂无数据
+      </template>
     </div>
   </div>
 </template>
