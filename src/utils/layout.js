@@ -63,3 +63,22 @@ export function getClientSize(el) {
   }
   throw new Error('getClientSize错误: el不是HTMLElement对象');
 }
+
+/**
+ * 获取相对于document的offset, 有滚动条的情况下，会减去滚动条
+ *
+ * @param el
+ * @return {{top: number, left: number}}
+ */
+export function getElementOffset(el) {
+  const viewportOffset = el.getBoundingClientRect();
+
+  const scrollLeft = window.pageXOffset !== undefined ? window.pageXOffset : (document.documentElement || document.body.parentNode || document.body).scrollLeft;
+  const scrollTop = window.pageYOffset !== undefined ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+  const offsetLeft = viewportOffset.left + scrollLeft;
+  const offsetTop = viewportOffset.top + scrollTop;
+  return {
+    left: offsetLeft,
+    top: offsetTop,
+  };
+}

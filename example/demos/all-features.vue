@@ -33,7 +33,7 @@
         固定
       </button>
     </div>
-    <div style="width: 100%; height: calc(100% - 50px);">
+    <div style="width: 100%; height: calc(100% - 50px); padding-left: 100px">
       <infinite-table
         ref="table"
         :data="data"
@@ -48,8 +48,7 @@
         :top-fixed-keys="['0 - 0', '100 - 0']"
         :table-columns="tableColumns"
         @column-resize="handleColumnResize"
-      >
-      </infinite-table>
+      />
     </div>
   </div>
 </template>
@@ -62,36 +61,25 @@ const tableColumns = [
     label: '0',
     width: 80,
     sortable: true,
+    sortBy: 'key',
     fixed: 'left',
-    render: (h, { rowIndex }) => `${rowIndex}-0`,
+    render: (h, { row }) => `${row.key}-0`,
   },
   {
     label: '1',
     width: 80,
     sortable: true,
+    sortBy: 'key',
     fixed: 'left',
-    render: (h, { rowIndex }) => `${rowIndex}-1`,
+    render: (h, { row }) => `${row.key}-1`,
   },
   {
     label: '2',
     width: 80,
     sortable: true,
+    sortBy: 'key',
     fixed: 'left',
-    render: (h, { rowIndex }) => `${rowIndex}-2`,
-  },
-  {
-    label: '3',
-    width: 80,
-    sortable: true,
-    fixed: 'left',
-    render: (h, { rowIndex }) => `${rowIndex}-3`,
-  },
-  {
-    label: '4',
-    width: 80,
-    sortable: true,
-    fixed: 'left',
-    render: (h, { rowIndex }) => `${rowIndex}-4`,
+    render: (h, { row }) => `${row.key}-2`,
   },
 ];
 
@@ -112,8 +100,9 @@ export default {
         label: this.tableColumns.length,
         width: 80,
         sortable: true,
+        sortBy: 'key',
         fixed: false,
-        render: (h, { rowIndex }) => `${rowIndex}-${columnIndex}`,
+        render: (h, { row }) => `${row.key}-${columnIndex}`,
       });
     },
     removeColumn() {
@@ -137,9 +126,7 @@ export default {
       }
     },
     handleColumnResize(columnIndex, column, size) {
-      console.log(columnIndex, column, size);
       this.tableColumns[columnIndex].width += size;
-      console.log(this.tableColumns);
     },
   },
 };

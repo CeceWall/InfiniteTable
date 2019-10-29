@@ -53,6 +53,8 @@
   </div>
 </template>
 <script>
+import { getElementOffset } from '@/utils/layout';
+
 const HEADER_DRAG_DATA_TYPE = 'headerColumnIndex'.toLowerCase();
 
 export default {
@@ -115,8 +117,8 @@ export default {
       // 如果鼠标按下时，鼠标在可以resize的区域内
       if (headerResizable && this.resizeIndicator.hover) {
         this.resizeIndicator.visible = true;
-        this.resizeIndicator.left = this.getParentScrollLeft() + event.clientX;
-        this.resizeIndicator.startX = event.clientX;
+        this.setResizeIndicatorPosition(event);
+        this.resizeIndicator.startX = event.pageX;
         document.body.addEventListener('mousemove', this.handleResizeIndicatorMove);
         document.body.addEventListener('mouseup', this.handleResizeIndicatorMouseUp);
         // 处于resize状态时，禁用单击事件
@@ -131,9 +133,13 @@ export default {
       if (this.tableOptions.headerResizable) {
         if (this.resizeIndicator.visible) {
           const { activeIndex, startX } = this.resizeIndicator;
-          const { clientX } = event;
+          const { pageX } = event;
           const activeColumn = this.tableStore.tableColumns.columns[activeIndex];
-          this.emitter.dispatch('column-resize', activeIndex, activeColumn, clientX - startX);
+          let delta = pageX - startX;
+          if (activeColumn.width + delta < 80) {
+            delta = 80 - activeColumn.width;
+          }
+          this.emitter.dispatch('column-resize', activeIndex, activeColumn, delta);
         }
         this.resizeIndicator.visible = false;
         document.body.removeEventListener('mousemove', this.handleResizeIndicatorMove);
@@ -153,12 +159,13 @@ export default {
     handleMouseMove(columnIndex, event) {
       if (this.tableOptions.headerResizable && !this.resizeIndicator.visible) {
         const { currentTarget, pageX } = event;
-        const cellRect = currentTarget.getBoundingClientRect();
+        const { left } = getElementOffset(event.currentTarget);
+        const right = left + event.currentTarget.offsetWidth;
         // 判断是否靠近右侧边缘或者 靠近左侧边缘且不是第一个
-        if (cellRect.right - pageX < 8 || (pageX - cellRect.left < 8 && columnIndex > 0)) {
+        if (right - pageX < 8 || (pageX - left < 8 && columnIndex > 0)) {
           currentTarget.draggable = false;
           this.resizeIndicator.hover = true;
-          const activeIndex = cellRect.right - pageX < 8 ? this.mouseEnterIndex : this.mouseEnterIndex - 1;
+          const activeIndex = right - pageX < 8 ? this.mouseEnterIndex : this.mouseEnterIndex - 1;
           this.resizeIndicator.activeIndex = activeIndex;
         } else {
           currentTarget.draggable = true;
@@ -166,8 +173,12 @@ export default {
         }
       }
     },
+    setResizeIndicatorPosition(event) {
+      const { left } = getElementOffset(this.$parent.$el);
+      this.resizeIndicator.left = this.getParentScrollLeft() + event.pageX - left;
+    },
     handleResizeIndicatorMove(event) {
-      this.resizeIndicator.left = this.getParentScrollLeft() + event.clientX;
+      this.setResizeIndicatorPosition(event);
     },
     handleHeaderDragStart(columnIndex, event) {
       event.dataTransfer.setData(HEADER_DRAG_DATA_TYPE, columnIndex);
