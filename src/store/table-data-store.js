@@ -86,12 +86,7 @@ function createDataStore(options) {
 
 export default class TableDataStore {
   constructor(options) {
-    Object.defineProperty(this, '_vm', {
-      value: createDataStore(options),
-      enumerable: false,
-      writable: false,
-      configurable: false,
-    });
+    this._vm = createDataStore(options);
   }
 
   get data() {
