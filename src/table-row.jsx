@@ -1,10 +1,12 @@
 import classNames from 'classnames';
 import RangeRender from './render/range-render.vue';
+import { NotifyMixin } from '@/event-emitter';
 
 export default {
   name: 'TableRow',
   inject: ['tableStore', 'emitter', 'tableOptions'],
   components: { RangeRender },
+  mixins: [NotifyMixin],
   props: {
     index: {
       type: Number,
@@ -20,6 +22,22 @@ export default {
     },
   },
   methods: {
+    handleMouseLeaveCell() {
+      this.notify('TableBody', 'hide-tooltip');
+    },
+    handleMouseEnterCell(data, column, event) {
+      const { currentTarget } = event;
+      if (currentTarget) {
+        const contentElement = currentTarget.querySelector('.cell-content');
+        if (contentElement) {
+          const cellWidth = currentTarget.clientWidth;
+          const contentWidth = contentElement.scrollWidth;
+          if (contentWidth > cellWidth) {
+            this.notify('TableBody', 'show-tooltip', currentTarget, contentElement.textContent);
+          }
+        }
+      }
+    },
     getFixedStyle(column) {
       return this.tableStore.tableColumns.getFixedColumnStyle(column);
     },
@@ -67,12 +85,16 @@ export default {
                 dragend: (e) => this.dispatchRowEvent('row-dragend', data, columnOption, e),
                 dragover: (e) => this.dispatchRowEvent('row-dragover', data, columnOption, e),
                 drop: (e) => this.dispatchRowEvent('row-drop', data, columnOption, e),
+                mouseenter: (e) => this.handleMouseEnterCell(data, columnOption, e),
+                mouseleave: (e) => this.handleMouseLeaveCell(data, columnOption, e),
               },
             }
           }
         >
           <div class="cell-content">
-            {columnRender(this.$createElement, { row: data, options: columnOption, rowIndex: index })}
+            {columnRender(this.$createElement, {
+              row: data, options: columnOption, rowIndex: index,
+            })}
           </div>
         </div>
       );

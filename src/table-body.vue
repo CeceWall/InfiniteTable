@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="tableBody"
     class="infinite-table__body"
     :style="{
       height: `${layoutSize.viewportHeight}px`,
@@ -43,6 +44,7 @@
         :index="index + fixedData.length"
         :offset-x="grid.offsetX"
         :data="rowData"
+        @show-tooltip="handleShowTooltip($event)"
       />
     </range-render>
     <div
@@ -52,12 +54,19 @@
       }"
       style="position: absolute; height: 1px;"
     />
+    <div
+      ref="tooltip"
+      class="tooltip-reference"
+      :style="{height: `${tableOptions.rowHeight}px`}"
+    />
   </div>
 </template>
 
 <script>
+import Tooltip from 'tooltip.js';
 import TableRow from './table-row.jsx';
 import RangeRender from './render/range-render.vue';
+import { getElementOffset } from '@/utils/layout';
 
 export default {
   name: 'TableBody',
@@ -99,9 +108,20 @@ export default {
     this.handing = false;
   },
   mounted() {
+    this.tooltip = new Tooltip(this.$refs.tooltip, {
+      placement: 'top',
+      container: document.body,
+      boundariesElement: document.body,
+      template: '<div class="infinite-table__tooltip tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',
+    });
+    this.$on('show-tooltip', this.handleShowTooltip);
+    this.$on('hide-tooltip', () => this.tooltip.hide());
     this.scroll = this.getScrollElement();
     this.scroll.addEventListener('scroll', this.handleScroll);
     this.handleScroll();
+  },
+  beforeDestroy() {
+    this.tooltip.dispose();
   },
   methods: {
     getExtraRowAttrs(rowItem, index) {
@@ -139,6 +159,19 @@ export default {
     },
     getScrollElement() {
       return this.$el.closest('.infinite-table--scrollable');
+    },
+    handleShowTooltip(element, textContent) {
+      if (element instanceof HTMLElement) {
+        const { top: bodyTop, left: bodyLeft } = getElementOffset(this.$refs.tableBody);
+        const { top, left } = getElementOffset(element);
+        const { tooltip } = this.$refs;
+        tooltip.style.top = `${top - bodyTop}px`;
+        tooltip.style.left = `${left - bodyLeft}px`;
+        tooltip.style.width = `${element.offsetWidth}px`;
+        tooltip.style.height = `${element.offsetHeight}px`;
+        this.tooltip.updateTitleContent(textContent);
+        this.tooltip.show();
+      }
     },
   },
 };

@@ -10,3 +10,23 @@ export default class EventEmitter {
     this.vm.$emit.apply(this.vm, [event, ...payload]);
   }
 }
+
+export const NotifyMixin = {
+  methods: {
+    notify(componentName, eventName, ...params) {
+      let parent = this.$parent || this.$root;
+      let { name } = parent.$options;
+
+      while (parent && (!name || name !== componentName)) {
+        parent = parent.$parent;
+
+        if (parent) {
+          name = parent.$options.name;
+        }
+      }
+      if (parent) {
+        parent.$emit.apply(parent, [eventName].concat(params));
+      }
+    },
+  },
+};

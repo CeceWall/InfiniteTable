@@ -9,6 +9,56 @@
   }
 }
 
+.infinite-table__tooltip {
+  pointer-events: none;
+  z-index: 1999;
+  position: absolute;
+  color: white;
+  background: #3c9afb;
+  min-width: 150px;
+  max-width: 250px;
+  border-radius: 3px;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  text-align: center;
+
+  .tooltip-arrow {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    position: absolute;
+    margin: 5px;
+  }
+
+  .tooltip-arrow {
+    color: #3c9afb;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  &[x-placement^="top"] .tooltip-arrow {
+    border-width: 5px 5px 0 5px;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    bottom: -5px;
+    left: calc(50% - 5px);
+  }
+
+  &[x-placement^="bottom"] .tooltip-arrow {
+    border-width: 0 5px 5px 5px;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    top: -5px;
+    left: calc(50% - 5px);
+  }
+
+  .tooltip-inner {
+    word-break: break-word;
+  }
+}
+
 .infinite-table {
   height: 100%;
   overflow: hidden;
@@ -119,6 +169,14 @@
 
 .infinite-table__body {
   position: relative;
+
+  .tooltip-reference {
+    position: absolute;
+    z-index: -99999;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+  }
 }
 
 .infinite-table__body__wrapper {
@@ -154,7 +212,7 @@
     z-index: 1000;
   }
 
-  &.infinite-table__cell--resizeable{
+  &.infinite-table__cell--resizeable {
     cursor: col-resize;
   }
 
