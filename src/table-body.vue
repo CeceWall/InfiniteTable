@@ -18,7 +18,7 @@
       <table-row
         v-for="(rowData, index) of fixedData"
         :key="index"
-        v-bind="getExtraRowAttrs(data, index)"
+        v-bind="getExtraRowAttrs(rowData, index)"
         :index="index"
         :offset-x="grid.offsetX"
         :data="rowData"
