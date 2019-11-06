@@ -11,11 +11,20 @@ module.exports = merge(baseConfig, {
     library: 'InfiniteTable',
     libraryExport: 'default',
     libraryTarget: 'umd',
+	globalObject: 'typeof self !== \'undefined\' ? self : this' 
   },
   externals: {
-    vue: 'vue',
+    vue: {
+		commonjs: 'vue',
+		commonjs2: 'vue',
+		root: 'Vue',
+		amd: 'vue'
+	},
   },
   plugins: [
     new BundleAnalyzerPlugin(),
-  ],
+  ],  
+  optimization: {
+    minimize: false
+  }
 });
